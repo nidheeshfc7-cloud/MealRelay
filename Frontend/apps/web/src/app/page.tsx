@@ -197,56 +197,75 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section className="py-20 bg-white border-y border-line-light" id="workflow">
+      {/* How It Works / Workflow Section */}
+      <section className="py-20 bg-forest text-white border-y border-line-dark" id="workflow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-forest">THE CLOSED-LOOP WORKFLOW</span>
-            <h2 className="text-3xl sm:text-5xl font-black text-ink tracking-tight mt-2">
-              Less guessing. More impact.
-            </h2>
-            <p className="text-base sm:text-lg text-ink-secondary mt-4">
-              Institutional dining waste happens because portions are planned in spreadsheets using gut feel.
-              MealRelay turns past dining data into actionable daily prep orders.
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+            <div>
+              <p className="text-xs font-extrabold uppercase tracking-widest text-lime">
+                FROM FORECAST TO FOLLOW-THROUGH
+              </p>
+              <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight mt-2">
+                One rhythm. Every service.
+              </h2>
+            </div>
+            <p className="text-white/70 text-base sm:text-lg max-w-md font-normal leading-relaxed">
+              A recommendation is a starting point. The manager makes the final call.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                step: '01',
-                title: 'Predict Demand',
-                icon: LineChart,
-                desc: 'Considers headcount, historical attendance, seasonality, and campus calendar patterns to forecast actual portions required.',
+                number: '01',
+                title: 'Predict',
+                description:
+                  'Review the sample baseline. Explore a buffer and see the additional portions before making a decision.',
+                Icon: LineChart,
+                href: '/forecasts',
+                action: 'Explore forecasts',
               },
               {
-                step: '02',
-                title: 'Prepare with Buffer',
-                icon: Utensils,
-                desc: 'Recommends prep quantities with a custom safety margin (default +4.8%). Chefs retain full manual control in steps of 5 servings.',
+                number: '02',
+                title: 'Prepare',
+                description:
+                  'Fine-tune breakfast, lunch and dinner quantities. Confirm the total and approve your reviewed plan.',
+                Icon: Utensils,
+                href: '/planner',
+                action: 'Open meal planner',
               },
               {
-                step: '03',
-                title: 'Measure & Improve',
-                icon: Leaf,
-                desc: 'Logs meals served and leftover trays after service. Closes the feedback loop so each subsequent forecast is sharper than the last.',
+                number: '03',
+                title: 'Improve',
+                description:
+                  'Read the prepared-versus-served breakdown. Use the sample leftovers to understand the planning gap.',
+                Icon: Leaf,
+                href: '/analytics',
+                action: 'Read service analytics',
               },
-            ].map((card) => {
-              const Icon = card.icon;
-              return (
-                <div
-                  key={card.step}
-                  className="p-8 rounded-3xl bg-canvas border border-line-light hover:border-forest/30 transition-all hover:shadow-lg group"
-                >
-                  <div className="w-12 h-12 rounded-2xl bg-forest text-lime flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
-                    <Icon size={24} />
+            ].map(({ number, title, description, Icon, href, action }) => (
+              <article
+                key={number}
+                className="p-8 rounded-2xl bg-forest-dark/70 border border-white/10 hover:border-lime/30 transition-all flex flex-col justify-between group"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
+                    <span className="text-xs font-mono font-bold tracking-widest text-lime">{number}</span>
+                    <Icon size={22} className="text-lime/80 group-hover:text-lime group-hover:scale-110 transition-transform" />
                   </div>
-                  <span className="text-xs font-black tracking-widest text-forest">STEP {card.step}</span>
-                  <h3 className="text-xl font-black text-ink mt-2 mb-3">{card.title}</h3>
-                  <p className="text-sm text-ink-secondary leading-relaxed">{card.desc}</p>
+                  <h3 className="text-2xl font-black text-white mb-3">{title}</h3>
+                  <p className="text-sm text-white/70 leading-relaxed font-normal mb-8">{description}</p>
                 </div>
-              );
-            })}
+
+                <Link
+                  href={href}
+                  className="inline-flex items-center gap-2 text-sm font-bold text-lime hover:text-lime-soft transition-colors group-hover:translate-x-1"
+                >
+                  <span>{action}</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </article>
+            ))}
           </div>
         </div>
       </section>
