@@ -23,6 +23,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   selectedDate,
   selectedShift,
   onShiftChange,
+  onDateChange,
 }) => {
   const [shiftDropdownOpen, setShiftDropdownOpen] = useState<boolean>(false);
   const [dateDropdownOpen, setDateDropdownOpen] = useState<boolean>(false);
@@ -58,19 +59,38 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </button>
 
           {dateDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-line-light shadow-xl p-2 z-30 animate-fadeIn">
+            <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-line-light shadow-xl p-2 z-30 animate-fadeIn">
               <p className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-ink-secondary">
                 Select Planning Date
               </p>
-              {["Tue, 12 Aug 2025 (Tomorrow)", "Wed, 13 Aug 2025", "Thu, 14 Aug 2025"].map((d) => (
-                <button
-                  key={d}
-                  onClick={() => setDateDropdownOpen(false)}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-ink hover:bg-canvas transition-colors"
-                >
-                  {d}
-                </button>
-              ))}
+              {[
+                { value: "Tue, 12 Aug 2025", label: "Tue, 12 Aug 2025 (Tomorrow)" },
+                { value: "Wed, 13 Aug 2025", label: "Wed, 13 Aug 2025" },
+                { value: "Thu, 14 Aug 2025", label: "Thu, 14 Aug 2025" },
+                { value: "Fri, 15 Aug 2025", label: "Fri, 15 Aug 2025" },
+                { value: "Sat, 16 Aug 2025", label: "Sat, 16 Aug 2025" },
+                { value: "Sun, 17 Aug 2025", label: "Sun, 17 Aug 2025" },
+              ].map((item) => {
+                const isCurrent = selectedDate === item.value || selectedDate.startsWith(item.value);
+                return (
+                  <button
+                    key={item.value}
+                    onClick={() => {
+                      onDateChange?.(item.value);
+                      setDateDropdownOpen(false);
+                    }}
+                    type="button"
+                    className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors ${
+                      isCurrent
+                        ? "bg-forest text-lime font-bold shadow-sm"
+                        : "text-ink hover:bg-canvas"
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    {isCurrent && <span className="text-lime text-xs font-black">✓</span>}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

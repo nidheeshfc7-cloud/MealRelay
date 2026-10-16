@@ -194,6 +194,13 @@ export default function DashboardPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
+  const handleDateChange = (newDate: string) => {
+    setSelectedDate(newDate);
+    setIsConfirmed(false);
+    setToastMessage(`Switched planning target to ${newDate}`);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
   return (
     <div className="min-h-screen bg-canvas flex flex-col font-sans selection:bg-lime selection:text-forest-dark">
       <div className="flex-1 flex flex-col lg:flex-row">
@@ -207,7 +214,7 @@ export default function DashboardPage() {
             selectedDate={selectedDate}
             selectedShift={selectedShift}
             onShiftChange={handleShiftChange}
-            onDateChange={setSelectedDate}
+            onDateChange={handleDateChange}
           />
 
           {/* Toast Notification */}
