@@ -160,10 +160,10 @@ export default function LandingPage() {
 
                 <div className="flex items-center justify-between pb-6 border-b border-white/10">
                   <div className="flex items-center gap-2.5">
-                    <span className="flex h-2.5 w-2.5 relative">
+                    {/* <span className="flex h-2.5 w-2.5 relative">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-lime"></span>
-                    </span>
+                    </span> */}
                     <div>
                       <p className="text-[10px] font-extrabold uppercase tracking-widest text-lime">
                         LIVE FORECAST RADAR
