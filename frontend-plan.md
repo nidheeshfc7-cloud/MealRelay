@@ -95,15 +95,15 @@ Institutional kitchen operators (hostel mess supervisors, college canteen manage
 ## 3. Checklist-Driven Implementation Roadmap
 
 ### Phase 1: API Client Setup & Configuration
-- [ ] **1.1**: Verify FastAPI CORS settings in `backend/src/main.py` explicitly allow requests from `http://localhost:3000`.
-- [ ] **1.2**: Add `NEXT_PUBLIC_API_URL=http://localhost:8000` to `frontend/apps/web/.env.local` and `.env.example`.
-- [ ] **1.3**: Create shared TypeScript interfaces matching backend schemas in `frontend/apps/web/src/lib/types/api.ts`:
+- [x] **1.1**: Verify FastAPI CORS settings in `backend/src/main.py` explicitly allow requests from `http://localhost:3000`.
+- [x] **1.2**: Add `NEXT_PUBLIC_API_URL=http://localhost:8000` to `frontend/apps/web/.env.local` and `.env.example`.
+- [x] **1.3**: Create shared TypeScript interfaces matching backend schemas in `frontend/apps/web/src/lib/types/api.ts`:
   - `ForecastRequest`
   - `ForecastResponse`
   - `DishForecastRecommendation`
   - `MealRecordCreate`
-- [ ] **1.4**: Implement strongly typed `fetchMealForecast(request: ForecastRequest)` in `frontend/apps/web/src/lib/api.ts` with error handling.
-- [ ] **1.5**: Implement strongly typed `logMealRecord(record: MealRecordCreate)` in `frontend/apps/web/src/lib/api.ts`.
+- [x] **1.4**: Implement strongly typed `fetchMealForecast(request: ForecastRequest)` in `frontend/apps/web/src/lib/api.ts` with error handling.
+- [x] **1.5**: Implement strongly typed `logMealRecord(record: MealRecordCreate)` in `frontend/apps/web/src/lib/api.ts`.
 
 ### Phase 2: Live Forecast Hook & State Management
 - [ ] **2.1**: Build `useMealForecast` React hook managing active parameters `[date, shift, attendance, bufferPct]`.
