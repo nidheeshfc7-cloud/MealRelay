@@ -10,6 +10,9 @@ export interface DishItem {
   recommendedQty: number;
   unit: string;
   note: string;
+  modelUsed?: string;
+  isFallback?: boolean;
+  explanationFactors?: string[];
 }
 
 export interface ShiftInfo {

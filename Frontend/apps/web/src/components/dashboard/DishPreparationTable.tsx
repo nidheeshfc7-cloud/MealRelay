@@ -7,11 +7,13 @@ import { DishItem } from "./types";
 interface DishPreparationTableProps {
   dishes: DishItem[];
   onViewFullMenu?: () => void;
+  isLoading?: boolean;
 }
 
 export const DishPreparationTable: React.FC<DishPreparationTableProps> = ({
   dishes,
   onViewFullMenu,
+  isLoading = false,
 }) => {
   return (
     <div className="p-6 sm:p-7 rounded-3xl bg-white border border-line-light shadow-sm flex flex-col justify-between">
@@ -59,7 +61,31 @@ export const DishPreparationTable: React.FC<DishPreparationTableProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-line-light/50">
-              {dishes.map((dish) => (
+              {isLoading ? (
+                Array.from({ length: 4 }).map((_, idx) => (
+                  <tr key={`skeleton-${idx}`} className="animate-pulse">
+                    <td className="py-4 px-2">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-11 h-11 rounded-full bg-line-light/70 shrink-0" />
+                        <div className="space-y-1.5">
+                          <div className="h-4 w-28 bg-line-light/70 rounded" />
+                          <div className="h-3 w-16 bg-line-light/50 rounded" />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="h-4 w-14 bg-line-light/60 rounded" />
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="h-8 w-16 bg-line-light/70 rounded-xl" />
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="h-3 w-40 bg-line-light/50 rounded" />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                dishes.map((dish) => (
                 <tr
                   key={dish.id}
                   className="hover:bg-canvas/40 transition-colors group"
@@ -104,7 +130,7 @@ export const DishPreparationTable: React.FC<DishPreparationTableProps> = ({
                     {dish.note}
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>

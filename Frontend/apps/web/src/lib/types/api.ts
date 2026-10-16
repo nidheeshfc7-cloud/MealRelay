@@ -7,6 +7,8 @@ export interface ForecastItemRequest {
   dish_name?: string;
 }
 
+export type ForecastDishItem = ForecastItemRequest;
+
 export interface ForecastRequest {
   meal_date: string; // ISO format: YYYY-MM-DD
   meal_type: "breakfast" | "lunch" | "dinner";

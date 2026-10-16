@@ -1,15 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { Calendar, ChevronDown, Coffee, Moon, Sun } from "lucide-react";
+import { Calendar, ChevronDown, Coffee, Moon, Shield, Sun } from "lucide-react";
 import { MealShiftKey } from "./types";
 
 interface DashboardHeaderProps {
   chefName?: string;
   selectedDate: string;
   selectedShift: MealShiftKey;
+  safetyBufferPct?: number;
   onShiftChange: (shift: MealShiftKey) => void;
   onDateChange?: (date: string) => void;
+  onBufferChange?: (bufferPct: number) => void;
 }
 
 const SHIFT_OPTIONS: { key: MealShiftKey; label: string; icon: React.ComponentType<{ size?: number; className?: string }> }[] = [
@@ -22,8 +24,10 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   chefName = "Sunil",
   selectedDate,
   selectedShift,
+  safetyBufferPct = 0.05,
   onShiftChange,
   onDateChange,
+  onBufferChange,
 }) => {
   const [shiftDropdownOpen, setShiftDropdownOpen] = useState<boolean>(false);
   const [dateDropdownOpen, setDateDropdownOpen] = useState<boolean>(false);
@@ -42,7 +46,32 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </p>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Safety Cushion Buffer Toggle */}
+        <div className="flex items-center gap-1 bg-white p-1 rounded-2xl border border-line-light shadow-sm">
+          <span className="text-[10px] font-black uppercase tracking-wider text-ink-secondary px-2 flex items-center gap-1">
+            <Shield size={12} className="text-forest" />
+            <span className="hidden sm:inline">Cushion:</span>
+          </span>
+          {[0.05, 0.08, 0.10].map((pct) => {
+            const isSelected = Math.abs(safetyBufferPct - pct) < 0.001;
+            return (
+              <button
+                key={pct}
+                onClick={() => onBufferChange?.(pct)}
+                type="button"
+                className={`px-2.5 py-1.5 rounded-xl text-xs font-black transition-all ${
+                  isSelected
+                    ? "bg-forest text-lime shadow-sm"
+                    : "text-ink-secondary hover:text-ink hover:bg-canvas"
+                }`}
+                title={`Apply +${Math.round(pct * 100)}% safety buffer`}
+              >
+                +{Math.round(pct * 100)}%
+              </button>
+            );
+          })}
+        </div>
         {/* Date Selector Dropdown Button */}
         <div className="relative">
           <button

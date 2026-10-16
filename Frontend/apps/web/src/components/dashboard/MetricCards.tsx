@@ -17,6 +17,7 @@ interface MetricCardsProps {
   safetyBufferPct?: number;
   confidenceLevel?: "High" | "Moderate" | "Good";
   confidencePct?: number;
+  isLoading?: boolean;
 }
 
 export const MetricCards: React.FC<MetricCardsProps> = ({
@@ -26,6 +27,7 @@ export const MetricCards: React.FC<MetricCardsProps> = ({
   safetyBufferPct = 5,
   confidenceLevel = "High",
   confidencePct = 88,
+  isLoading = false,
 }) => {
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
 
