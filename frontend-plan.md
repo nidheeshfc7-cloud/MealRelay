@@ -106,11 +106,11 @@ Institutional kitchen operators (hostel mess supervisors, college canteen manage
 - [x] **1.5**: Implement strongly typed `logMealRecord(record: MealRecordCreate)` in `frontend/apps/web/src/lib/api.ts`.
 
 ### Phase 2: Live Forecast Hook & State Management
-- [ ] **2.1**: Build `useMealForecast` React hook managing active parameters `[date, shift, attendance, bufferPct]`.
-- [ ] **2.2**: Implement in-flight loading state (`isLoading: boolean`) with visual indicator.
-- [ ] **2.3**: Implement clear error state (`error: string | null`) that displays an alert banner if the backend is offline.
-- [ ] **2.4**: Implement buffer reactivity: changing safety buffer (+5%, +8%, +10%) triggers re-calculation or re-query.
-- [ ] **2.5**: Cache responses in session memory by `date_shift_buffer` to prevent redundant network requests.
+- [x] **2.1**: Build `useMealForecast` React hook managing active parameters `[date, shift, attendance, bufferPct]`.
+- [x] **2.2**: Implement in-flight loading state (`isLoading: boolean`) with visual indicator.
+- [x] **2.3**: Implement clear error state (`error: string | null`) that displays an alert banner if the backend is offline.
+- [x] **2.4**: Implement buffer reactivity: changing safety buffer (+5%, +8%, +10%) triggers re-calculation or re-query.
+- [x] **2.5**: Cache responses in session memory by `date_shift_buffer` to prevent redundant network requests.
 
 ### Phase 3: Wiring ML Outputs into Dashboard UI Components
 - [ ] **3.1**: Connect `DashboardHeader`:
