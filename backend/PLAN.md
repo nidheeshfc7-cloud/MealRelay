@@ -146,9 +146,9 @@ backend/
 
 ## 5. Acceptance Checklist
 
-- [ ] All code split across modular files under `src/` (no monolithic script).
-- [ ] Dependencies managed and executable via `uv`.
-- [ ] Random Forest Regressor implemented and benchmarked against historical-average baseline.
-- [ ] Sparse data fallback handled cleanly without fabricated confidence.
-- [ ] Safety buffer configurable and explainability notes provided for every recommendation.
-- [ ] Synthetic data explicitly labeled.
+- [x] All code split across modular files under `src/` (no monolithic script).
+- [x] Dependencies managed and executable via `uv`.
+- [x] Random Forest Regressor implemented and benchmarked against historical-average baseline.
+- [x] Sparse data fallback handled cleanly without fabricated confidence.
+- [x] Safety buffer configurable and explainability notes provided for every recommendation.
+- [x] Synthetic data explicitly labeled.
