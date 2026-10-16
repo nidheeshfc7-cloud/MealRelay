@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 import { Sidebar } from '@/components/Sidebar';
 import { Header } from '@/components/Header';
-import { DemoBanner } from '@/components/DemoBanner';
 import { APP_CONFIG } from '@mealrelay/config';
 
 export default function SettingsPage() {
@@ -42,8 +41,6 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-canvas flex flex-col">
-      <DemoBanner />
-
       <div className="flex-1 flex flex-col lg:flex-row">
         <Sidebar />
 

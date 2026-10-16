@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, CheckCircle2, Lock, Mail, ShieldCheck, Sparkles } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
-import { DemoBanner } from '@/components/DemoBanner';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,8 +30,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-canvas flex flex-col">
-      <DemoBanner />
-
       <div className="flex-1 flex flex-col justify-center items-center px-4 sm:px-6 py-12">
         <div className="w-full max-w-md">
           {/* Header */}

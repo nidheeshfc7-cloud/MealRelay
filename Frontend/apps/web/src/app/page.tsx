@@ -20,7 +20,6 @@ import {
   Utensils,
 } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
-import { DemoBanner } from "@/components/DemoBanner";
 import { CinematicIntro } from "@/components/CinematicIntro";
 import {
   DEFAULT_MEALS,
@@ -35,7 +34,6 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col relative">
       <CinematicIntro />
-      <DemoBanner />
 
       {/* Top Professional Navigation */}
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-line-light">

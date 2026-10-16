@@ -13,7 +13,6 @@ import {
   UtensilsCrossed,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
-import { DemoBanner } from '@/components/DemoBanner';
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -34,8 +33,6 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen bg-canvas flex flex-col">
-      <DemoBanner />
-
       <header className="bg-white border-b border-line-light py-4 px-6 flex items-center justify-between">
         <BrandLogo size="md" />
         <Link href="/dashboard" className="text-xs font-bold text-ink-secondary hover:text-forest">

@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import { Sidebar } from '@/components/Sidebar';
 import { Header } from '@/components/Header';
-import { DemoBanner } from '@/components/DemoBanner';
 import {
   DEFAULT_MEALS,
   INITIAL_PORTIONS,
@@ -54,8 +53,6 @@ export default function PlannerPage() {
 
   return (
     <div className="min-h-screen bg-canvas flex flex-col">
-      <DemoBanner />
-
       <div className="flex-1 flex flex-col lg:flex-row">
         <Sidebar />
 
