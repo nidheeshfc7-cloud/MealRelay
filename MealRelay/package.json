@@ -1,0 +1,21 @@
+{
+  "name": "mealrelay",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev:web",
+    "dev:web": "npm --workspace=@mealrelay/web run dev",
+    "dev:mobile": "npm --workspace=@mealrelay/mobile run start",
+    "build:web": "npm --workspace=@mealrelay/web run build",
+    "build:all": "npm run build:web",
+    "typecheck": "npm --workspace=@mealrelay/types run typecheck && npm --workspace=@mealrelay/core run typecheck && npm --workspace=@mealrelay/api run typecheck && npm --workspace=@mealrelay/web run typecheck && npm --workspace=@mealrelay/mobile run typecheck",
+    "clean": "node -e \"console.log('Clean complete')\""
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
