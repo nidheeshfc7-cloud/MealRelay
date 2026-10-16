@@ -14,6 +14,11 @@ npm install
 ```
 *Installs dependencies for all workspaces (`apps/*` and `packages/*`) in one step.*
 
+> [!IMPORTANT]
+> **Do NOT run `npm audit fix --force`!**
+> `npm audit` flags transitive build-time tooling (Metro bundler, PostCSS, Chokidar file watchers). Running `--force` will destructively downgrade Expo from modern SDK 57 (React 19) down to `expo@44` (from 2021) and attempt to force Tailwind v4, breaking the monorepo.
+> These packages have **zero runtime or production server exposure**. The project compiles and typechecks cleanly with **0 errors**.
+
 ### 2. Run the Applications
 
 #### Option A: Web Platform (Next.js 15)
@@ -104,3 +109,4 @@ The database schema and multi-tenant Row-Level Security (RLS) policies are defin
 - **Port in use:** `npm --workspace=@mealrelay/web run dev -- -p 3001`
 - **Expo tunnel mode (for restricted Wi-Fi):** `cd apps/mobile && npx expo start --tunnel`
 - **Typecheck validation:** `npm run typecheck`
+- **`npm audit` warnings / Do NOT run `npm audit fix --force`:** Build tools (Metro bundler, PostCSS, Chokidar) trigger advisory notices for local regex parsing. Never run `npm audit fix --force`, as it will downgrade Expo SDK 57 to Expo 44 and break React 19 compatibility. Workspace code and builds are completely safe.

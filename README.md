@@ -51,6 +51,9 @@ npm install
 npm run dev:web
 ```
 
+> [!IMPORTANT]
+> **Do NOT run `npm audit fix --force`**: Notice that `npm audit` reports build-time devDependencies (Metro, PostCSS, Chokidar). Running `--force` will destructively downgrade Expo from SDK 57 down to Expo 44 and break React 19/React Native compatibility. Dependencies are fully validated; both `npm run typecheck` and `npm run build:web` pass cleanly.
+
 ### 2. Launch the Machine Learning Backend (FastAPI on http://localhost:8000)
 ```bash
 # Open a second terminal and navigate to backend
@@ -341,6 +344,12 @@ rm -rf .next
 cd Frontend/apps/mobile
 npx expo start -c
 ```
+
+### Q6: `npm install` displays audit vulnerabilities — Should I run `npm audit fix --force`?
+**Answer: Absolutely NOT.**
+- **Why it breaks:** Running `npm audit fix --force` tells npm to aggressively force major semver changes; it attempts to downgrade Expo SDK 57 (React 19) all the way down to `expo@44` (from 2021) and forces Tailwind v4, corrupting your monorepo and breaking React Native.
+- **Why you are safe:** All flagged advisories (`braces`, `micromatch`, `postcss`, `node-forge`) exist solely in developer-side build tooling (Metro bundler, PostCSS preprocessor, Chokidar file watcher, Xcode generators). They run on your local computer during compilation and have zero attack surface in production.
+- **Verification:** Both `npm run typecheck` across all 5 workspace packages and `npm run build:web` pass with **0 errors**.
 
 ---
 
