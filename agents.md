@@ -92,6 +92,10 @@ Follow the official MealRelay design system and tokens consistently:
   - Dark: `#123D2E` (subtle dividers on forest background)
   - Dark Glass: `rgba(255, 255, 255, 0.10)` (`border-white/10`)
 
+### CinematicIntro Color Exception (Intentional — DO NOT ALTER)
+- The rapid-cut cinematic introduction (`frontend/apps/web/src/components/CinematicIntro.tsx`) intentionally features high-energy, eclectic colors (including `#EF693C` Burnt Orange, `#245BFF` Vibrant Cobalt, `#080A09` Near Black, `#D5FB53` Electric Lime, and `#003F2F` Forest Green) to deliver high visual momentum and punchy brand impact.
+- **Never modify, homogenize, or strip down the colors in `CinematicIntro.tsx` during future color refactors or palette consolidations.** Its vibrant multi-color sequence is deliberately designed this way on purpose.
+
 ### Brand Logo & Typography
 - **Font Family:** `Inter, system-ui, sans-serif`. Use heavy/black weights (`font-black`, `font-extrabold`) for editorial headlines and clean semibold weights for data/controls.
 - **Brand Mark:** A `-rotate-6` rounded square emblem in Electric Lime (`#D5FB53`) or Forest Green with a Lucide `Leaf` icon (`stroke-[2.5]`).
