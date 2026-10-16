@@ -5,10 +5,7 @@ from typing import List
 
 # Base Paths
 BACKEND_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BACKEND_DIR / "data"
-
-# Ensure data dir exists
-DATA_DIR.mkdir(parents=True, exist_ok=True)
+DATA_DIR = Path(__file__).resolve().parent / "data"
 
 # Recommendation & Forecast Defaults
 DEFAULT_SAFETY_BUFFER: float = 0.10  # 10% safety buffer

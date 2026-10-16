@@ -41,16 +41,22 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.venv
 .venv/
+.venv/**
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+backend/.venv
 backend/.venv/
+backend/.venv/**
 backend/venv/
 backend/env/
+**/.venv
 **/.venv/
+**/.venv/**
 **/venv/
 **/env/
 
