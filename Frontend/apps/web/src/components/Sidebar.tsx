@@ -19,10 +19,9 @@ import {
 import { BrandLogo } from "./BrandLogo";
 
 const NAV_ITEMS = [
-  { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Meal Planner", href: "/planner", icon: CalendarRange },
-  { label: "Demand Forecasts", href: "/forecasts", icon: LineChart },
-  { label: "Waste Analytics", href: "/analytics", icon: BarChart3 },
+  { label: "Kitchen Plan", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Meal Records", href: "/planner", icon: CalendarRange },
+  { label: "Food & Savings", href: "/analytics", icon: BarChart3 },
   { label: "Kitchen Settings", href: "/settings", icon: SlidersHorizontal },
 ];
 
