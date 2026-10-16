@@ -97,6 +97,7 @@ Keep the UI minimal, professional, and high-contrast. Reserve orange for primary
 - Validate inputs and handle errors, loading states, and empty states properly.
 - Never expose secrets or service credentials in client-side code.
 - Do not invent customer data, pilot results, savings, or model accuracy.
+- Commit message convention: Inspect previous git commit records and strictly follow the established sequential two-digit numbered prefix format (e.g., `01: initial commit`, `02: fixed something`, `03: ...`). After completing each successful step, make a commit following this exact format.
 - Keep this document focused on persistent MVP requirements. Put detailed architecture, tasks, database schemas, APIs, and implementation phases in `PLAN.md`.
 
 **Core principle:** Build a reliable, explainable, minimal meal-planning web app first. Future mobile apps and production-scale features are outside the current MVP scope.
