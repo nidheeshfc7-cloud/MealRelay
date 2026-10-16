@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   BarChart3,
   CalendarRange,
@@ -15,15 +15,15 @@ import {
   SlidersHorizontal,
   UtensilsCrossed,
   X,
-} from 'lucide-react';
-import { BrandLogo } from './BrandLogo';
+} from "lucide-react";
+import { BrandLogo } from "./BrandLogo";
 
 const NAV_ITEMS = [
-  { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Meal Planner', href: '/planner', icon: CalendarRange },
-  { label: 'Demand Forecasts', href: '/forecasts', icon: LineChart },
-  { label: 'Waste Analytics', href: '/analytics', icon: BarChart3 },
-  { label: 'Kitchen Settings', href: '/settings', icon: SlidersHorizontal },
+  { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Meal Planner", href: "/planner", icon: CalendarRange },
+  { label: "Demand Forecasts", href: "/forecasts", icon: LineChart },
+  { label: "Waste Analytics", href: "/analytics", icon: BarChart3 },
+  { label: "Kitchen Settings", href: "/settings", icon: SlidersHorizontal },
 ];
 
 export const Sidebar: React.FC = () => {
@@ -35,9 +35,9 @@ export const Sidebar: React.FC = () => {
   // Load pinned preference from localStorage on mount
   useEffect(() => {
     try {
-      const savedPin = localStorage.getItem('mealrelay_sidebar_pinned');
+      const savedPin = localStorage.getItem("mealrelay_sidebar_pinned");
       if (savedPin !== null) {
-        setIsPinned(savedPin === 'true');
+        setIsPinned(savedPin === "true");
       }
     } catch {
       // Ignore storage restrictions
@@ -48,7 +48,7 @@ export const Sidebar: React.FC = () => {
     setIsPinned((prev) => {
       const next = !prev;
       try {
-        localStorage.setItem('mealrelay_sidebar_pinned', String(next));
+        localStorage.setItem("mealrelay_sidebar_pinned", String(next));
       } catch {
         // Ignore storage restrictions
       }
@@ -95,8 +95,12 @@ export const Sidebar: React.FC = () => {
 
               {/* Kitchen Badge */}
               <div className="mb-6 p-3 rounded-xl bg-forest/60 border border-white/10 text-xs">
-                <p className="text-white/50 uppercase font-semibold text-[10px] tracking-wider">Active Facility</p>
-                <p className="text-white font-bold truncate mt-0.5">Sreenidhi Campus Kitchen</p>
+                <p className="text-white/50 uppercase font-semibold text-[10px] tracking-wider">
+                  Active Facility
+                </p>
+                <p className="text-white font-bold truncate mt-0.5">
+                  Sreenidhi Campus Kitchen
+                </p>
                 <span className="inline-block mt-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-lime/20 text-lime border border-lime/30">
                   Buffer +4.8% Active
                 </span>
@@ -114,11 +118,16 @@ export const Sidebar: React.FC = () => {
                       onClick={() => setMobileOpen(false)}
                       className={`flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all ${
                         active
-                          ? 'bg-lime text-forest-dark shadow-sm'
-                          : 'text-white/75 hover:bg-white/10 hover:text-white'
+                          ? "bg-lime text-forest-dark shadow-sm"
+                          : "text-white/75 hover:bg-white/10 hover:text-white"
                       }`}
                     >
-                      <Icon size={18} className={active ? 'text-forest-dark' : 'text-white/60'} />
+                      <Icon
+                        size={18}
+                        className={
+                          active ? "text-forest-dark" : "text-white/60"
+                        }
+                      />
                       <span>{item.label}</span>
                     </Link>
                   );
@@ -144,21 +153,24 @@ export const Sidebar: React.FC = () => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={`hidden lg:flex flex-col justify-between bg-forest text-white border-r border-line-dark h-screen sticky top-0 shrink-0 select-none px-3.5 py-5 overflow-hidden transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-          isExpanded ? 'w-[260px]' : 'w-[72px]'
+          isExpanded ? "w-[260px]" : "w-[72px]"
         }`}
       >
         <div>
           {/* Header: Logo and Sticky Pin Button */}
           <div className="flex items-center h-11 mb-6 relative">
-            <Link href="/" className="flex items-center gap-2.5 shrink-0 group active:scale-95">
-              <div className="w-11 h-11 rounded-xl bg-lime text-forest-dark flex items-center justify-center -rotate-6 shadow-sm shrink-0 transition-transform group-hover:rotate-0">
+            <Link
+              href="/"
+              className="flex items-center gap-2.5 shrink-0 group active:scale-95"
+            >
+              <div className="w-11 h-11 rounded-xl bg-lime text-forest-dark flex items-center justify-center -rotate-6 shadow-sm shrink-0 transition-transform">
                 <Leaf size={20} className="stroke-[2.5]" />
               </div>
               <div
                 className={`overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                   isExpanded
-                    ? 'opacity-100 max-w-[130px] translate-x-0'
-                    : 'opacity-0 max-w-0 -translate-x-2 pointer-events-none'
+                    ? "opacity-100 max-w-[130px] translate-x-0"
+                    : "opacity-0 max-w-0 -translate-x-2 pointer-events-none"
                 }`}
               >
                 <span className="font-black tracking-tight text-xl text-white whitespace-nowrap">
@@ -172,23 +184,23 @@ export const Sidebar: React.FC = () => {
               type="button"
               title={
                 isPinned
-                  ? 'Unpin sidebar (collapse on hover off)'
-                  : 'Pin sidebar open (always visible)'
+                  ? "Unpin sidebar (collapse on hover off)"
+                  : "Pin sidebar open (always visible)"
               }
               className={`ml-auto p-2 rounded-xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer shrink-0 ${
                 isExpanded
-                  ? 'opacity-100 scale-100 pointer-events-auto'
-                  : 'opacity-0 scale-75 pointer-events-none'
+                  ? "opacity-100 scale-100 pointer-events-auto"
+                  : "opacity-0 scale-75 pointer-events-none"
               } ${
                 isPinned
-                  ? 'bg-lime text-forest-dark shadow-sm hover:bg-lime-soft'
-                  : 'bg-white/10 hover:bg-white/20 text-white/70 hover:text-white'
+                  ? "bg-lime text-forest-dark shadow-sm hover:bg-lime-soft"
+                  : "bg-white/10 hover:bg-white/20 text-white/70 hover:text-white"
               }`}
-              aria-label={isPinned ? 'Unpin sidebar' : 'Pin sidebar'}
+              aria-label={isPinned ? "Unpin sidebar" : "Pin sidebar"}
             >
               <Pin
                 size={16}
-                className={`transition-transform duration-200 ${isPinned ? 'rotate-45' : ''}`}
+                className={`transition-transform duration-200 ${isPinned ? "rotate-45" : ""}`}
               />
             </button>
           </div>
@@ -196,23 +208,32 @@ export const Sidebar: React.FC = () => {
           {/* Active Facility Widget */}
           <div
             className={`mb-6 rounded-2xl bg-forest-dark/70 border border-white/10 overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-              isExpanded ? 'p-3.5 h-[104px]' : 'p-0 h-11 w-11'
+              isExpanded ? "p-3.5 h-[104px]" : "p-0 h-11 w-11"
             }`}
-            title={!isExpanded ? 'Active Facility: Sreenidhi Campus Kitchen (+4.8% buffer)' : undefined}
+            title={
+              !isExpanded
+                ? "Active Facility: Sreenidhi Campus Kitchen (+4.8% buffer)"
+                : undefined
+            }
           >
             {isExpanded ? (
               <div className="w-full">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-white/50">FACILITY</span>
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-white/50">
+                    FACILITY
+                  </span>
                   <span className="flex h-2 w-2 relative">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-lime"></span>
                   </span>
                 </div>
-                <p className="text-sm font-bold text-white mt-1 truncate">Sreenidhi Campus Kitchen</p>
+                <p className="text-sm font-bold text-white mt-1 truncate">
+                  Sreenidhi Campus Kitchen
+                </p>
                 <div className="mt-2 flex items-center justify-between text-[11px] text-white/70">
                   <span className="flex items-center gap-1">
-                    <UtensilsCrossed size={12} className="text-lime" /> 3 Services
+                    <UtensilsCrossed size={12} className="text-lime" /> 3
+                    Services
                   </span>
                   <span className="font-semibold text-lime">+4.8% buffer</span>
                 </div>
@@ -240,15 +261,17 @@ export const Sidebar: React.FC = () => {
                   title={!isExpanded ? item.label : undefined}
                   className={`group flex items-center h-11 rounded-xl text-sm font-bold transition-all duration-200 ${
                     active
-                      ? 'bg-lime text-forest-dark shadow-sm'
-                      : 'text-white/75 hover:bg-white/10 hover:text-white'
+                      ? "bg-lime text-forest-dark shadow-sm"
+                      : "text-white/75 hover:bg-white/10 hover:text-white"
                   }`}
                 >
                   <div className="w-11 h-11 shrink-0 flex items-center justify-center">
                     <Icon
                       size={20}
                       className={`transition-colors duration-150 ${
-                        active ? 'text-forest-dark' : 'text-white/60 group-hover:text-white'
+                        active
+                          ? "text-forest-dark"
+                          : "text-white/60 group-hover:text-white"
                       }`}
                     />
                   </div>
@@ -256,11 +279,13 @@ export const Sidebar: React.FC = () => {
                   <div
                     className={`overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                       isExpanded
-                        ? 'opacity-100 max-w-[170px] translate-x-0'
-                        : 'opacity-0 max-w-0 -translate-x-2 pointer-events-none'
+                        ? "opacity-100 max-w-[170px] translate-x-0"
+                        : "opacity-0 max-w-0 -translate-x-2 pointer-events-none"
                     }`}
                   >
-                    <span className="whitespace-nowrap pr-3 truncate block">{item.label}</span>
+                    <span className="whitespace-nowrap pr-3 truncate block">
+                      {item.label}
+                    </span>
                   </div>
                 </Link>
               );
@@ -280,13 +305,17 @@ export const Sidebar: React.FC = () => {
           <div
             className={`flex items-center justify-between flex-1 overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
               isExpanded
-                ? 'opacity-100 max-w-[170px] ml-3 translate-x-0'
-                : 'opacity-0 max-w-0 ml-0 -translate-x-2 pointer-events-none'
+                ? "opacity-100 max-w-[170px] ml-3 translate-x-0"
+                : "opacity-0 max-w-0 ml-0 -translate-x-2 pointer-events-none"
             }`}
           >
             <div className="truncate">
-              <p className="text-xs font-bold text-white truncate">Campus Chef</p>
-              <p className="text-[10px] text-white/50 truncate max-w-[110px]">chef@sreenidhi.edu</p>
+              <p className="text-xs font-bold text-white truncate">
+                Campus Chef
+              </p>
+              <p className="text-[10px] text-white/50 truncate max-w-[110px]">
+                chef@sreenidhi.edu
+              </p>
             </div>
             <Link
               href="/settings"
