@@ -1,6 +1,6 @@
 """Pydantic schemas for demand forecasts and preparation recommendations."""
 
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import List, Optional
 from pydantic import BaseModel, Field, ConfigDict
 
@@ -50,6 +50,6 @@ class ForecastResponse(BaseModel):
     safety_buffer_pct: float = Field(..., description="Safety buffer percentage applied")
     recommendations: List[DishForecastRecommendation] = Field(..., description="Per-dish preparation recommendations")
     total_recommended_portions: int = Field(..., ge=0, description="Sum of all recommended portions for the meal")
-    generated_at: datetime = Field(default_factory=datetime.utcnow, description="Timestamp of forecast generation")
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="Timestamp of forecast generation")
 
     model_config = ConfigDict(from_attributes=True)
