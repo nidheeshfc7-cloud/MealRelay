@@ -1,12 +1,34 @@
-# Python
+# ==========================================
+# MealRelay Master Git Ignore Rules
+# ==========================================
+
+# Dependencies & Package Managers
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js / Web Build Artifacts
+.next/
+out/
+build/
+dist/
+
+# Expo / React Native Mobile Artifacts
+.expo/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Python Backend & Virtual Environments
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -19,8 +41,6 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-
-# Virtual Environments
 .venv/
 env/
 venv/
@@ -34,22 +54,35 @@ backend/env/
 **/venv/
 **/env/
 
-# Testing
+# Testing & Coverage
 .pytest_cache/
 .coverage
 htmlcov/
+coverage/
 
-# Node / Frontend
-node_modules/
-.next/
-out/
-.env*.local
+# Environment Configuration
 .env
+.env.*
+.env*.local
+!.env.example
 
-# IDE & OS
-.vscode/
-.idea/
+# Temporary, Cache & Build Files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.tsbuildinfo
+*.bak
 *.swp
 *.swo
+
+# IDE & Operating System Files
+.vscode/
+.idea/
 .DS_Store
 Thumbs.db
+
+# Standalone Prototypes & Backups (Local Only)
+MealRelayMini/
+MealRelayMini_backup/
