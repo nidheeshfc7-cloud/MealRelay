@@ -113,38 +113,38 @@ Institutional kitchen operators (hostel mess supervisors, college canteen manage
 - [x] **2.5**: Cache responses in session memory by `date_shift_buffer` to prevent redundant network requests.
 
 ### Phase 3: Wiring ML Outputs into Dashboard UI Components
-- [ ] **3.1**: Connect `DashboardHeader`:
-  - [ ] Selecting a date triggers `useMealForecast` with the target planning date.
-  - [ ] Selecting a meal shift (Breakfast, Lunch, Dinner) passes the active shift to the forecast query.
-- [ ] **3.2**: Connect `MetricCards`:
-  - [ ] **Estimated Demand**: Bind to the sum of ML `predicted_portions` from recommendations.
-  - [ ] **Recommended Preparation**: Bind to ML `total_recommended_portions`.
-  - [ ] **Forecast Confidence**: Set to "High" when Random Forest is used, or "Moderate" if sparse history triggered baseline fallback.
-- [ ] **3.3**: Connect `DishPreparationTable`:
-  - [ ] Dynamically render dishes from ML `recommendations`.
-  - [ ] Display ML `predicted_portions` in the **Predicted Demand** column.
-  - [ ] Display ML `recommended_portions` in the **Recommended Qty** highlighted card pill.
-  - [ ] Display `recommendation.explanation_factors[0]` in the **Notes** column.
-- [ ] **3.4**: Connect `KeyInsightsPanel`:
-  - [ ] Parse attendance ratio factor from ML response into the "Attendance Trend" card.
-  - [ ] Parse day-of-week curve factor from ML response into the "Dining Schedule" card.
-  - [ ] Parse buffer calculation into the "Shortage Protection" card.
-- [ ] **3.5**: Connect `DashboardActionBar` & `EditQuantitiesModal`:
-  - [ ] Allow chef to adjust portions manually using `-` and `+` steppers before cooking.
-  - [ ] Save manual overrides locally and update total portion counts.
-  - [ ] Mark work order as "Confirmed" on clicking **Confirm Preparation Plan**.
+- [x] **3.1**: Connect `DashboardHeader`:
+  - [x] Selecting a date triggers `useMealForecast` with the target planning date.
+  - [x] Selecting a meal shift (Breakfast, Lunch, Dinner) passes the active shift to the forecast query.
+- [x] **3.2**: Connect `MetricCards`:
+  - [x] **Estimated Demand**: Bind to the sum of ML `predicted_portions` from recommendations.
+  - [x] **Recommended Preparation**: Bind to ML `total_recommended_portions`.
+  - [x] **Forecast Confidence**: Set to "High" when Random Forest is used, or "Moderate" if sparse history triggered baseline fallback.
+- [x] **3.3**: Connect `DishPreparationTable`:
+  - [x] Dynamically render dishes from ML `recommendations`.
+  - [x] Display ML `predicted_portions` in the **Predicted Demand** column.
+  - [x] Display ML `recommended_portions` in the **Recommended Qty** highlighted card pill.
+  - [x] Display `recommendation.explanation_factors[0]` in the **Notes** column.
+- [x] **3.4**: Connect `KeyInsightsPanel`:
+  - [x] Parse attendance ratio factor from ML response into the "Attendance Trend" card.
+  - [x] Parse day-of-week curve factor from ML response into the "Dining Schedule" card.
+  - [x] Parse buffer calculation into the "Shortage Protection" card.
+- [x] **3.5**: Connect `DashboardActionBar` & `EditQuantitiesModal`:
+  - [x] Allow chef to adjust portions manually using `-` and `+` steppers before cooking.
+  - [x] Save manual overrides locally and update total portion counts.
+  - [x] Mark work order as "Confirmed" on clicking **Confirm Preparation Plan**.
 
 ### Phase 4: Closing the Feedback Loop (Recording Actual Outcomes)
-- [ ] **4.1**: Build a clean "Log Shift Outcomes" modal/drawer in `frontend/apps/web/src/components/dashboard/LogOutcomesModal.tsx`.
-- [ ] **4.2**: Add inputs for each dish: `served_portions`, `leftover_portions`, and final `actual_attendance`.
-- [ ] **4.3**: Wire form submission to call `logMealRecord` (`POST /records`).
-- [ ] **4.4**: Verify that submitted records update backend model state for subsequent forecasting cycles.
+- [x] **4.1**: Build a clean "Log Shift Outcomes" modal/drawer in `frontend/apps/web/src/components/dashboard/LogOutcomesModal.tsx`.
+- [x] **4.2**: Add inputs for each dish: `served_portions`, `leftover_portions`, and final `actual_attendance`.
+- [x] **4.3**: Wire form submission to call `logMealRecord` (`POST /records`).
+- [x] **4.4**: Verify that submitted records update backend model state for subsequent forecasting cycles.
 
 ### Phase 5: Verification & End-to-End Validation
-- [ ] **5.1**: Run `npm run typecheck` across `frontend/apps/web` to confirm zero TypeScript errors.
-- [ ] **5.2**: Test live forecast query against the running FastAPI server (`http://localhost:8000`).
-- [ ] **5.3**: Verify clean error handling when FastAPI server is stopped (no fallback layer, clear connection warning).
-- [ ] **5.4**: Test the complete mess workflow end-to-end:
+- [x] **5.1**: Run `npm run typecheck` across `frontend/apps/web` to confirm zero TypeScript errors.
+- [x] **5.2**: Test live forecast query against the running FastAPI server (`http://localhost:8000`).
+- [x] **5.3**: Verify clean error handling when FastAPI server is stopped (no fallback layer, clear connection warning).
+- [x] **5.4**: Test the complete mess workflow end-to-end:
   - Select planning date and shift $\rightarrow$
   - Inspect ML recommended portions and grounded notes $\rightarrow$
   - Adjust buffer or edit portions $\rightarrow$
