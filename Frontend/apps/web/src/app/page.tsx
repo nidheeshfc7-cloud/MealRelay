@@ -114,7 +114,7 @@ export default function LandingPage() {
                 </Link>
                 <Link
                   href="/planner"
-                  className="px-8 py-4 rounded-2xl bg-white border border-line-light text-ink font-bold text-base hover:bg-slate-50 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95"
+                  className="px-8 py-4 rounded-2xl bg-white border border-line-light text-ink font-bold text-base hover:bg-canvas transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95"
                 >
                   <span>See How It Works</span>
                   <ChevronRight size={18} className="text-ink-secondary" />
@@ -329,15 +329,15 @@ export default function LandingPage() {
       {/* Problem vs Solution Section */}
       <section className="py-20 sm:py-28 bg-canvas border-t border-line-light relative overflow-hidden">
         {/* Soft decorative background accents */}
-        <div className="absolute -left-20 bottom-0 w-80 h-80 rounded-full bg-emerald-100/40 blur-3xl pointer-events-none" />
+        <div className="absolute -left-20 bottom-0 w-80 h-80 rounded-full bg-forest/5 blur-3xl pointer-events-none" />
         <div className="absolute right-0 top-0 w-80 h-80 rounded-full bg-lime/10 blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
             {/* The Problem Card */}
-            <div className="bg-white rounded-3xl p-8 sm:p-10 border border-line-light/90 shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="bg-white rounded-3xl p-8 sm:p-10 border border-line-light shadow-sm hover:shadow-md transition-all duration-300">
               <div className="flex items-start gap-5 sm:gap-6">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#FEECEB] flex items-center justify-center flex-shrink-0 text-[#F05252]">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-canvas border border-line-light flex items-center justify-center flex-shrink-0 text-ink-secondary">
                   <BarChart3
                     className="w-7 h-7 sm:w-8 sm:h-8"
                     strokeWidth={2.4}
@@ -353,20 +353,20 @@ export default function LandingPage() {
                   </p>
                   <ul className="mt-6 sm:mt-8 space-y-3.5">
                     <li className="flex items-center gap-3.5 text-sm sm:text-base font-semibold text-ink">
-                      <span className="w-5 h-5 rounded-full bg-[#EB5757] text-white flex items-center justify-center flex-shrink-0 shadow-xs">
-                        <Check size={12} strokeWidth={3.5} />
+                      <span className="w-5 h-5 rounded-full bg-canvas border border-line-light text-ink-secondary flex items-center justify-center flex-shrink-0 text-xs font-bold">
+                        ✕
                       </span>
                       <span>Unpredictable demand</span>
                     </li>
                     <li className="flex items-center gap-3.5 text-sm sm:text-base font-semibold text-ink">
-                      <span className="w-5 h-5 rounded-full bg-[#EB5757] text-white flex items-center justify-center flex-shrink-0 shadow-xs">
-                        <Check size={12} strokeWidth={3.5} />
+                      <span className="w-5 h-5 rounded-full bg-canvas border border-line-light text-ink-secondary flex items-center justify-center flex-shrink-0 text-xs font-bold">
+                        ✕
                       </span>
                       <span>Excess food waste</span>
                     </li>
                     <li className="flex items-center gap-3.5 text-sm sm:text-base font-semibold text-ink">
-                      <span className="w-5 h-5 rounded-full bg-[#EB5757] text-white flex items-center justify-center flex-shrink-0 shadow-xs">
-                        <Check size={12} strokeWidth={3.5} />
+                      <span className="w-5 h-5 rounded-full bg-canvas border border-line-light text-ink-secondary flex items-center justify-center flex-shrink-0 text-xs font-bold">
+                        ✕
                       </span>
                       <span>Inefficient labor and higher costs</span>
                     </li>
@@ -376,9 +376,9 @@ export default function LandingPage() {
             </div>
 
             {/* The Solution Card */}
-            <div className="bg-white rounded-3xl p-8 sm:p-10 border border-line-light/90 shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="bg-white rounded-3xl p-8 sm:p-10 border border-line-light shadow-sm hover:shadow-md transition-all duration-300">
               <div className="flex items-start gap-5 sm:gap-6">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#EAF8E6] flex items-center justify-center flex-shrink-0 text-[#2B8A3E]">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-forest text-lime flex items-center justify-center flex-shrink-0 shadow-sm">
                   <Leaf className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={2.2} />
                 </div>
                 <div className="flex-1">
@@ -392,19 +392,19 @@ export default function LandingPage() {
                   </p>
                   <ul className="mt-6 sm:mt-8 space-y-3.5">
                     <li className="flex items-center gap-3.5 text-sm sm:text-base font-semibold text-ink">
-                      <span className="w-5 h-5 rounded-full bg-[#37B24D] text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+                      <span className="w-5 h-5 rounded-full bg-forest text-lime flex items-center justify-center flex-shrink-0 shadow-xs">
                         <Check size={12} strokeWidth={3.5} />
                       </span>
                       <span>Accurate demand forecasting</span>
                     </li>
                     <li className="flex items-center gap-3.5 text-sm sm:text-base font-semibold text-ink">
-                      <span className="w-5 h-5 rounded-full bg-[#37B24D] text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+                      <span className="w-5 h-5 rounded-full bg-forest text-lime flex items-center justify-center flex-shrink-0 shadow-xs">
                         <Check size={12} strokeWidth={3.5} />
                       </span>
                       <span>Optimized prep plans and work orders</span>
                     </li>
                     <li className="flex items-center gap-3.5 text-sm sm:text-base font-semibold text-ink">
-                      <span className="w-5 h-5 rounded-full bg-[#37B24D] text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+                      <span className="w-5 h-5 rounded-full bg-forest text-lime flex items-center justify-center flex-shrink-0 shadow-xs">
                         <Check size={12} strokeWidth={3.5} />
                       </span>
                       <span>Continuous improvement through real data</span>

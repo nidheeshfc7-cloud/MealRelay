@@ -63,7 +63,7 @@ export default function PlannerPage() {
             action={
               <button
                 onClick={handleReset}
-                className="px-4 py-2.5 rounded-xl border border-line-light bg-white hover:bg-slate-50 text-ink text-xs font-bold transition-all flex items-center gap-1.5"
+                className="px-4 py-2.5 rounded-xl border border-line-light bg-white hover:bg-canvas text-ink text-xs font-bold transition-all flex items-center gap-1.5"
               >
                 <RefreshCw size={13} />
                 <span>Reset to Recommendations</span>
@@ -72,14 +72,14 @@ export default function PlannerPage() {
           />
 
           {notification && (
-            <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-semibold flex items-center justify-between animate-fadeIn">
+            <div className="p-4 rounded-2xl bg-sage border border-line-light text-forest text-sm font-semibold flex items-center justify-between animate-fadeIn">
               <div className="flex items-center gap-2">
-                <CheckCircle2 size={18} className="text-emerald-600" />
+                <CheckCircle2 size={18} className="text-forest" />
                 <span>{notification}</span>
               </div>
               <button
                 onClick={() => setNotification(null)}
-                className="text-xs font-bold text-emerald-700 hover:underline"
+                className="text-xs font-bold text-forest hover:text-forest-light hover:underline"
               >
                 Dismiss
               </button>
@@ -153,7 +153,7 @@ export default function PlannerPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => updateQuantity(meal.key, -5)}
-                        className="w-11 h-11 rounded-xl border border-line-light bg-canvas hover:bg-slate-200 text-ink flex items-center justify-center transition-all active:scale-95 shadow-sm"
+                        className="w-11 h-11 rounded-xl border border-line-light bg-canvas hover:bg-line-light text-ink flex items-center justify-center transition-all active:scale-95 shadow-sm"
                         aria-label={`Decrease ${meal.name} portions by 5`}
                       >
                         <Minus size={18} />
@@ -191,7 +191,7 @@ export default function PlannerPage() {
               onClick={handleApprove}
               className={`py-4 px-8 rounded-2xl font-black text-base transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95 ${
                 approved
-                  ? 'bg-emerald-500 text-white'
+                  ? 'bg-forest-dark border border-lime/40 text-lime'
                   : 'bg-lime text-forest-dark hover:bg-lime-soft'
               }`}
             >

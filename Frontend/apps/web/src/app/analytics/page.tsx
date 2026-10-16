@@ -36,7 +36,7 @@ export default function AnalyticsPage() {
             action={
               <button
                 onClick={() => alert('Exporting kitchen compliance summary CSV for institutional audit...')}
-                className="px-4 py-2.5 rounded-xl border border-line-light bg-white hover:bg-slate-50 text-ink text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
+                className="px-4 py-2.5 rounded-xl border border-line-light bg-white hover:bg-canvas text-ink text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
               >
                 <Download size={13} />
                 <span>Export Operations Report</span>
@@ -56,7 +56,7 @@ export default function AnalyticsPage() {
 
             <div className="p-6 rounded-3xl bg-white border border-line-light shadow-sm">
               <span className="text-xs font-bold uppercase tracking-wider text-ink-secondary">Service Accuracy</span>
-              <p className="text-3xl font-black text-emerald-700 mt-2">
+              <p className="text-3xl font-black text-forest mt-2">
                 {SAMPLE_METRICS.serviceRate}%
               </p>
               <p className="text-xs text-ink-secondary mt-1">Met demand without running short</p>
@@ -113,7 +113,7 @@ export default function AnalyticsPage() {
                       <div className="w-full bg-canvas rounded-t-xl overflow-hidden h-36 flex items-end">
                         <div
                           className={`w-full rounded-t-xl transition-all duration-700 ${
-                            isToday ? 'bg-forest group-hover:bg-lime' : 'bg-emerald-200 group-hover:bg-emerald-300'
+                            isToday ? 'bg-forest group-hover:bg-lime' : 'bg-forest/15 group-hover:bg-forest/30'
                           }`}
                           style={{ height: `${heightPercent}%` }}
                         />
@@ -155,10 +155,10 @@ export default function AnalyticsPage() {
                     <td className="py-3.5 px-4 font-bold text-ink">Breakfast</td>
                     <td className="py-3.5 px-4 font-semibold text-ink">182</td>
                     <td className="py-3.5 px-4 font-semibold text-ink">169</td>
-                    <td className="py-3.5 px-4 font-semibold text-emerald-800">13 portions</td>
+                    <td className="py-3.5 px-4 font-semibold text-forest">13 portions</td>
                     <td className="py-3.5 px-4 text-xs font-semibold text-ink-secondary">7.1%</td>
                     <td className="py-3.5 px-4">
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-forest bg-sage border border-line-light px-2.5 py-0.5 rounded-full">
                         <CheckCircle2 size={12} />
                         100% (No Shortage)
                       </span>
@@ -168,10 +168,10 @@ export default function AnalyticsPage() {
                     <td className="py-3.5 px-4 font-bold text-ink">Lunch</td>
                     <td className="py-3.5 px-4 font-semibold text-ink">264</td>
                     <td className="py-3.5 px-4 font-semibold text-ink">249</td>
-                    <td className="py-3.5 px-4 font-semibold text-emerald-800">15 portions</td>
+                    <td className="py-3.5 px-4 font-semibold text-forest">15 portions</td>
                     <td className="py-3.5 px-4 text-xs font-semibold text-ink-secondary">5.7%</td>
                     <td className="py-3.5 px-4">
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-forest bg-sage border border-line-light px-2.5 py-0.5 rounded-full">
                         <CheckCircle2 size={12} />
                         100% (No Shortage)
                       </span>
@@ -181,10 +181,10 @@ export default function AnalyticsPage() {
                     <td className="py-3.5 px-4 font-bold text-ink">Dinner</td>
                     <td className="py-3.5 px-4 font-semibold text-ink">215</td>
                     <td className="py-3.5 px-4 font-semibold text-ink">201</td>
-                    <td className="py-3.5 px-4 font-semibold text-emerald-800">14 portions</td>
+                    <td className="py-3.5 px-4 font-semibold text-forest">14 portions</td>
                     <td className="py-3.5 px-4 text-xs font-semibold text-ink-secondary">6.5%</td>
                     <td className="py-3.5 px-4">
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-forest bg-sage border border-line-light px-2.5 py-0.5 rounded-full">
                         <CheckCircle2 size={12} />
                         100% (No Shortage)
                       </span>

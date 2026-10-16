@@ -76,7 +76,7 @@ export default function LoginPage() {
                   type="button"
                   disabled={isLoading}
                   onClick={() => handleDemoLogin('Head Chef')}
-                  className="w-full p-4 rounded-2xl border border-line-light hover:border-forest/40 bg-white hover:bg-slate-50 transition-all flex items-center justify-between text-left group active:scale-[0.99]"
+                  className="w-full p-4 rounded-2xl border border-line-light hover:border-forest/40 bg-white hover:bg-canvas transition-all flex items-center justify-between text-left group active:scale-[0.99]"
                 >
                   <div>
                     <p className="text-sm font-black text-ink group-hover:text-forest">Head Chef (Full Operations)</p>
@@ -89,7 +89,7 @@ export default function LoginPage() {
                   type="button"
                   disabled={isLoading}
                   onClick={() => handleDemoLogin('Operations Manager')}
-                  className="w-full p-4 rounded-2xl border border-line-light hover:border-forest/40 bg-white hover:bg-slate-50 transition-all flex items-center justify-between text-left group active:scale-[0.99]"
+                  className="w-full p-4 rounded-2xl border border-line-light hover:border-forest/40 bg-white hover:bg-canvas transition-all flex items-center justify-between text-left group active:scale-[0.99]"
                 >
                   <div>
                     <p className="text-sm font-black text-ink group-hover:text-forest">Kitchen Director (Analytics & Waste)</p>

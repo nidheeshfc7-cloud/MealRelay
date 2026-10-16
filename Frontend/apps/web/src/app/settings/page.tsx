@@ -51,8 +51,8 @@ export default function SettingsPage() {
           />
 
           {saved && (
-            <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-semibold flex items-center gap-2">
-              <CheckCircle2 size={18} className="text-emerald-600" />
+            <div className="p-4 rounded-2xl bg-sage border border-line-light text-forest text-sm font-semibold flex items-center gap-2">
+              <CheckCircle2 size={18} className="text-forest" />
               <span>Workspace preferences saved successfully!</span>
             </div>
           )}
@@ -109,7 +109,7 @@ export default function SettingsPage() {
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="px-4 py-2.5 rounded-xl border border-line-light text-xs font-bold text-ink-secondary hover:text-red-600 hover:bg-red-50 transition-colors flex items-center gap-1.5"
+                    className="px-4 py-2.5 rounded-xl border border-line-light text-xs font-bold text-ink-secondary hover:text-ink hover:bg-canvas transition-colors flex items-center gap-1.5"
                   >
                     <RefreshCw size={14} />
                     <span>Restore Defaults</span>

@@ -18,7 +18,7 @@ export function Header({ title, subtitle, action }: HeaderProps) {
           <span>{today}</span>
           <span>•</span>
           <span className="text-forest font-extrabold flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-forest inline-block"></span>
             LIVE
           </span>
         </div>

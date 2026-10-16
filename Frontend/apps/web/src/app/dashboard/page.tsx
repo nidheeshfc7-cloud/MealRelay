@@ -170,7 +170,7 @@ export default function DashboardPage() {
             <div className="p-6 rounded-3xl bg-white border border-line-light shadow-sm">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-ink-secondary uppercase tracking-wider">Service Accuracy</span>
-                <span className="p-2 rounded-xl bg-emerald-50 text-emerald-700">
+                <span className="p-2 rounded-xl bg-sage text-forest">
                   <CheckCircle2 size={16} />
                 </span>
               </div>
@@ -192,7 +192,7 @@ export default function DashboardPage() {
             <div className="p-6 rounded-3xl bg-white border border-line-light shadow-sm">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-ink-secondary uppercase tracking-wider">Yesterday Leftovers</span>
-                <span className="p-2 rounded-xl bg-orange-50 text-orange-700">
+                <span className="p-2 rounded-xl bg-canvas border border-line-light text-ink-secondary">
                   <TrendingUp size={16} />
                 </span>
               </div>

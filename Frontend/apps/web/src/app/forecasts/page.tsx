@@ -44,7 +44,7 @@ export default function ForecastsPage() {
 
           {/* Statistical Transparency Notice */}
           <div className="p-6 rounded-3xl bg-white border border-line-light shadow-sm flex items-start gap-4">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center shrink-0 mt-0.5">
+            <div className="w-10 h-10 rounded-xl bg-sage text-forest flex items-center justify-center shrink-0 mt-0.5">
               <ShieldCheck size={20} />
             </div>
             <div>
@@ -106,7 +106,7 @@ export default function ForecastsPage() {
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="text-xl font-black text-ink">{f.serviceName}</h3>
-                        <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                        <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-sage text-forest border border-line-light">
                           Confidence: {Math.round(f.confidenceScore * 100)}%
                         </span>
                       </div>
