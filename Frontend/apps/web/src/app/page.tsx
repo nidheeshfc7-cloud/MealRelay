@@ -27,6 +27,7 @@ import {
   SAMPLE_METRICS,
   formatPortionNumber,
 } from "@mealrelay/core";
+import Footer from "@/components/footer";
 
 export default function LandingPage() {
   const totalPortions = DEFAULT_MEALS.reduce((acc, m) => acc + m.base, 0);
@@ -326,6 +327,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
       {/* Problem vs Solution Section */}
       <section className="py-20 sm:py-28 bg-canvas border-t border-line-light relative overflow-hidden">
         {/* Soft decorative background accents */}
@@ -488,33 +490,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Footer Section */}
-      <footer className="mt-auto bg-white border-t border-line-light py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <BrandLogo size="md" />
-
-          <div className="flex items-center gap-6 text-xs text-ink-secondary font-semibold">
-            <Link href="/dashboard" className="hover:text-forest">
-              Dashboard
-            </Link>
-            <Link href="/planner" className="hover:text-forest">
-              Planner
-            </Link>
-            <Link href="/forecasts" className="hover:text-forest">
-              Forecasts
-            </Link>
-            <Link href="/analytics" className="hover:text-forest">
-              Analytics
-            </Link>
-            <Link href="/settings" className="hover:text-forest">
-              Settings
-            </Link>
-          </div>
-
-          <p className="text-xs text-ink-secondary">
-            © 2026 MealRelay. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
