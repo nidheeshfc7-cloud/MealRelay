@@ -6,12 +6,14 @@ interface BrandLogoProps {
   light?: boolean;
   className?: string;
   size?: "sm" | "md" | "lg";
+  iconOnly?: boolean;
 }
 
 export function BrandLogo({
   light = false,
   className = "",
   size = "md",
+  iconOnly = false,
 }: BrandLogoProps) {
   const iconSize = size === "sm" ? 16 : size === "lg" ? 24 : 20;
   const boxSize =
@@ -35,11 +37,13 @@ export function BrandLogo({
       >
         <Leaf size={iconSize} className="stroke-[2.5]" />
       </div>
-      <span
-        className={`font-black tracking-tight ${textSize} ${light ? "text-white" : "text-ink"}`}
-      >
-        mealrelay<span className={light ? "text-lime" : "text-forest"}>.</span>
-      </span>
+      {!iconOnly && (
+        <span
+          className={`font-black tracking-tight ${textSize} ${light ? "text-white" : "text-ink"}`}
+        >
+          mealrelay<span className={light ? "text-lime" : "text-forest"}>.</span>
+        </span>
+      )}
     </Link>
   );
 }
