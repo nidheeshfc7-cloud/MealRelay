@@ -19,8 +19,7 @@ import {
 import { BrandLogo } from "./BrandLogo";
 
 const NAV_ITEMS = [
-  { label: "Kitchen Plan", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Meal Records", href: "/planner", icon: CalendarRange },
+  { label: "Daily Cooking Plan", href: "/dashboard", icon: LayoutDashboard },
   { label: "Food & Savings", href: "/analytics", icon: BarChart3 },
   { label: "Kitchen Settings", href: "/settings", icon: SlidersHorizontal },
 ];

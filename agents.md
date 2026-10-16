@@ -133,9 +133,10 @@ To maintain a polished, award-winning feel, follow these animation standards acr
    - **Clean Account Divider:** The user profile footer must sit directly on the sidebar's natural background with a subtle top divider (`border-t border-white/10`)—avoid heavy dark box wrappers (`bg-forest-dark/40`).
    - **Fluid Flex Reflow:** Sidebars must be in-flow flex items next to `<main className="flex-1">`, smoothly pushing and resizing adjacent content in real-time.
 
-6. **Strict Sidebar Preservation Rule (Do NOT Mess With Sidebar):**
+6. **Strict Sidebar Preservation Rule (Do NOT Mess With Sidebar in Dashboard or Any Screen):**
+   - The user currently very much likes the sidebar: **DO NOT mess with the sidebar in the dashboard or any other screen**.
    - The desktop and mobile sidebar styling, colors, luxury easing curves, fixed geometric padding (`px-3.5`), header logo mark, facility status widget, user profile footer, and hover/pinned interaction mechanics must NEVER be altered, redesigned, or broken during dashboard or page refactors.
-   - When restructuring dashboard workflows or navigation, only the navigation items array (`NAV_ITEMS` labels, icons, and target routes) may be streamlined or re-routed. The visual shell, Tailwind classes, and interaction mechanics of `Sidebar.tsx` must remain completely untouched.
+   - When restructuring dashboard workflows or navigation, only the navigation items array (`NAV_ITEMS` labels, icons, and target routes) may be streamlined or re-routed to avoid unnecessary tabs. The visual shell, Tailwind classes, and interaction mechanics of `Sidebar.tsx` must remain completely untouched.
 
 ## 9. Responsive Design
 
