@@ -44,8 +44,8 @@ Get both Web and Mobile running on your machine in under 2 minutes:
 # 1. Clone the repository
 git clone https://github.com/nidheeshfc7-cloud/MealRelay.git
 
-# 2. Open the project and enter the monorepo directory
-cd MealRelay/MealRelay
+# 2. Enter the Frontend monorepo directory
+cd MealRelay/Frontend
 
 # 3. Install all workspace dependencies (one command for all packages and apps)
 npm install
@@ -89,7 +89,7 @@ The project is structured as an npm workspaces monorepo:
 
 ```text
 MealRelay/
-├── MealRelay/                      # Monorepo root (where npm install is run)
+├── Frontend/                       # Frontend monorepo root (where npm install is run)
 │   ├── apps/
 │   │   ├── web/                    # Next.js 15 (App Router), React 19, Tailwind CSS
 │   │   └── mobile/                 # React Native, Expo SDK 57, Expo Video
@@ -118,11 +118,11 @@ MealRelay/
 The web interface is tailored for kitchen managers, dining directors, and supervisors on laptops or tablets.
 
 ### 1. Start the Dev Server
-From `MealRelay/MealRelay`:
+From `Frontend`:
 ```bash
 npm run dev:web
 ```
-*(Alternatively, from inside `MealRelay/MealRelay/apps/web`: `npm run dev`)*
+*(Alternatively, from inside `Frontend/apps/web`: `npm run dev`)*
 
 ### 2. Open in Browser
 - **Local Machine:** [http://localhost:3000](http://localhost:3000)
@@ -146,11 +146,11 @@ npm run dev:web
 The mobile app is built with **React Native** and **Expo SDK 57**, featuring bottom-tab navigation, native touch gestures, smooth animations, and video onboarding.
 
 ### 1. Start Expo
-From `MealRelay/MealRelay`:
+From `Frontend`:
 ```bash
 npm run dev:mobile
 ```
-*(Alternatively, from inside `MealRelay/MealRelay/apps/mobile`: `npm start`)*
+*(Alternatively, from inside `Frontend/apps/mobile`: `npm start`)*
 
 ### 2. Choose How to View the App
 
@@ -180,11 +180,11 @@ Because MealRelay uses an integrated monorepo, you can run both the Web platform
 
 ```bash
 # Terminal 1 (Web Platform)
-cd MealRelay/MealRelay
+cd Frontend
 npm run dev:web
 
 # Terminal 2 (Mobile App)
-cd MealRelay/MealRelay
+cd Frontend
 npm run dev:mobile
 ```
 
@@ -205,7 +205,7 @@ Any modification to shared logic in `packages/core/` or `packages/types/` will i
 
 ## 📜 Complete Scripts Cheatsheet
 
-Run all commands from the `MealRelay/MealRelay/` root:
+Run all commands from the `Frontend/` root:
 
 ```bash
 # Development
@@ -230,12 +230,12 @@ The application works immediately out-of-the-box using `@mealrelay/api`'s `DemoM
 
 ### 2. Supabase PostgreSQL (Ready for Deployment)
 A complete, production-ready PostgreSQL schema with Row-Level Security (RLS) is located at:
-📁 `MealRelay/packages/api/schema.sql`
+📁 `Frontend/packages/api/schema.sql`
 
 To connect to a live Supabase project:
 1. Create a free project at [supabase.com](https://supabase.com).
-2. Run the SQL script from `MealRelay/packages/api/schema.sql` in the Supabase SQL Editor.
-3. Create `MealRelay/apps/web/.env.local`:
+2. Run the SQL script from `Frontend/packages/api/schema.sql` in the Supabase SQL Editor.
+3. Create `Frontend/apps/web/.env.local`:
    ```env
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
@@ -250,9 +250,9 @@ A comprehensive technical specification for the planned Python demand forecastin
 ## 🛠️ Troubleshooting & FAQs
 
 ### Q1: `npm install` fails or gives workspace errors
-**Solution:** Make sure you are in the monorepo root (`MealRelay/MealRelay`) where the root `package.json` with the `workspaces` field is located.
+**Solution:** Make sure you are in the monorepo root (`Frontend`) where the root `package.json` with the `workspaces` field is located.
 ```bash
-cd MealRelay/MealRelay
+cd Frontend
 npm install
 ```
 
@@ -269,7 +269,7 @@ npm --workspace=@mealrelay/web run dev -- -p 3001
 2. **Firewall:** Ensure Windows Defender / macOS Firewall allows inbound connections to Node.js.
 3. **Tunnel Mode:** If your Wi-Fi has client isolation (common on college/office Wi-Fi), use Expo's tunnel mode:
    ```bash
-   cd MealRelay/apps/mobile
+   cd Frontend/apps/mobile
    npx expo start --tunnel
    ```
 
@@ -282,11 +282,11 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ### Q5: How do I clear build caches?
 ```bash
 # Clear Next.js cache
-cd MealRelay/apps/web
+cd Frontend/apps/web
 rm -rf .next
 
 # Clear Expo Metro cache
-cd MealRelay/apps/mobile
+cd Frontend/apps/mobile
 npx expo start -c
 ```
 

@@ -6,7 +6,7 @@ Welcome to the **MealRelay** monorepo! This workspace hosts both the Next.js web
 
 ## ⚡ Quick Start for Developers
 
-From this directory (`MealRelay/`):
+From this directory (`Frontend/`):
 
 ### 1. Install All Dependencies
 ```bash
@@ -43,7 +43,7 @@ npm run dev:mobile
 ## 🏗️ Monorepo Structure
 
 ```text
-MealRelay/
+Frontend/
 ├── apps/
 │   ├── web/                    # Next.js 15 App Router, React 19, Tailwind CSS
 │   └── mobile/                 # React Native Expo SDK 57 (Android & iOS)
