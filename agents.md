@@ -66,31 +66,78 @@ Compare Random Forest against a historical-average baseline. Use transparent fal
 
 Prioritize a functional preparation workflow over extra features.
 
-## 7. Visual Design
+## 7. Visual Design & Brand Identity
 
-Use this exact palette consistently:
+Follow the official MealRelay design system and tokens consistently:
 
-- **Background:** `#0f1012`
-- **Primary text:** `#f2f2ef`
-- **Secondary text:** `#8f949b`
-- **Accent:** `#f07734`
+### Color Palette
+- **Forest Green (Primary Brand):**
+  - DEFAULT: `#003F2F`
+  - Dark: `#002F24`
+  - Mid: `#143928`
+  - Light: `#245C40`
+- **Electric Lime (Signature Accent):**
+  - DEFAULT: `#D5FB53`
+  - Soft: `#E6FCA8`
+- **Canvas & Surface:**
+  - Canvas: `#F6F7F1` (warm off-white page background)
+  - Ivory Pure: `#FFFFFF` (card surfaces)
+  - Sage: `#EDF2E7` (soft pill badges & subtle fills)
+- **Ink (Typography):**
+  - Primary: `#172A21` (deep forest ink for high contrast)
+  - Secondary: `#718078` (muted slate ink)
+  - Muted: `#8B9C92`
+- **Lines & Borders:**
+  - Light: `#E5EBE1` (clean borders on canvas)
+  - Dark: `#123D2E` (subtle dividers on forest background)
+  - Dark Glass: `rgba(255, 255, 255, 0.10)` (`border-white/10`)
 
-Keep the UI minimal, professional, and high-contrast. Reserve orange for primary actions and important highlights. Use grey for secondary information.
+### Brand Logo & Typography
+- **Font Family:** `Inter, system-ui, sans-serif`. Use heavy/black weights (`font-black`, `font-extrabold`) for editorial headlines and clean semibold weights for data/controls.
+- **Brand Mark:** A `-rotate-6` rounded square emblem in Electric Lime (`#D5FB53`) or Forest Green with a Lucide `Leaf` icon (`stroke-[2.5]`).
+- **Wordmark:** `mealrelay.` in lowercase bold, with the trailing period highlighted in Electric Lime (`.` on dark) or Forest Green (`.` on light). Supports an `iconOnly` prop when collapsed.
 
-- Maximum three font families; preferably one.
-- Maintain consistent typography, spacing, components, borders, and icon styles.
-- Use subtle, purposeful animations.
-- Avoid excessive colors, gradients, charts, and decorative elements.
+### Surface & Component Language
+- High-contrast editorial aesthetic combining light canvas views (`bg-canvas text-ink`) with moody dark-green operational blocks (`bg-forest text-white`).
+- Generous card radiuses: `rounded-2xl` for internal widgets/cards, `rounded-3xl` for high-level feature sections.
+- Pill badges for buffer and status indicators (`bg-lime/20 text-lime border border-lime/30` or `bg-sage text-forest`).
 
-## 8. Responsive Design
+## 8. Awwwards-Tier Animation & Interaction Principles
+
+To maintain a polished, award-winning feel, follow these animation standards across all interactive components:
+
+1. **Luxury Easing Curves**:
+   - Use the Apple/Awwwards ease-out exponential curve: `cubic-bezier(0.16, 1, 0.3, 1)` rather than standard linear or generic `ease-in-out`.
+   - Standard transitions: `duration-300` for structural layout and drawer/sidebar expansion; `duration-150` to `duration-200` for micro-interactions (hover, active scale).
+
+2. **Fixed Geometric Padding (Zero Lateral Wobble)**:
+   - When components expand or collapse (e.g., sidebars, drawers, accordions), keep container horizontal padding constant (e.g., `px-3.5`).
+   - Never animate padding simultaneously with width. Changing padding causes icons to drift and wobble laterally.
+
+3. **Masked Overflow Reveals Over Jarring DOM Swaps**:
+   - Avoid abruptly unmounting/mounting text elements with React ternaries during animated transitions.
+   - Keep items in the DOM and use masked container unveils: `overflow-hidden`, `max-w-0` to `max-w-[Npx]`, `opacity-0` to `opacity-100`, and `translate-x-[-8px]` to `translate-x-0`.
+
+4. **Aspect Ratio Protection on Circular Elements**:
+   - Always enforce `aspect-square`, `shrink-0`, and exact dimensions on circular elements (user avatars, badges, indicator dots):
+     `w-10 h-10 min-w-[40px] min-h-[40px] aspect-square rounded-full shrink-0`.
+   - This prevents flexbox or grid stretching from distorting circles into ovals/ellipses during animation.
+
+5. **Desktop Collapsible Sidebar Standards**:
+   - **Default/Unpinned Behavior:** Collapses to an ultra-minimalist icon-only rail (`w-[72px]`). Expands to full width (`w-[260px]`) on hover (`onMouseEnter`), and collapses back on mouse leave (`onMouseLeave`).
+   - **Sticky Pin Button:** A `<Pin />` toggle button on the top right allows users to lock the sidebar open permanently. When unpinned, it resumes hover-on/hover-off behavior. State persists in `localStorage` (`mealrelay_sidebar_pinned`).
+   - **Clean Account Divider:** The user profile footer must sit directly on the sidebar's natural background with a subtle top divider (`border-t border-white/10`)—avoid heavy dark box wrappers (`bg-forest-dark/40`).
+   - **Fluid Flex Reflow:** Sidebars must be in-flow flex items next to `<main className="flex-1">`, smoothly pushing and resizing adjacent content in real-time.
+
+## 9. Responsive Design
 
 - Optimize desktop layouts for 16:9 screens without forcing a fixed aspect ratio.
-- Ensure full usability on tablets and mobile browsers.
+- Ensure full usability on tablets and mobile browsers with dedicated drawer navigation.
 - Prevent overflow, clipping, and overlapping elements.
 - Adapt tables, navigation, and controls to smaller screens.
 - Keep all essential workflows functional across screen sizes.
 
-## 9. Development Rules
+## 10. Development Rules
 
 - Inspect the existing codebase before making changes.
 - Build reusable components and maintain clear frontend/backend separation.
