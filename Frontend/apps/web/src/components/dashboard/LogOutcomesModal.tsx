@@ -16,9 +16,10 @@ import {
   Info,
 } from "lucide-react";
 import { DishItem, MealShiftKey } from "./types";
-import { logMealRecord, logMealRecordsBatch } from "@/lib/api";
-import { MealRecordCreate } from "@/lib/types/api";
+import { fetchDishesCatalog, logMealRecord, logMealRecordsBatch } from "@/lib/api";
+import { DishCatalogItem, MealRecordCreate } from "@/lib/types/api";
 import { clearForecastCache, normalizeToIsoDate } from "@/lib/hooks/useMealForecast";
+
 
 interface LogOutcomesModalProps {
   isOpen: boolean;
@@ -103,6 +104,7 @@ export const LogOutcomesModal: React.FC<LogOutcomesModalProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Single Record Mode States
+  const [catalogDishes, setCatalogDishes] = useState<DishCatalogItem[]>([]);
   const [singleDishId, setSingleDishId] = useState<string>("");
   const [singleDate, setSingleDate] = useState<string>(normalizeToIsoDate(date));
   const [singleShift, setSingleShift] = useState<MealShiftKey>(shift);
@@ -111,6 +113,53 @@ export const LogOutcomesModal: React.FC<LogOutcomesModalProps> = ({
   const [singleServed, setSingleServed] = useState<number>(140);
   const [singleServedUnmeasured, setSingleServedUnmeasured] = useState<boolean>(false);
   const [singleLeftover, setSingleLeftover] = useState<number>(10);
+
+  // Fetch full dish catalog to support selecting dishes across all meal shifts
+  useEffect(() => {
+    if (!isOpen) return;
+    fetchDishesCatalog()
+      .then((cat) => {
+        if (Array.isArray(cat) && cat.length > 0) {
+          setCatalogDishes(cat);
+        }
+      })
+      .catch(() => {
+        // Fallback to active dishes if backend is offline
+      });
+  }, [isOpen]);
+
+  // Derived single dishes matching the selected shift
+  const availableSingleDishes = useMemo(() => {
+    if (catalogDishes.length > 0) {
+      const filtered = catalogDishes.filter(
+        (d) => d.meal_type.toLowerCase() === singleShift.toLowerCase()
+      );
+      if (filtered.length > 0) return filtered;
+    }
+    return dishes.map((d) => ({
+      id: d.id,
+      name: d.name,
+      meal_type: shift,
+      category: d.category as any,
+    }));
+  }, [catalogDishes, singleShift, dishes, shift]);
+
+  // Sync single dish ID when shift or available dishes change
+  useEffect(() => {
+    if (availableSingleDishes.length > 0) {
+      const exists = availableSingleDishes.some((d) => d.id === singleDishId);
+      if (!exists) {
+        const first = availableSingleDishes[0];
+        setSingleDishId(first.id);
+        const matchingDish = dishes.find((d) => d.id === first.id);
+        if (matchingDish) {
+          setSinglePrepared(matchingDish.recommendedQty);
+          setSingleLeftover(Math.max(0, Math.round(matchingDish.recommendedQty * 0.05)));
+          setSingleServed(Math.max(0, matchingDish.recommendedQty - Math.round(matchingDish.recommendedQty * 0.05)));
+        }
+      }
+    }
+  }, [availableSingleDishes, singleDishId, dishes]);
 
   // Initialize batch inputs when dishes, isOpen, or shift changes
   useEffect(() => {
@@ -147,6 +196,7 @@ export const LogOutcomesModal: React.FC<LogOutcomesModalProps> = ({
       setSingleServed(Math.max(0, dishes[0].recommendedQty - Math.round(dishes[0].recommendedQty * 0.05)));
     }
   }, [dishes, isOpen, defaultAttendance, date, shift]);
+
 
   // Validation checks for all active batch dishes
   const batchValidations = useMemo<Record<string, DishValidation>>(() => {
@@ -287,7 +337,10 @@ export const LogOutcomesModal: React.FC<LogOutcomesModalProps> = ({
     }
 
     setIsSubmitting(true);
-    const selectedDishObj = dishes.find((d) => d.id === singleDishId);
+    const selectedDishObj =
+      dishes.find((d) => d.id === singleDishId) ||
+      catalogDishes.find((d) => d.id === singleDishId);
+
 
     try {
       const singlePayload: MealRecordCreate = {
@@ -675,13 +728,14 @@ export const LogOutcomesModal: React.FC<LogOutcomesModalProps> = ({
                 className="w-full px-3 py-2 rounded-xl bg-canvas border border-line-light text-ink font-bold text-xs sm:text-sm focus:outline-none focus:border-forest"
                 required
               >
-                {dishes.map((d) => (
+                {availableSingleDishes.map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.name} ({d.category})
                   </option>
                 ))}
               </select>
             </div>
+
 
             {/* Attendance & Prepared Counts */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
