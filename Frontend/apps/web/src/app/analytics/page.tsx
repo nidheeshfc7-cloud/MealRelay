@@ -1,28 +1,201 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   BarChart3,
   Calendar,
-  CheckCircle2,
-  ChevronRight,
+  CalendarDays,
+  ChevronDown,
   Download,
-  Leaf,
-  Scale,
-  TrendingDown,
-  TrendingUp,
+  Filter,
+  RefreshCw,
+  Sparkles,
+  Layers,
+  ArrowRight,
 } from 'lucide-react';
+import Link from 'next/link';
 import { Sidebar } from '@/components/Sidebar';
 import { Header } from '@/components/Header';
+import { fetchMealRecords, fetchModelMetrics } from '@/lib/api';
+import { EvaluationReport, MealRecord } from '@/lib/types/api';
 import {
-  SAMPLE_METRICS,
-  SAMPLE_WEEKLY_VOLUME,
-  formatPortionNumber,
-} from '@mealrelay/core';
+  aggregateRecords,
+  calculateRecordMetrics,
+  calculateEsgMetrics,
+  groupRecordsByCategory,
+  groupRecordsByDayOfWeek,
+  groupRecordsByMonth,
+  groupRecordsByWeek,
+  MonthlyBucket,
+} from '@/components/analytics/analyticsCalculations';
+import { AnalyticsKPICards } from '@/components/analytics/AnalyticsKPICards';
+import { MonthlySavingsChart } from '@/components/analytics/MonthlySavingsChart';
+import { ModelBenchmarkCard } from '@/components/analytics/ModelBenchmarkCard';
+import { CategorySavingsChart } from '@/components/analytics/CategorySavingsChart';
+import { DayOfWeekPatternChart } from '@/components/analytics/DayOfWeekPatternChart';
+import { EsgMilestoneCard } from '@/components/analytics/EsgMilestoneCard';
+import { AuditHistoryTable } from '@/components/analytics/AuditHistoryTable';
 
 export default function AnalyticsPage() {
-  const peak = Math.max(...SAMPLE_WEEKLY_VOLUME);
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const [records, setRecords] = useState<MealRecord[]>([]);
+  const [modelMetrics, setModelMetrics] = useState<EvaluationReport | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
+  // View state: 'monthly' or 'weekly'
+  const [timeView, setTimeView] = useState<'monthly' | 'weekly'>('monthly');
+  // Selected month key: e.g. "2026-10" or "all"
+  const [selectedMonthKey, setSelectedMonthKey] = useState<string>('all');
+
+  const loadData = async (isManualRefresh: boolean = false): Promise<void> => {
+    if (isManualRefresh) {
+      setIsRefreshing(true);
+    } else {
+      setIsLoading(true);
+    }
+    setFetchError(null);
+
+    try {
+      const [metricsRes, recordsRes] = await Promise.allSettled([
+        fetchModelMetrics(),
+        fetchMealRecords({ limit: 500 }),
+      ]);
+
+      if (metricsRes.status === 'fulfilled') {
+        setModelMetrics(metricsRes.value);
+      } else {
+        console.warn('Could not load ML evaluation metrics:', metricsRes.reason);
+      }
+
+      if (recordsRes.status === 'fulfilled') {
+        setRecords(recordsRes.value);
+      } else {
+        console.warn('Could not load meal records:', recordsRes.reason);
+        setFetchError('Failed to connect to backend server. Please verify FastAPI backend on port 8000.');
+      }
+    } catch (err: any) {
+      setFetchError(err?.message || 'Error loading analytics data.');
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  // 1. Group records by month dynamically
+  const monthlyBuckets: MonthlyBucket[] = useMemo(() => {
+    if (records.length === 0) return [];
+    return groupRecordsByMonth(records);
+  }, [records]);
+
+  // Set default selected month to latest month once records are loaded
+  useEffect(() => {
+    if (monthlyBuckets.length > 0 && selectedMonthKey === 'all') {
+      setSelectedMonthKey(monthlyBuckets[0].key);
+    }
+  }, [monthlyBuckets, selectedMonthKey]);
+
+  // 2. Active records based on selected timeview and month
+  const activeRecords: MealRecord[] = useMemo(() => {
+    if (records.length === 0) return [];
+
+    if (timeView === 'weekly') {
+      // Sort descending by date and take latest 7 distinct days
+      const sorted = [...records].sort((a, b) => b.meal_date.localeCompare(a.meal_date));
+      const dates = Array.from(new Set(sorted.map((r) => r.meal_date))).slice(0, 7);
+      const datesSet = new Set(dates);
+      return sorted.filter((r) => datesSet.has(r.meal_date));
+    }
+
+    if (selectedMonthKey === 'all') {
+      return records;
+    }
+
+    return records.filter((r) => (r.meal_date || '').startsWith(selectedMonthKey));
+  }, [records, timeView, selectedMonthKey]);
+
+  // 3. Computed Aggregates
+  const currentMetrics = useMemo(() => {
+    return aggregateRecords(activeRecords);
+  }, [activeRecords]);
+
+  // 4. Weekly buckets within the selected month (for Monthly View chart)
+  const weeklyBuckets = useMemo(() => {
+    if (activeRecords.length === 0) return [];
+    return groupRecordsByWeek(activeRecords);
+  }, [activeRecords]);
+
+  // 5. Daily data breakdown (for Weekly View chart)
+  const dailyData = useMemo(() => {
+    if (timeView !== 'weekly' || activeRecords.length === 0) return [];
+
+    const dateMap = new Map<string, MealRecord[]>();
+    for (const r of activeRecords) {
+      if (!dateMap.has(r.meal_date)) {
+        dateMap.set(r.meal_date, []);
+      }
+      dateMap.get(r.meal_date)!.push(r);
+    }
+
+    // Sort ascending by date
+    const sortedDates = Array.from(dateMap.keys()).sort();
+
+    return sortedDates.map((dateStr) => {
+      const dayRecords = dateMap.get(dateStr) || [];
+      const m = aggregateRecords(dayRecords);
+      let dayLabel = dateStr;
+      try {
+        const d = new Date(dateStr);
+        dayLabel = d.toLocaleDateString('en-US', { weekday: 'short' });
+      } catch {
+        dayLabel = dateStr;
+      }
+
+      return {
+        date: dateStr,
+        dayLabel,
+        rupeesSaved: m.totalRupeesSaved,
+        portionsRescued: m.totalPortionsRescued,
+        kgSaved: m.totalKgSaved,
+        prepared: m.totalPrepared,
+        leftovers: m.totalLeftovers,
+      };
+    });
+  }, [timeView, activeRecords]);
+
+  // 6. Category breakdown
+  const categoryBreakdown = useMemo(() => {
+    if (activeRecords.length === 0) return [];
+    return groupRecordsByCategory(activeRecords);
+  }, [activeRecords]);
+
+  // 7. Day-of-Week Recurrent Analysis
+  const dayOfWeekSummaries = useMemo(() => {
+    if (activeRecords.length === 0) return [];
+    return groupRecordsByDayOfWeek(activeRecords);
+  }, [activeRecords]);
+
+  // 8. ESG & Sustainability Milestones
+  const esgMetrics = useMemo(() => {
+    return calculateEsgMetrics(
+      currentMetrics.totalKgSaved,
+      currentMetrics.totalPortionsRescued,
+      currentMetrics.totalRupeesSaved,
+      100000
+    );
+  }, [currentMetrics]);
+
+  // Active Label
+  const activePeriodLabel = useMemo(() => {
+    if (timeView === 'weekly') return 'Last 7 Days';
+    if (selectedMonthKey === 'all') return 'All Recorded History';
+    const b = monthlyBuckets.find((item) => item.key === selectedMonthKey);
+    return b ? b.label : selectedMonthKey;
+  }, [timeView, selectedMonthKey, monthlyBuckets]);
 
   return (
     <div className="min-h-screen bg-canvas flex flex-col">
@@ -31,169 +204,146 @@ export default function AnalyticsPage() {
 
         <main className="flex-1 p-4 sm:p-8 max-w-7xl mx-auto w-full space-y-8">
           <Header
-            title="Kitchen Waste & Efficiency Analytics"
-            subtitle="7-Day Performance Review · Closed-Loop Impact Measurements"
+            title="Food Waste & Financial Savings Analytics"
+            subtitle="Closed-Loop Impact Measurement · Machine Learning Calibration Audit"
             action={
-              <button
-                onClick={() => alert('Exporting kitchen compliance summary CSV for institutional audit...')}
-                className="px-4 py-2.5 rounded-xl border border-line-light bg-white hover:bg-canvas text-ink text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
-              >
-                <Download size={13} />
-                <span>Export Operations Report</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => loadData(true)}
+                  disabled={isRefreshing}
+                  className="px-3.5 py-2 rounded-xl border border-line-light bg-white hover:bg-canvas text-ink text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+                  title="Reload live metrics from backend"
+                >
+                  <RefreshCw
+                    size={13}
+                    className={isRefreshing ? 'animate-spin text-forest' : 'text-ink-secondary'}
+                  />
+                  <span className="hidden sm:inline">Refresh Data</span>
+                </button>
+                <Link
+                  href="/dashboard"
+                  className="px-4 py-2 rounded-xl bg-forest text-lime text-xs font-bold hover:bg-forest-dark transition-all flex items-center gap-1.5 shadow-sm"
+                >
+                  <span>Cooking Plan</span>
+                  <ArrowRight size={13} />
+                </Link>
+              </div>
             }
           />
 
-          {/* Top Key Metrics */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-6 rounded-3xl bg-white border border-line-light shadow-sm">
-              <span className="text-xs font-bold uppercase tracking-wider text-ink-secondary">Weekly Volume</span>
-              <p className="text-3xl font-black text-ink mt-2">
-                {formatPortionNumber(SAMPLE_METRICS.sevenDayPlannedTotal)}
-              </p>
-              <p className="text-xs text-ink-secondary mt-1">Servings planned across 7 days</p>
-            </div>
-
-            <div className="p-6 rounded-3xl bg-white border border-line-light shadow-sm">
-              <span className="text-xs font-bold uppercase tracking-wider text-ink-secondary">Service Accuracy</span>
-              <p className="text-3xl font-black text-forest mt-2">
-                {SAMPLE_METRICS.serviceRate}%
-              </p>
-              <p className="text-xs text-ink-secondary mt-1">Met demand without running short</p>
-            </div>
-
-            <div className="p-6 rounded-3xl bg-white border border-line-light shadow-sm">
-              <span className="text-xs font-bold uppercase tracking-wider text-ink-secondary">Food Waste Avoided</span>
-              <p className="text-3xl font-black text-forest mt-2">
-                ~{SAMPLE_METRICS.wasteReductionPercent}%
-              </p>
-              <p className="text-xs text-ink-secondary mt-1">Against unmanaged baseline</p>
-            </div>
-
-            <div className="p-6 rounded-3xl bg-white border border-line-light shadow-sm">
-              <span className="text-xs font-bold uppercase tracking-wider text-ink-secondary">Weight Saved</span>
-              <p className="text-3xl font-black text-ink mt-2">
-                ~{SAMPLE_METRICS.wastePreventedKg} kg
-              </p>
-              <p className="text-xs text-ink-secondary mt-1">Daily edible food prevented from waste</p>
-            </div>
-          </div>
-
-          {/* 7-Day Weekly Production Volume Chart */}
-          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-line-light shadow-sm space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <span className="text-xs font-extrabold uppercase tracking-widest text-forest">TREND ANALYSIS</span>
-                <h2 className="text-xl font-black text-ink mt-0.5">7-Day Servings Planned</h2>
+          {/* Timeframe Controls Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-3xl bg-white border border-line-light shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-forest">
+                TIMEFRAME VIEW:
+              </span>
+              {/* Monthly vs Weekly Switcher */}
+              <div className="flex items-center p-1 rounded-2xl bg-canvas border border-line-light">
+                <button
+                  onClick={() => setTimeView('monthly')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                    timeView === 'monthly'
+                      ? 'bg-forest text-lime shadow-sm'
+                      : 'text-ink-secondary hover:text-ink'
+                  }`}
+                >
+                  <CalendarDays size={13} />
+                  <span>Monthly View</span>
+                </button>
+                <button
+                  onClick={() => setTimeView('weekly')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                    timeView === 'weekly'
+                      ? 'bg-forest text-lime shadow-sm'
+                      : 'text-ink-secondary hover:text-ink'
+                  }`}
+                >
+                  <Calendar size={13} />
+                  <span>Weekly View</span>
+                </button>
               </div>
-              <div className="flex items-center gap-4 text-xs font-bold">
-                <span className="flex items-center gap-1.5 text-ink-secondary">
-                  <span className="w-3 h-3 rounded bg-line-light inline-block"></span>
-                  Past Weekdays
+            </div>
+
+            {/* Month Dropdown (visible in Monthly View) */}
+            {timeView === 'monthly' && (
+              <div className="flex items-center gap-2 self-start sm:self-auto">
+                <span className="text-xs font-bold text-ink-secondary hidden sm:inline">
+                  Select Month:
                 </span>
-                <span className="flex items-center gap-1.5 text-forest">
-                  <span className="w-3 h-3 rounded bg-lime inline-block"></span>
-                  Target Service (Today)
-                </span>
+                <select
+                  value={selectedMonthKey}
+                  onChange={(e) => setSelectedMonthKey(e.target.value)}
+                  className="px-3.5 py-1.5 rounded-xl bg-canvas border border-line-light text-xs font-bold text-ink focus:outline-none cursor-pointer"
+                >
+                  {monthlyBuckets.map((bucket) => (
+                    <option key={bucket.key} value={bucket.key}>
+                      {bucket.label} ({bucket.metrics.recordsCount} records)
+                    </option>
+                  ))}
+                  <option value="all">All Available Records ({records.length})</option>
+                </select>
               </div>
-            </div>
-
-            {/* Custom SVG/HTML Bar Chart */}
-            <div className="pt-8 pb-4">
-              <div className="h-48 flex items-end gap-3 sm:gap-6">
-                {SAMPLE_WEEKLY_VOLUME.map((val, idx) => {
-                  const heightPercent = Math.max(10, Math.round((val / peak) * 100));
-                  const isToday = idx === SAMPLE_WEEKLY_VOLUME.length - 1;
-
-                  return (
-                    <div key={idx} className="flex-1 flex flex-col items-center gap-2 group">
-                      <span className="text-[11px] font-bold text-ink-secondary opacity-0 group-hover:opacity-100 transition-opacity">
-                        {val}
-                      </span>
-                      <div className="w-full bg-canvas rounded-t-xl overflow-hidden h-36 flex items-end">
-                        <div
-                          className={`w-full rounded-t-xl transition-all duration-700 ${
-                            isToday ? 'bg-forest group-hover:bg-lime' : 'bg-forest/15 group-hover:bg-forest/30'
-                          }`}
-                          style={{ height: `${heightPercent}%` }}
-                        />
-                      </div>
-                      <span className={`text-xs font-bold ${isToday ? 'text-forest font-black' : 'text-ink-secondary'}`}>
-                        {days[idx]}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            )}
           </div>
 
-          {/* Yesterday's Service Breakdown Table */}
-          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-line-light shadow-sm space-y-4">
-            <div>
-              <span className="text-xs font-extrabold uppercase tracking-widest text-forest">CLOSED-LOOP AUDIT</span>
-              <h2 className="text-xl font-black text-ink mt-0.5">Yesterday's Actuals vs Planned</h2>
-              <p className="text-xs sm:text-sm text-ink-secondary mt-1">
-                Post-service audit comparing kitchen work orders against actual plates served and leftovers logged.
-              </p>
+          {/* Error Banner if backend unreachable */}
+          {fetchError && (
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold flex items-center justify-between">
+              <span>{fetchError}</span>
+              <button
+                onClick={() => loadData(true)}
+                className="underline font-bold text-amber-900 ml-4 hover:opacity-80"
+              >
+                Retry Connection
+              </button>
             </div>
+          )}
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-line-light text-xs font-extrabold uppercase tracking-wider text-ink-secondary">
-                    <th className="py-3 px-4">Service</th>
-                    <th className="py-3 px-4">Prepared</th>
-                    <th className="py-3 px-4">Served</th>
-                    <th className="py-3 px-4">Leftovers</th>
-                    <th className="py-3 px-4">Leftover %</th>
-                    <th className="py-3 px-4">Fulfillment</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-line-light">
-                  <tr className="hover:bg-canvas/50">
-                    <td className="py-3.5 px-4 font-bold text-ink">Breakfast</td>
-                    <td className="py-3.5 px-4 font-semibold text-ink">182</td>
-                    <td className="py-3.5 px-4 font-semibold text-ink">169</td>
-                    <td className="py-3.5 px-4 font-semibold text-forest">13 portions</td>
-                    <td className="py-3.5 px-4 text-xs font-semibold text-ink-secondary">7.1%</td>
-                    <td className="py-3.5 px-4">
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-forest bg-sage border border-line-light px-2.5 py-0.5 rounded-full">
-                        <CheckCircle2 size={12} />
-                        100% (No Shortage)
-                      </span>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-canvas/50">
-                    <td className="py-3.5 px-4 font-bold text-ink">Lunch</td>
-                    <td className="py-3.5 px-4 font-semibold text-ink">264</td>
-                    <td className="py-3.5 px-4 font-semibold text-ink">249</td>
-                    <td className="py-3.5 px-4 font-semibold text-forest">15 portions</td>
-                    <td className="py-3.5 px-4 text-xs font-semibold text-ink-secondary">5.7%</td>
-                    <td className="py-3.5 px-4">
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-forest bg-sage border border-line-light px-2.5 py-0.5 rounded-full">
-                        <CheckCircle2 size={12} />
-                        100% (No Shortage)
-                      </span>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-canvas/50">
-                    <td className="py-3.5 px-4 font-bold text-ink">Dinner</td>
-                    <td className="py-3.5 px-4 font-semibold text-ink">215</td>
-                    <td className="py-3.5 px-4 font-semibold text-ink">201</td>
-                    <td className="py-3.5 px-4 font-semibold text-forest">14 portions</td>
-                    <td className="py-3.5 px-4 text-xs font-semibold text-ink-secondary">6.5%</td>
-                    <td className="py-3.5 px-4">
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-forest bg-sage border border-line-light px-2.5 py-0.5 rounded-full">
-                        <CheckCircle2 size={12} />
-                        100% (No Shortage)
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          {/* 1. Dynamic Key Impact KPI Cards */}
+          <AnalyticsKPICards
+            metrics={currentMetrics}
+            modelMetrics={modelMetrics}
+            periodLabel={activePeriodLabel}
+          />
+
+          {/* 2. ESG & Sustainability Performance Card */}
+          <EsgMilestoneCard
+            esgMetrics={esgMetrics}
+            monthLabel={activePeriodLabel}
+          />
+
+          {/* 3. Main Visual Graph: Monthly / Weekly Savings Trajectory */}
+          <MonthlySavingsChart
+            weeklyData={weeklyBuckets}
+            dailyData={dailyData}
+            timeView={timeView}
+            monthLabel={activePeriodLabel}
+          />
+
+          {/* 4. Two-Column Analytics Grid: Model Benchmark & Category Breakdown */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Left: ML Model Accuracy & Benchmark Card */}
+            <ModelBenchmarkCard
+              modelMetrics={modelMetrics}
+              isLoading={isLoading}
+            />
+
+            {/* Right: Food Category Savings & Waste Breakdown */}
+            <CategorySavingsChart
+              categories={categoryBreakdown}
+            />
           </div>
+
+          {/* 5. Recurrent Day-of-Week Consumption & Waste Pattern Graph */}
+          <DayOfWeekPatternChart
+            daySummaries={dayOfWeekSummaries}
+          />
+
+          {/* 6. Closed-Loop Audit History Table with CSV Export */}
+          <AuditHistoryTable
+            records={activeRecords}
+            monthLabel={activePeriodLabel}
+          />
         </main>
       </div>
     </div>
