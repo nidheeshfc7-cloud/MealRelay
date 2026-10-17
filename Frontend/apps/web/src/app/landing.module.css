@@ -538,22 +538,7 @@
   isolation: isolate;
   overflow: hidden;
   padding: 45px 0;
-}
-.comparison::before {
-  content: "";
-  position: absolute;
-  z-index: -2;
-  inset: 0;
-  background: url("/images/landing-kitchen.webp") center / cover no-repeat;
-  filter: none;
-  opacity: 1;
-}
-.comparison::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(90deg, #ffffff30, #f6f7f166 30% 70%, #ffffff30);
+  background: var(--canvas);
 }
 .comparisonGrid {
   display: grid;
