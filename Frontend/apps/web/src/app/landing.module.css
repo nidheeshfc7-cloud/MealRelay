@@ -112,31 +112,21 @@
   overflow: hidden;
   padding: 64px 0 68px;
 }
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  background: url("/images/landing-hero.webp") center / cover no-repeat;
-}
-.hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(
-    90deg,
-    #ffffff70 0%,
-    #f6f7f166 34%,
-    #f6f7f130 65%,
-    #ffffff10
-  );
-}
 .heroGrid {
-  display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  gap: 35px;
-  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+.heroCopy {
+  width: 100%;
+  max-width: 760px;
+  text-align: center;
+}
+.heroCopy > p,
+.heroCopy .heroStats {
+  margin-inline: auto;
+}
+.heroCopy .actions {
+  justify-content: center;
 }
 .pill {
   display: inline-flex;

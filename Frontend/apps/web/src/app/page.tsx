@@ -82,7 +82,7 @@ export default function LandingPage() {
           <BrandLogo size="md" />
           <nav className={s.navLinks} aria-label="Main navigation">
             <a href="#workflow">How It Works</a>
-            <a href="#radar">Forecasting Engine</a>
+            <Link href="/forecasts">Forecasting Engine</Link>
             <a href="#architecture">Cross-Platform Stack</a>
             <Link href="/analytics">Analytics</Link>
           </nav>
@@ -135,11 +135,8 @@ export default function LandingPage() {
                 </div>
               </div>
               <small className={s.sampleNote}>
-                Preview uses illustrative data. Your team stays in control.
+                Quantities shown are illustrative. Your team stays in control.
               </small>
-            </div>
-            <div id="radar" className={s.heroPreview}>
-              <LandingPreview />
             </div>
           </div>
         </section>
