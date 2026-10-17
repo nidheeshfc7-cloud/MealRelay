@@ -120,7 +120,12 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(90deg, transparent 15%, #f6f7f126 35% 65%, transparent 85%);
+  background: linear-gradient(
+    90deg,
+    transparent 15%,
+    #f6f7f126 35% 65%,
+    transparent 85%
+  );
 }
 @media (min-width: 801px) {
   .hero {
@@ -800,7 +805,6 @@
   .platformCopy h2 {
     font-size: 30px;
   }
-
 }
 @media (max-width: 540px) {
   .container {

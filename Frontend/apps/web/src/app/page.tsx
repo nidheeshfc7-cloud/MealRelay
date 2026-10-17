@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import {
   ArrowRight,
   BarChart3,
@@ -46,6 +45,7 @@ const steps = [
     action: "View analytics",
   },
 ];
+
 export default function LandingPage() {
   const total = DEFAULT_MEALS.reduce((sum, meal) => sum + meal.base, 0);
   return (
