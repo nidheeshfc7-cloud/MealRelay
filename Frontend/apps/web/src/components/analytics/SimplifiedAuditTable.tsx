@@ -6,6 +6,7 @@ import {
   Search,
   CheckCircle2,
   AlertCircle,
+  Info,
 } from 'lucide-react';
 import { MealRecord } from '@/lib/types/api';
 import { calculateRecordMetrics } from './analyticsCalculations';
@@ -57,13 +58,15 @@ export const SimplifiedAuditTable: React.FC<SimplifiedAuditTableProps> = ({
       'Dish Name',
       'Plates Cooked',
       'Plates Served',
-      'Leftover Plates',
+      'Leftover Cushion (Plates)',
       'Leftover %',
-      'Money Saved (INR)',
+      'Money Saved (Avoided Waste INR)',
+      'Service Status',
     ];
 
     const rows = filteredRecords.map((r) => {
       const m = calculateRecordMetrics(r);
+      const status = m.hadShortage ? 'Shortage Logged' : '100% Demand Met';
       return [
         r.meal_date,
         r.meal_type.toUpperCase(),
@@ -73,6 +76,7 @@ export const SimplifiedAuditTable: React.FC<SimplifiedAuditTableProps> = ({
         m.leftovers,
         `${m.leftoverPercent}%`,
         m.rupeesSaved,
+        status,
       ].join(',');
     });
 
@@ -90,18 +94,18 @@ export const SimplifiedAuditTable: React.FC<SimplifiedAuditTableProps> = ({
   };
 
   return (
-    <div className="p-6 sm:p-8 rounded-3xl bg-white border border-line-light shadow-sm space-y-4">
+    <div className="p-6 sm:p-8 rounded-3xl bg-white border border-line-light shadow-xs space-y-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <span className="text-xs font-black uppercase tracking-wider text-forest">
-            DAILY KITCHEN LOG
+            KITCHEN LOG & AUDIT
           </span>
           <h3 className="text-lg font-black text-ink mt-0.5">
-            Meal-by-Meal Cooking & Leftover Records
+            Dish-by-Dish Cooking & Leftover Records
           </h3>
           <p className="text-xs text-ink-secondary mt-0.5">
-            Clear daily audit comparing what was cooked against what was consumed.
+            Audit verifying that small safety cushions were kept while cutting out blind waste.
           </p>
         </div>
 
@@ -112,6 +116,14 @@ export const SimplifiedAuditTable: React.FC<SimplifiedAuditTableProps> = ({
           <Download size={13} className="text-forest" />
           <span>Download Spreadsheet</span>
         </button>
+      </div>
+
+      {/* Clear Math Callout Note */}
+      <div className="p-3 rounded-2xl bg-canvas border border-line-light flex items-start gap-2.5 text-xs text-ink-secondary">
+        <Info size={15} className="text-forest shrink-0 mt-0.5" />
+        <p className="leading-relaxed">
+          <strong className="text-ink font-bold">Why is there money saved when leftovers exist?</strong> Leftovers below are lean safety cushions (typically 3–5%) to prevent running out of food. The <strong>Money Saved</strong> is what you kept by avoiding the typical 14% blind over-preparation.
+        </p>
       </div>
 
       {/* Filter and Search Bar */}
@@ -126,7 +138,7 @@ export const SimplifiedAuditTable: React.FC<SimplifiedAuditTableProps> = ({
               setSearchQuery(e.target.value);
               setPage(1);
             }}
-            placeholder="Search dish (e.g. Paneer, Rice)..."
+            placeholder="Search dish (e.g. Paneer, Basmati Rice)..."
             className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-canvas border border-line-light text-xs font-medium text-ink focus:outline-none focus:ring-1 focus:ring-forest"
           />
         </div>
@@ -158,12 +170,12 @@ export const SimplifiedAuditTable: React.FC<SimplifiedAuditTableProps> = ({
           <thead>
             <tr className="border-b border-line-light font-extrabold text-ink-secondary uppercase tracking-wider text-[11px]">
               <th className="py-2.5 px-3">Date & Shift</th>
-              <th className="py-2.5 px-3">Dish</th>
-              <th className="py-2.5 px-3 text-right">Cooked</th>
-              <th className="py-2.5 px-3 text-right">Served</th>
-              <th className="py-2.5 px-3 text-right">Leftovers</th>
-              <th className="py-2.5 px-3 text-right">Money Saved</th>
-              <th className="py-2.5 px-3 text-center">Status</th>
+              <th className="py-2.5 px-3">Dish Name</th>
+              <th className="py-2.5 px-3 text-right">Plates Cooked</th>
+              <th className="py-2.5 px-3 text-right">Plates Served</th>
+              <th className="py-2.5 px-3 text-right">Leftover Cushion</th>
+              <th className="py-2.5 px-3 text-right">Money Saved (Avoided Waste)</th>
+              <th className="py-2.5 px-3 text-center">Kitchen Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line-light">
@@ -195,7 +207,7 @@ export const SimplifiedAuditTable: React.FC<SimplifiedAuditTableProps> = ({
                       {m.served}
                     </td>
                     <td className="py-2.5 px-3 text-right font-semibold text-forest">
-                      {m.leftovers} ({m.leftoverPercent}%)
+                      {m.leftovers} plates ({m.leftoverPercent}%)
                     </td>
                     <td className="py-2.5 px-3 text-right font-black text-forest">
                       ₹{m.rupeesSaved.toLocaleString('en-IN')}
@@ -204,16 +216,16 @@ export const SimplifiedAuditTable: React.FC<SimplifiedAuditTableProps> = ({
                       {m.hadShortage ? (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">
                           <AlertCircle size={10} />
-                          Shortage
+                          Shortage Logged
                         </span>
                       ) : m.leftoverPercent <= 6.0 ? (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold text-forest bg-sage border border-line-light px-2 py-0.5 rounded-full">
                           <CheckCircle2 size={10} />
-                          Spot On
+                          Spot On Cushion
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
-                          Controlled
+                          Controlled Cushion
                         </span>
                       )}
                     </td>

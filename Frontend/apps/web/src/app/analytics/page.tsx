@@ -23,6 +23,7 @@ import { KitchenImpactCards } from '@/components/analytics/KitchenImpactCards';
 import { DailySavingsTimelineChart } from '@/components/analytics/DailySavingsTimelineChart';
 import { MealSessionDistribution } from '@/components/analytics/MealSessionDistribution';
 import { SimplifiedAuditTable } from '@/components/analytics/SimplifiedAuditTable';
+import { SavingsLogicExplainer } from '@/components/analytics/SavingsLogicExplainer';
 
 export default function AnalyticsPage() {
   const [records, setRecords] = useState<MealRecord[]>([]);
@@ -177,6 +178,9 @@ export default function AnalyticsPage() {
               </select>
             </div>
           </div>
+
+          {/* Friendly Savings Explanation Banner */}
+          <SavingsLogicExplainer />
 
           {/* Error Notice if offline */}
           {fetchError && (

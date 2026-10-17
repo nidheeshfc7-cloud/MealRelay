@@ -8,6 +8,7 @@ import {
   Sparkles,
   ChevronRight,
   TrendingUp,
+  Info,
 } from 'lucide-react';
 import { DailyRecordSummary } from './analyticsCalculations';
 
@@ -25,7 +26,7 @@ export const DailySavingsTimelineChart: React.FC<DailySavingsTimelineChartProps>
 
   if (dailyData.length === 0) {
     return (
-      <div className="p-8 rounded-3xl bg-white border border-line-light shadow-sm text-center py-12">
+      <div className="p-8 rounded-3xl bg-white border border-line-light shadow-xs text-center py-12">
         <p className="text-sm font-semibold text-ink-secondary">
           No meal logs recorded for this month yet.
         </p>
@@ -43,13 +44,13 @@ export const DailySavingsTimelineChart: React.FC<DailySavingsTimelineChartProps>
   const maxPortions = Math.max(1, ...dailyData.map((d) => Math.max(d.totalPrepared, d.totalServed)));
 
   return (
-    <div className="p-6 sm:p-8 rounded-3xl bg-white border border-line-light shadow-sm space-y-6">
+    <div className="p-6 sm:p-8 rounded-3xl bg-white border border-line-light shadow-xs space-y-5">
       {/* Clean Header & Mode Selector */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-black uppercase tracking-wider text-forest">
-              DAILY CALENDAR TIMELINE
+              DAY-BY-DAY SPENDING & SAVINGS
             </span>
             <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-sage text-forest">
               {monthLabel}
@@ -57,11 +58,11 @@ export const DailySavingsTimelineChart: React.FC<DailySavingsTimelineChartProps>
           </div>
           <h2 className="text-xl font-black text-ink mt-0.5">
             {metricMode === 'savings'
-              ? 'Daily Money Saved from Avoided Waste'
-              : 'Daily Servings Cooked vs. Actually Eaten'}
+              ? 'Money Saved Each Day by Avoiding Over-Cooking'
+              : 'Cooked Plates vs. Actually Consumed Plates'}
           </h2>
           <p className="text-xs text-ink-secondary mt-1">
-            Tap or hover any day (1 to {dailyData.length}) to inspect cooking quantities and savings.
+            Tap or hover any day (1 to {dailyData.length}) to see your exact cooking cushion and saved rupees.
           </p>
         </div>
 
@@ -71,23 +72,23 @@ export const DailySavingsTimelineChart: React.FC<DailySavingsTimelineChartProps>
             onClick={() => setMetricMode('savings')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               metricMode === 'savings'
-                ? 'bg-forest text-lime shadow-sm'
+                ? 'bg-forest text-lime shadow-xs'
                 : 'text-ink-secondary hover:text-ink'
             }`}
           >
             <Coins size={13} />
-            <span>₹ Savings View</span>
+            <span>₹ Money Saved</span>
           </button>
           <button
             onClick={() => setMetricMode('portions')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               metricMode === 'portions'
-                ? 'bg-forest text-lime shadow-sm'
+                ? 'bg-forest text-lime shadow-xs'
                 : 'text-ink-secondary hover:text-ink'
             }`}
           >
             <Utensils size={13} />
-            <span>Cooked vs Eaten</span>
+            <span>Plates Cooked vs Eaten</span>
           </button>
         </div>
       </div>
@@ -95,20 +96,24 @@ export const DailySavingsTimelineChart: React.FC<DailySavingsTimelineChartProps>
       {/* Selected Day Inspector Banner */}
       {activeDay && (
         <div className="p-4 rounded-2xl bg-canvas border border-line-light flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-forest text-lime flex flex-col items-center justify-center font-black">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-forest text-lime flex flex-col items-center justify-center font-black shrink-0">
               <span className="text-[10px] leading-none uppercase">{activeDay.dayOfWeekShort}</span>
               <span className="text-sm leading-none mt-0.5">{activeDay.dayNumber}</span>
             </div>
             <div>
-              <p className="font-bold text-sm text-ink">
-                Day {activeDay.dayNumber} of {monthLabel}
-                {activeDay.isWeekend && <span className="ml-2 text-[10px] font-bold text-ink-secondary">(Weekend)</span>}
+              <p className="font-extrabold text-sm text-ink flex items-center gap-2">
+                <span>{activeDay.dayOfWeekShort}, {monthLabel.split(' ')[0]} {activeDay.dayNumber}</span>
+                {activeDay.isWeekend && (
+                  <span className="text-[10px] font-bold px-1.5 py-0.2 bg-amber-100 text-amber-800 rounded">
+                    Weekend
+                  </span>
+                )}
               </p>
               <p className="text-[11px] text-ink-secondary mt-0.5">
                 {activeDay.recordsCount > 0
-                  ? `${activeDay.recordsCount} dishes prepared across all shifts`
-                  : 'No meal service logged for this day'}
+                  ? `${activeDay.recordsCount} meal items cooked across Breakfast, Lunch, and Dinner`
+                  : 'Kitchen scheduled off or untracked'}
               </p>
             </div>
           </div>
@@ -116,21 +121,27 @@ export const DailySavingsTimelineChart: React.FC<DailySavingsTimelineChartProps>
           {activeDay.recordsCount > 0 ? (
             <div className="flex flex-wrap items-center gap-4 text-xs">
               <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-ink-secondary uppercase">Cooked</span>
-                <span className="font-extrabold text-ink text-sm">{activeDay.totalPrepared.toLocaleString()} plates</span>
+                <span className="text-[10px] font-bold text-ink-secondary uppercase">Plates Cooked</span>
+                <span className="font-extrabold text-ink text-sm">{activeDay.totalPrepared.toLocaleString()}</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-ink-secondary uppercase">Served</span>
-                <span className="font-extrabold text-ink text-sm">{activeDay.totalServed.toLocaleString()} plates</span>
+                <span className="text-[10px] font-bold text-ink-secondary uppercase">Plates Eaten</span>
+                <span className="font-extrabold text-ink text-sm">{activeDay.totalServed.toLocaleString()}</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-ink-secondary uppercase">Leftovers</span>
+                <span className="text-[10px] font-bold text-ink-secondary uppercase">Safe Cushion Kept</span>
                 <span className="font-extrabold text-ink text-sm">
-                  {activeDay.totalLeftovers} ({activeDay.leftoverPercent}%)
+                  {activeDay.totalLeftovers} plates ({activeDay.leftoverPercent}%)
                 </span>
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-forest uppercase">Money Saved</span>
+                <span className="text-[10px] font-bold text-forest uppercase">Avoided Waste</span>
+                <span className="font-black text-forest text-sm">
+                  +{activeDay.portionsRescued} plates saved
+                </span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-forest uppercase">Money Kept in Budget</span>
                 <span className="font-black text-forest text-sm">
                   ₹{activeDay.rupeesSaved.toLocaleString('en-IN')}
                 </span>
@@ -138,7 +149,7 @@ export const DailySavingsTimelineChart: React.FC<DailySavingsTimelineChartProps>
             </div>
           ) : (
             <span className="text-xs font-semibold text-ink-secondary italic">
-              Kitchen scheduled off or untracked
+              No meal records logged
             </span>
           )}
         </div>
@@ -162,7 +173,7 @@ export const DailySavingsTimelineChart: React.FC<DailySavingsTimelineChartProps>
                   onClick={() => setSelectedDayIdx(idx)}
                   onMouseEnter={() => setSelectedDayIdx(idx)}
                   className="flex-1 flex flex-col items-center h-full justify-end cursor-pointer group select-none"
-                  title={`Day ${day.dayNumber} (${day.dayOfWeekShort}): ₹${day.rupeesSaved.toLocaleString('en-IN')} saved`}
+                  title={`Day ${day.dayNumber} (${day.dayOfWeekShort}): ₹${day.rupeesSaved.toLocaleString('en-IN')} saved by avoiding overcooking`}
                 >
                   {/* Bar */}
                   <div
@@ -251,33 +262,36 @@ export const DailySavingsTimelineChart: React.FC<DailySavingsTimelineChartProps>
             <>
               <div className="flex items-center gap-1.5 font-bold text-ink">
                 <span className="w-3 h-3 rounded bg-forest inline-block" />
-                <span>Daily Savings (₹)</span>
+                <span>₹ Money Kept in Budget</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-3 h-3 rounded bg-forest/25 inline-block" />
-                <span>Weekend Days</span>
+                <span>Weekend Shading</span>
               </div>
             </>
           ) : (
             <>
               <div className="flex items-center gap-1.5 font-bold text-ink">
-                <span className="w-3 h-3 rounded bg-forest/25 inline-block" />
-                <span>Cooked Plates</span>
+                <span className="w-3 h-3 rounded bg-forest/20 inline-block" />
+                <span>Plates Cooked</span>
               </div>
               <div className="flex items-center gap-1.5 font-bold text-forest">
                 <span className="w-3 h-3 rounded bg-forest inline-block" />
-                <span>Actually Served</span>
+                <span>Plates Consumed</span>
               </div>
             </>
           )}
         </div>
 
-        <span className="font-semibold text-ink">
-          Total Savings for {monthLabel}:{' '}
-          <strong className="text-forest font-black">
-            ₹{dailyData.reduce((acc, d) => acc + d.rupeesSaved, 0).toLocaleString('en-IN')}
-          </strong>
-        </span>
+        <div className="flex items-center gap-1.5 text-ink font-semibold">
+          <Info size={13} className="text-forest" />
+          <span>
+            Total Month Savings:{' '}
+            <strong className="text-forest font-black">
+              ₹{dailyData.reduce((acc, d) => acc + d.rupeesSaved, 0).toLocaleString('en-IN')}
+            </strong>
+          </span>
+        </div>
       </div>
     </div>
   );
