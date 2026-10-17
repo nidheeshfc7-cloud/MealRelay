@@ -1,7 +1,12 @@
-"""Configuration settings and constants for MealRelay backend."""
-
+import os
 from pathlib import Path
 from typing import List
+
+# Enforce single-threaded math libraries to prevent memory exhaustion on Windows/edge devices
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("NUMEXPR_NUM_THREADS", "1")
 
 # Base Paths
 BACKEND_DIR = Path(__file__).resolve().parent.parent

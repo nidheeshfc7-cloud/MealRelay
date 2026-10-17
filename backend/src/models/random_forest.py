@@ -167,17 +167,49 @@ class DemandRandomForestModel:
         attendance = X_clean["expected_attendance"].clip(lower=1).to_numpy()
         return np.maximum(0.0, np.round(raw_preds / attendance, 3))
 
-    def predict_with_explanation(
-        self,
-        X_row: pd.DataFrame,
-        dish_name: Optional[str] = None
-    ) -> Tuple[float, List[str]]:
-        """Predicts portion demand for a single dish and provides grounded factor explanations."""
+    def calculate_ensemble_volatility(self, X_row: pd.DataFrame) -> Tuple[float, float]:
+        """Calculates standard deviation across tree estimators to quantify demand volatility.
+        
+        Returns:
+            (predicted_portions, adaptive_buffer_pct)
+        """
         if not self.is_fitted:
             raise ValueError("Model is not fitted. Call fit() before predicting.")
 
         X_clean = self._prepare_input_df(X_row)
-        pred = float(self.predict(X_clean)[0])
+        preprocessor = self.pipeline.named_steps["preprocessor"]
+        regressor = self.pipeline.named_steps["regressor"]
+
+        X_trans = preprocessor.transform(X_clean)
+        tree_preds = np.array([tree.predict(X_trans)[0] for tree in regressor.estimators_])
+
+        mean_pred = float(np.mean(tree_preds))
+        std_spread = float(np.std(tree_preds))
+
+        attendance = float(X_clean.iloc[0].get("expected_attendance", 200))
+        attendance = max(1.0, attendance)
+
+        if self.is_ratio_model:
+            pred_portions = max(0.0, round(mean_pred * attendance, 1))
+            adaptive_buffer = float(np.clip(std_spread * 1.5, 0.06, 0.18))
+        else:
+            pred_portions = max(0.0, round(mean_pred, 1))
+            rel_std = std_spread / max(1.0, pred_portions)
+            adaptive_buffer = float(np.clip(rel_std * 1.2, 0.06, 0.18))
+
+        return pred_portions, round(adaptive_buffer, 3)
+
+    def predict_with_volatility_and_explanation(
+        self,
+        X_row: pd.DataFrame,
+        dish_name: Optional[str] = None
+    ) -> Tuple[float, float, List[str]]:
+        """Predicts portion demand, tree ensemble volatility buffer, and factor explanations."""
+        if not self.is_fitted:
+            raise ValueError("Model is not fitted. Call fit() before predicting.")
+
+        pred, adaptive_buffer = self.calculate_ensemble_volatility(X_row)
+        X_clean = self._prepare_input_df(X_row)
         row = X_clean.iloc[0]
 
         dish_label = dish_name or str(X_row.iloc[0].get("dish_id", "dish"))
@@ -242,6 +274,26 @@ class DemandRandomForestModel:
         elif is_rice == 1 and category_val in ["curry", "side"]:
             explanations.append("Paired with steamed rice course.")
 
+        # Factor 5: Adaptive Volatility Cushion
+        buffer_pct_int = int(round(adaptive_buffer * 100))
+        if adaptive_buffer <= 0.08:
+            explanations.append(
+                f"Low demand volatility detected ({buffer_pct_int}% adaptive cushion): tight margins minimize waste for daily staples."
+            )
+        else:
+            explanations.append(
+                f"Demand volatility absorbed (+{buffer_pct_int}% adaptive cushion) based on observed recipe variance."
+            )
+
+        return pred, adaptive_buffer, explanations
+
+    def predict_with_explanation(
+        self,
+        X_row: pd.DataFrame,
+        dish_name: Optional[str] = None
+    ) -> Tuple[float, List[str]]:
+        """Predicts portion demand for a single dish and provides grounded factor explanations."""
+        pred, _, explanations = self.predict_with_volatility_and_explanation(X_row, dish_name=dish_name)
         return pred, explanations
 
     def save(self, file_path: Path) -> None:

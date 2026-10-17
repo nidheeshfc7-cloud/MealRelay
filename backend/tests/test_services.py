@@ -8,6 +8,7 @@ from src.services.recommendation import (
     build_dish_recommendation,
     determine_kitchen_unit,
     build_simple_reason,
+    apply_nutritional_safety_floor,
 )
 from src.services.forecast_service import ForecastService
 from src.schemas.forecast import ForecastRequest, ForecastItemRequest, ForecastResponse, DishForecastRecommendation
@@ -320,5 +321,83 @@ def test_forecast_response_validator_synchronization():
     assert resp2.expected_students == 175
     assert resp2.total_cook_portions == 150
     assert len(resp2.dishes) == 1
+
+
+def test_nutritional_safety_floor():
+    """Verifies that primary meal staples cannot drop below 50% attendance coverage."""
+    # 1. Direct helper test: 40 portions for attendance 200 on curry -> bumped to 100
+    portions, applied = apply_nutritional_safety_floor(40, category="curry", attendance=200)
+    assert applied is True
+    assert portions == 100
+
+    # 2. Already above floor: 130 portions for attendance 200 on curry -> unchanged
+    portions_ok, applied_ok = apply_nutritional_safety_floor(130, category="curry", attendance=200)
+    assert applied_ok is False
+    assert portions_ok == 130
+
+    # 3. Non-main category (beverage) -> floor not forced
+    bev_portions, bev_applied = apply_nutritional_safety_floor(30, category="beverage", attendance=200)
+    assert bev_applied is False
+    assert bev_portions == 30
+
+    # 4. Recommendation integration: build_dish_recommendation enforces floor and adds explanation
+    rec = build_dish_recommendation(
+        dish_id="d_low",
+        dish_name="Dal Tadka",
+        meal_type="lunch",
+        predicted_portions=20.0,
+        safety_buffer_pct=0.10,
+        model_used="baseline_fallback",
+        data_points_count=10,
+        is_fallback=False,
+        category="curry",
+        attendance=180,
+    )
+    assert rec.cook_portions >= 90  # 180 * 0.50 = 90
+    assert any("Nutritional safety floor enforced" in factor for factor in rec.explanation_factors)
+
+
+def test_internal_adaptive_volatility_buffer():
+    """Verifies that Random Forest ensemble volatility automatically adjusts buffer without customer cushion sliders."""
+    service = ForecastService.get_instance()
+    # Request without explicit safety_buffer_pct (None)
+    request = ForecastRequest(
+        meal_date=date(2026, 10, 24),
+        meal_type="lunch",
+        expected_attendance=190,
+        safety_buffer_pct=None,
+        dishes=[
+            ForecastItemRequest(dish_id="d_rice_lunch"),
+        ],
+    )
+
+    response = service.generate_forecast(request)
+    rice_rec = response.dishes[0]
+
+    # Model calculates adaptive buffer in 0.06 - 0.18 range
+    assert 0.05 <= rice_rec.safety_buffer_pct <= 0.20
+    assert rice_rec.cook_portions > 0
+    # Explanations reflect internal volatility absorption
+    joined_factors = " ".join(rice_rec.explanation_factors)
+    assert "adaptive cushion" in joined_factors or "safety buffer" in joined_factors
+
+
+def test_data_sufficiency_indicator():
+    """Verifies that dishes with sparse data display 'Moderate (Building kitchen history)'."""
+    service = ForecastService.get_instance()
+    request = ForecastRequest(
+        meal_date=date(2026, 10, 24),
+        meal_type="lunch",
+        expected_attendance=190,
+        dishes=[
+            ForecastItemRequest(dish_id="d_brand_new_unseen", dish_name="Fusion Curry"),
+        ],
+    )
+
+    response = service.generate_forecast(request)
+    new_rec = response.dishes[0]
+    assert new_rec.confidence == "Moderate (Building kitchen history)"
+    assert "standard campus averages" in new_rec.simple_reason
+
 
 

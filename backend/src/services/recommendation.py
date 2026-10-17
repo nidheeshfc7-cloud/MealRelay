@@ -1,7 +1,7 @@
 """Recommendation logic: safety buffer application, portion rounding, and explainability factors."""
 
 import math
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from src.schemas.forecast import DishForecastRecommendation
 from src.config import DEFAULT_SAFETY_BUFFER
 
@@ -62,6 +62,25 @@ def calculate_safety_buffer_portions(predicted_portions: float, buffer_pct: floa
     return int(math.ceil(round(predicted_portions * safe_multiplier, 6)))
 
 
+def apply_nutritional_safety_floor(
+    cook_portions: int,
+    category: Optional[str],
+    attendance: Optional[int],
+    min_floor_ratio: float = 0.50,
+) -> Tuple[int, bool]:
+    """Ensures primary meal staples (rice, curry, bread, main) never drop below 50% attendance coverage."""
+    if not attendance or attendance <= 0:
+        return cook_portions, False
+
+    cat_clean = (category or "").lower()
+    if any(k in cat_clean for k in ["main", "curry", "rice", "bread"]):
+        min_floor = int(math.ceil(attendance * min_floor_ratio))
+        if cook_portions < min_floor:
+            return min_floor, True
+
+    return cook_portions, False
+
+
 def build_dish_recommendation(
     dish_id: str,
     dish_name: str,
@@ -80,12 +99,12 @@ def build_dish_recommendation(
     """Builds a complete single-target preparation recommendation with customer-friendly explanations."""
     buffer_val = DEFAULT_SAFETY_BUFFER if safety_buffer_pct is None else max(0.0, min(0.50, safety_buffer_pct))
     predicted_val = max(0.0, round(predicted_portions, 1))
-    cook_val = calculate_safety_buffer_portions(predicted_val, buffer_val)
+    raw_cook_val = calculate_safety_buffer_portions(predicted_val, buffer_val)
 
     # Human-friendly attributes
     category_name = category or "Main"
     unit_str = determine_kitchen_unit(category_name)
-    confidence_tier = "Moderate" if (is_fallback or data_points_count < 5) else "High"
+    confidence_tier = "Moderate (Building kitchen history)" if (is_fallback or data_points_count < 5) else "High"
     simple_reason_text = build_simple_reason(
         dish_name=dish_name,
         meal_type=meal_type,
@@ -95,6 +114,9 @@ def build_dish_recommendation(
         is_fallback=is_fallback,
         data_points_count=data_points_count,
     )
+
+    # Hardcoded physical nutritional safety floor: primary meal staples must never drop below 50% attendance
+    cook_val, floor_applied = apply_nutritional_safety_floor(raw_cook_val, category_name, attendance)
 
     explanations: List[str] = []
 
@@ -110,14 +132,20 @@ def build_dish_recommendation(
 
     # 3. Buffer explanation note
     buffer_pct_int = int(round(buffer_val * 100))
-    buffer_diff = cook_val - int(math.ceil(predicted_val))
+    buffer_diff = raw_cook_val - int(math.ceil(predicted_val))
     if buffer_diff > 0:
         explanations.append(
             f"+{buffer_pct_int}% safety buffer applied (+{buffer_diff} extra portions) to prevent food shortage."
         )
     else:
         explanations.append(
-            f"Portion recommended at ceiling demand level ({cook_val} portions)."
+            f"Portion recommended at ceiling demand level ({raw_cook_val} portions)."
+        )
+
+    # 4. Nutritional floor notice if triggered
+    if floor_applied:
+        explanations.append(
+            f"Nutritional safety floor enforced: minimum 50% headcount coverage ({cook_val} portions) for primary dining course."
         )
 
     return DishForecastRecommendation(
@@ -125,14 +153,14 @@ def build_dish_recommendation(
         dish_name=dish_name,
         meal_type=meal_type,
         category=category_name,
-        cook_portions=cook_val,
+        cook_portions=int(math.ceil(cook_val)),
         unit=unit_str,
         confidence=confidence_tier,
         simple_reason=simple_reason_text,
         suggested_step=5,
         predicted_portions=predicted_val,
         safety_buffer_pct=buffer_val,
-        recommended_portions=cook_val,
+        recommended_portions=int(math.ceil(cook_val)),
         model_used=model_used,
         data_points_count=data_points_count,
         is_fallback=is_fallback,

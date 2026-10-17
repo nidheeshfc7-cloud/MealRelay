@@ -201,11 +201,13 @@ class ForecastService:
                     competing_curries_count=competing_curries,
                     is_paired_with_rice=has_rice,
                 )
-                pred_portions, explanations = self.rf_model.predict_with_explanation(
+                pred_portions, adaptive_buffer, explanations = self.rf_model.predict_with_volatility_and_explanation(
                     X_infer, dish_name=dish_name
                 )
                 model_used = "random_forest"
                 is_fallback = False
+                # Use model's internal adaptive volatility buffer unless customer explicitly overrode it
+                effective_buffer = buffer_pct if request.safety_buffer_pct is not None else adaptive_buffer
             else:
                 # Use HistoricalAverageBaseline transparent fallback
                 base_pred = self.baseline_model.predict_dish(
@@ -218,13 +220,14 @@ class ForecastService:
                 explanations = [base_pred.explanation]
                 model_used = "baseline_fallback"
                 is_fallback = True
+                effective_buffer = buffer_pct
 
             recommendation = build_dish_recommendation(
                 dish_id=dish_id,
                 dish_name=dish_name,
                 meal_type=target_meal_type,
                 predicted_portions=pred_portions,
-                safety_buffer_pct=buffer_pct,
+                safety_buffer_pct=effective_buffer,
                 model_used=model_used,
                 data_points_count=data_points_count,
                 is_fallback=is_fallback,

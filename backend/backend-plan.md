@@ -109,17 +109,17 @@ Give the Random Forest regressor rich institutional mess signals to boost predic
 
 Clearly separate dynamic machine learning from essential physical kitchen safety limits.
 
-- [ ] **4.1: Internal Volatility Absorption (Adaptive Buffer)**
-  - [ ] Let the model measure dish variance internally (using tree spread or historical residuals).
-  - [ ] Automatically bake higher protection into high-volatility dishes (e.g. non-veg / paneer specials) and tighter margins into staples (steamed rice, yellow dal) without exposing math sliders to the user.
-- [ ] **4.2: Hardcoded Nutritional Safety Floor (Never Starve Students)**
-  - [ ] Enforce hardcoded rule:
+- [x] **4.1: Internal Volatility Absorption (Adaptive Buffer)**
+  - [x] Let the model measure dish variance internally (using tree spread or historical residuals).
+  - [x] Automatically bake higher protection into high-volatility dishes (e.g. non-veg / paneer specials) and tighter margins into staples (steamed rice, yellow dal) without exposing math sliders to the user.
+- [x] **4.2: Hardcoded Nutritional Safety Floor (Never Starve Students)**
+  - [x] Enforce hardcoded rule:
     $$\text{cook\_portions} \ge \lceil \text{expected\_attendance} \times \text{min\_floor\_ratio} \rceil$$
-  - [ ] For main rice/curry/bread dishes, ensure minimum preparation never drops below $0.50$ servings per student, regardless of sparse data anomalies.
-- [ ] **4.3: Physical Integer Ceilings**
-  - [ ] Enforce `math.ceil` rounding on all preparation numbers. Kitchen staff cannot cook fractional portions.
-- [ ] **4.4: Transparent Data Sufficiency Indicator**
-  - [ ] When a dish has $< 5$ recorded historical meals, internally use the historical mess average and set `confidence: "Moderate (Building kitchen history)"` instead of technical fallback warnings.
+  - [x] For main rice/curry/bread dishes, ensure minimum preparation never drops below $0.50$ servings per student, regardless of sparse data anomalies.
+- [x] **4.3: Physical Integer Ceilings**
+  - [x] Enforce `math.ceil` rounding on all preparation numbers. Kitchen staff cannot cook fractional portions.
+- [x] **4.4: Transparent Data Sufficiency Indicator**
+  - [x] When a dish has $< 5$ recorded historical meals, internally use the historical mess average and set `confidence: "Moderate (Building kitchen history)"` instead of technical fallback warnings.
 
 ---
 
@@ -148,5 +148,5 @@ Keep the backend fast, lightweight, and deployable on edge kitchen hardware or c
 | **Phase 1** | Real-Time Kitchen Log Ingestion & Closed-Loop Learning | 🟢 Completed |
 | **Phase 2** | Customer-Friendly Backend Output Schema (Single-Target Output) | 🟢 Completed |
 | **Phase 3** | Domain Feature Engineering & Seasonality Signals | 🟢 Completed |
-| **Phase 4** | AI Pattern Recognition vs. Hardcoded Physical Guardrails | ⚪ Planned |
+| **Phase 4** | AI Pattern Recognition vs. Hardcoded Physical Guardrails | 🟢 Completed |
 | **Phase 5** | Model Optimization, Persistence & Edge Deployment | 🟡 In Progress (Thread-safe execution live; Supabase planned) |
