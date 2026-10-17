@@ -48,6 +48,46 @@ class MealRecordBase(BaseModel):
 
         return data
 
+    @model_validator(mode="after")
+    def validate_kitchen_guardrails(self) -> "MealRecordBase":
+        """Physical kitchen reality checks to reject corrupt or impossible data."""
+        # 1. Leftover portions cannot exceed prepared portions
+        if self.leftover_portions is not None and self.leftover_portions > self.prepared_portions:
+            raise ValueError(
+                f"Leftover portions ({self.leftover_portions}) cannot exceed prepared portions ({self.prepared_portions})."
+            )
+
+        # 2. Served portions cannot exceed prepared portions
+        if self.served_portions is not None and self.served_portions > self.prepared_portions:
+            raise ValueError(
+                f"Served portions ({self.served_portions}) cannot exceed prepared portions ({self.prepared_portions})."
+            )
+
+        # 3. Sum of served and leftover cannot exceed prepared portions
+        if (
+            self.served_portions is not None
+            and self.leftover_portions is not None
+            and (self.served_portions + self.leftover_portions) > self.prepared_portions
+        ):
+            raise ValueError(
+                f"Sum of served ({self.served_portions}) and leftover ({self.leftover_portions}) "
+                f"portions exceeds prepared portions ({self.prepared_portions})."
+            )
+
+        # 4. Typo guardrail: served portions cannot be absurdly higher than attendance
+        if self.attendance is not None and self.attendance > 0 and self.served_portions is not None:
+            if self.served_portions > self.attendance * 5:
+                raise ValueError(
+                    f"Served portions ({self.served_portions}) is unrealistically high for reported "
+                    f"attendance of {self.attendance} students (maximum 5x allowed). Please check for typos."
+                )
+
+        # 5. Zero attendance cannot have positive served portions
+        if self.attendance == 0 and (self.served_portions or 0) > 0:
+            raise ValueError("Cannot serve portions when attendance is 0.")
+
+        return self
+
 
 class MealRecordCreate(MealRecordBase):
     """Schema for adding a new meal record."""

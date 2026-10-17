@@ -45,11 +45,12 @@ Close the operational loop so the AI model dynamically improves every time a mea
 - [x] **1.3: Priority Sample Weighting (Real Kitchen Data vs. Synthetic)**
   - [x] Configure `FeaturePreprocessor.prepare_training_dataset()` to assign a **$3.0\times$ priority sample weight** (`sample_weight=3.0`) to authenticated kitchen logs (`is_synthetic=False`).
   - [x] Ensure real student eating habits rapidly steer tree splits over initial synthetic seed data without catastrophic forgetting.
-- [ ] **1.4: Kitchen Input Sanity Guardrails**
-  - [ ] Add physical sanity checks in `MealRecordCreate`:
-    - Reject negative portions or negative attendance.
-    - Reject obvious typo values (e.g., $\text{served} > 3\times \text{attendance}$).
-    - Enforce $\text{leftover} \le \text{prepared}$.
+- [x] **1.4: Kitchen Input Sanity Guardrails**
+  - [x] Add physical sanity checks in `MealRecordCreate`:
+    - [x] Reject negative portions or negative attendance.
+    - [x] Reject obvious typo values (e.g., $\text{served} > 5\times \text{attendance}$).
+    - [x] Enforce $\text{leftover} \le \text{prepared}$ and $\text{served} \le \text{prepared}$.
+    - [x] Enforce $(\text{served} + \text{leftover}) \le \text{prepared}$.
 
 ---
 
@@ -144,7 +145,7 @@ Keep the backend fast, lightweight, and deployable on edge kitchen hardware or c
 
 | Phase | Description | Status |
 |---|---|---|
-| **Phase 1** | Real-Time Kitchen Log Ingestion & Closed-Loop Learning | 🟡 In Progress (Retrain & batch live; sanity checks pending) |
+| **Phase 1** | Real-Time Kitchen Log Ingestion & Closed-Loop Learning | 🟢 Completed |
 | **Phase 2** | Customer-Friendly Backend Output Schema (Single-Target Output) | ⚪ Ready for Implementation |
 | **Phase 3** | Domain Feature Engineering & Seasonality Signals | ⚪ Planned |
 | **Phase 4** | AI Pattern Recognition vs. Hardcoded Physical Guardrails | ⚪ Planned |

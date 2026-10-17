@@ -111,3 +111,97 @@ def test_record_management_in_service():
     tea_records = service.get_records(dish_id="d_tea", limit=10)
     assert len(tea_records) > 0
     assert tea_records[0].dish_id == "d_tea"
+
+
+def test_batch_records_management():
+    """Verifies batch logging of multiple dishes and dynamic model retraining."""
+    service = ForecastService.get_instance()
+    initial_count = len(service.records)
+
+    batch_input = [
+        MealRecordCreate(
+            dish_id="d_rice_lunch",
+            dish_name="Steamed Rice",
+            meal_date=date(2026, 10, 20),
+            meal_type="lunch",
+            attendance=180,
+            prepared_portions=190,
+            served_portions=175,
+            leftover_portions=15,
+        ),
+        MealRecordCreate(
+            dish_id="d_dal_tadka",
+            dish_name="Yellow Dal",
+            meal_date=date(2026, 10, 20),
+            meal_type="lunch",
+            attendance=180,
+            prepared_portions=170,
+            served_portions=160,
+            leftover_portions=10,
+        ),
+    ]
+
+    created = service.add_records_batch(batch_input)
+    assert len(created) == 2
+    assert len(service.records) == initial_count + 2
+    assert service.is_trained is True
+
+
+def test_kitchen_guardrails_validation():
+    """Verifies that physical guardrails reject impossible kitchen data."""
+    # 1. Leftover cannot exceed prepared
+    with pytest.raises(ValueError, match="cannot exceed prepared portions"):
+        MealRecordCreate(
+            dish_id="d_rice_lunch",
+            meal_date=date(2026, 10, 21),
+            meal_type="lunch",
+            attendance=180,
+            prepared_portions=100,
+            leftover_portions=150,
+        )
+
+    # 2. Served cannot exceed prepared
+    with pytest.raises(ValueError, match="cannot exceed prepared portions"):
+        MealRecordCreate(
+            dish_id="d_rice_lunch",
+            meal_date=date(2026, 10, 21),
+            meal_type="lunch",
+            attendance=180,
+            prepared_portions=100,
+            served_portions=120,
+        )
+
+    # 3. Served + Leftover cannot exceed prepared
+    with pytest.raises(ValueError, match="exceeds prepared portions"):
+        MealRecordCreate(
+            dish_id="d_rice_lunch",
+            meal_date=date(2026, 10, 21),
+            meal_type="lunch",
+            attendance=180,
+            prepared_portions=100,
+            served_portions=80,
+            leftover_portions=30,  # 80 + 30 = 110 > 100
+        )
+
+    # 4. Absurdly high served portions relative to attendance (typo check)
+    with pytest.raises(ValueError, match="unrealistically high for reported attendance"):
+        MealRecordCreate(
+            dish_id="d_rice_lunch",
+            meal_date=date(2026, 10, 21),
+            meal_type="lunch",
+            attendance=100,
+            prepared_portions=1000,
+            served_portions=600,  # 600 > 100 * 5
+        )
+
+    # 5. Zero attendance cannot serve food
+    with pytest.raises(ValueError, match="Cannot serve portions when attendance is 0"):
+        MealRecordCreate(
+            dish_id="d_rice_lunch",
+            meal_date=date(2026, 10, 21),
+            meal_type="lunch",
+            attendance=0,
+            prepared_portions=100,
+            served_portions=50,
+        )
+
