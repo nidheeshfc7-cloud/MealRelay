@@ -384,7 +384,7 @@ export default function DashboardPage() {
         {/* Preserved Unmodified Sidebar */}
         <Sidebar />
 
-        <main className="flex-1 p-5 sm:p-8 lg:p-10 max-w-7xl mx-auto w-full space-y-7">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 w-full space-y-7">
           {/* 1. Header with Chef Greeting, Date Selector, Shift Selector, and Buffer Pills */}
           <DashboardHeader
             chefName="Sunil"
