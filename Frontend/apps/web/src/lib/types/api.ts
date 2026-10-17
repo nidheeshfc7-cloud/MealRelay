@@ -46,16 +46,25 @@ export interface MealRecordCreate {
   meal_date: string; // ISO format: YYYY-MM-DD
   meal_type: "breakfast" | "lunch" | "dinner";
   day_of_week?: number; // 0=Monday, 6=Sunday
-  attendance?: number;
+  attendance?: number | null;
   prepared_portions: number;
   served_portions?: number | null;
   leftover_portions?: number | null;
+  category?: string | null;
   is_synthetic?: boolean;
 }
 
 export interface MealRecord extends MealRecordCreate {
   id: string;
   day_of_week: number;
+}
+
+export interface MealRecordsFilterParams {
+  dish_id?: string;
+  meal_type?: "breakfast" | "lunch" | "dinner" | string;
+  start_date?: string;
+  end_date?: string;
+  limit?: number;
 }
 
 export interface DishCatalogItem {
@@ -65,3 +74,4 @@ export interface DishCatalogItem {
   category: "main" | "curry" | "rice" | "bread" | "side" | "beverage" | "dessert";
   description?: string;
 }
+

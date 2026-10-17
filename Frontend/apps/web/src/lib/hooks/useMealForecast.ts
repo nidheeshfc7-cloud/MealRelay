@@ -28,6 +28,15 @@ export interface UseMealForecastReturn {
 const forecastSessionCache = new Map<string, ForecastResponse>();
 
 /**
+ * Clears the session forecast cache so subsequent refetches retrieve fresh predictions
+ * computed by newly retrained ML models.
+ */
+export const clearForecastCache = (): void => {
+  forecastSessionCache.clear();
+};
+
+
+/**
  * Normalizes input date string to "YYYY-MM-DD"
  */
 export const normalizeToIsoDate = (inputDate: string): string => {

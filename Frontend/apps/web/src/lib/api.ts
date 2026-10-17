@@ -9,6 +9,7 @@ import {
   ForecastResponse,
   MealRecordCreate,
   MealRecord,
+  MealRecordsFilterParams,
   DishCatalogItem,
 } from "./types/api";
 
@@ -47,7 +48,7 @@ export const fetchMealForecast = async (
 };
 
 /**
- * Submits actual shift outcomes (served, leftover, attendance) to close the feedback loop.
+ * Submits actual shift outcomes (served, leftover, attendance) for a single dish to close the feedback loop.
  */
 export const logMealRecord = async (
   record: MealRecordCreate
@@ -75,6 +76,75 @@ export const logMealRecord = async (
   const data: MealRecord = await response.json();
   return data;
 };
+
+/**
+ * Atomically submits a batch of meal outcomes across multiple dishes from a shift.
+ * Triggers a single continuous learning retrain on the Random Forest model with 3.0x sample weighting.
+ */
+export const logMealRecordsBatch = async (
+  records: MealRecordCreate[]
+): Promise<MealRecord[]> => {
+  if (records.length === 0) {
+    return [];
+  }
+
+  const baseUrl = getApiBaseUrl();
+  const endpoint = `${baseUrl}/api/records/batch`;
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(records),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    const message =
+      errorData?.detail ||
+      `Batch logging failed with status ${response.status} (${response.statusText})`;
+    throw new Error(message);
+  }
+
+  const data: MealRecord[] = await response.json();
+  return data;
+};
+
+/**
+ * Retrieves chronological meal records from the backend with optional filtering.
+ */
+export const fetchMealRecords = async (
+  params?: MealRecordsFilterParams
+): Promise<MealRecord[]> => {
+  const baseUrl = getApiBaseUrl();
+  const query = new URLSearchParams();
+
+  if (params?.dish_id) query.append("dish_id", params.dish_id);
+  if (params?.meal_type) query.append("meal_type", params.meal_type);
+  if (params?.start_date) query.append("start_date", params.start_date);
+  if (params?.end_date) query.append("end_date", params.end_date);
+  if (params?.limit) query.append("limit", String(params.limit));
+
+  const queryString = query.toString();
+  const endpoint = `${baseUrl}/api/records${queryString ? `?${queryString}` : ""}`;
+
+  const response = await fetch(endpoint, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch meal records (${response.status})`);
+  }
+
+  const data: MealRecord[] = await response.json();
+  return data;
+};
+
 
 /**
  * Fetches the registered dish catalog from the backend.

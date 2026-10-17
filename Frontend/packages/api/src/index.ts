@@ -33,7 +33,10 @@ export interface MealRelayApiClient {
   approvePreparationPlan(planId: string): Promise<PreparationPlan>;
   getDemandForecasts(kitchenId: string, date: string): Promise<DemandForecast[]>;
   getConsumptionHistory(kitchenId: string): Promise<ConsumptionRecord[]>;
+  logConsumptionRecord(record: Omit<ConsumptionRecord, 'id'>): Promise<ConsumptionRecord>;
+  logConsumptionBatch(records: Omit<ConsumptionRecord, 'id'>[]): Promise<ConsumptionRecord[]>;
 }
+
 
 /**
  * Standard In-Memory Demo Adapter
@@ -172,7 +175,26 @@ export class DemoMealRelayApiClient implements MealRelayApiClient {
   async getConsumptionHistory(_kitchenId: string): Promise<ConsumptionRecord[]> {
     return [...this.history];
   }
+
+  async logConsumptionRecord(record: Omit<ConsumptionRecord, 'id'>): Promise<ConsumptionRecord> {
+    const newRecord: ConsumptionRecord = {
+      ...record,
+      id: `rec_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    };
+    this.history.unshift(newRecord);
+    return newRecord;
+  }
+
+  async logConsumptionBatch(records: Omit<ConsumptionRecord, 'id'>[]): Promise<ConsumptionRecord[]> {
+    const created: ConsumptionRecord[] = records.map((record, idx) => ({
+      ...record,
+      id: `rec_${Date.now()}_${idx}_${Math.random().toString(36).slice(2, 7)}`,
+    }));
+    this.history.unshift(...created);
+    return created;
+  }
 }
+
 
 // Global demo singleton instance
 export const demoApiClient = new DemoMealRelayApiClient();
