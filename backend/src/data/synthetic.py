@@ -164,6 +164,7 @@ def generate_synthetic_records(
                         prepared_portions=prepared,
                         served_portions=served_portions,
                         leftover_portions=leftover_portions,
+                        category=dish.category.value if hasattr(dish.category, 'value') else str(dish.category),
                         is_synthetic=True,
                     )
                 )

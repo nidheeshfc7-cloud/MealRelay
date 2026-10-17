@@ -84,3 +84,61 @@ def test_unfitted_model_raises():
     dummy_df = pd.DataFrame([{"dish_id": "d1"}])
     with pytest.raises(ValueError):
         model.predict(dummy_df)
+
+
+def test_ratio_based_demand_modeling():
+    """Verifies that Random Forest learns per-student ratio and scales linearly with attendance."""
+    # 85% consumption ratio across various attendances
+    df_train = pd.DataFrame([
+        {"dish_id": "d_paneer", "meal_type": "lunch", "day_of_week": 1, "category": "curry", "expected_attendance": 200, "is_holiday_or_weekend": 0, "lagged_avg_demand_7d": 170.0, "lagged_same_weekday_demand": 170.0, "competing_curries_count": 1, "is_paired_with_rice": 1},
+        {"dish_id": "d_paneer", "meal_type": "lunch", "day_of_week": 2, "category": "curry", "expected_attendance": 100, "is_holiday_or_weekend": 0, "lagged_avg_demand_7d": 85.0, "lagged_same_weekday_demand": 85.0, "competing_curries_count": 1, "is_paired_with_rice": 1},
+        {"dish_id": "d_paneer", "meal_type": "lunch", "day_of_week": 3, "category": "curry", "expected_attendance": 150, "is_holiday_or_weekend": 0, "lagged_avg_demand_7d": 128.0, "lagged_same_weekday_demand": 128.0, "competing_curries_count": 1, "is_paired_with_rice": 1},
+    ])
+    # Portions matching 0.85 ratio
+    y_portions = pd.Series([170.0, 85.0, 127.5])
+
+    model = DemandRandomForestModel(n_estimators=10, random_state=42)
+    model.fit(df_train, y_portions)
+
+    assert model.is_ratio_model is True
+
+    # Test prediction on 200 students vs 100 students
+    test_200 = pd.DataFrame([{"dish_id": "d_paneer", "meal_type": "lunch", "day_of_week": 1, "category": "curry", "expected_attendance": 200, "is_holiday_or_weekend": 0, "lagged_avg_demand_7d": 170.0, "lagged_same_weekday_demand": 170.0, "competing_curries_count": 1, "is_paired_with_rice": 1}])
+    test_100 = pd.DataFrame([{"dish_id": "d_paneer", "meal_type": "lunch", "day_of_week": 1, "category": "curry", "expected_attendance": 100, "is_holiday_or_weekend": 0, "lagged_avg_demand_7d": 85.0, "lagged_same_weekday_demand": 85.0, "competing_curries_count": 1, "is_paired_with_rice": 1}])
+
+    pred_200 = float(model.predict(test_200)[0])
+    pred_100 = float(model.predict(test_100)[0])
+    ratios = model.predict_ratio(test_200)
+
+    assert len(ratios) == 1
+    assert 0.70 <= ratios[0] <= 1.0
+    # 200 headcount prediction should be approximately double the 100 headcount prediction
+    assert 1.7 <= (pred_200 / pred_100) <= 2.3
+
+
+def test_category_encoding_and_features():
+    """Verifies that dish category and same-weekday numerical features are integrated into the pipeline."""
+    model = DemandRandomForestModel()
+    assert "category" in model.CATEGORICAL_FEATURES
+    assert "lagged_same_weekday_demand" in model.NUMERICAL_FEATURES
+    assert "competing_curries_count" in model.NUMERICAL_FEATURES
+    assert "is_paired_with_rice" in model.NUMERICAL_FEATURES
+
+
+def test_preprocessor_session_menu_synergy():
+    """Verifies session menu flags: is_paired_with_rice and competing_curries_count."""
+    records = generate_synthetic_records(num_days=3, base_capacity=200, random_seed=42)
+    df = FeaturePreprocessor.records_to_dataframe(records)
+
+    assert "is_paired_with_rice" in df.columns
+    assert "competing_curries_count" in df.columns
+    assert "category" in df.columns
+    # Lunch sessions typically feature rice
+    lunch_records = df[df["meal_type"] == "lunch"]
+    assert (lunch_records["is_paired_with_rice"] == 1).any()
+
+    # Verify lagged same-weekday computation
+    df_featured = FeaturePreprocessor.compute_lagged_averages(df)
+    assert "lagged_same_weekday_demand" in df_featured.columns
+    assert not df_featured["lagged_same_weekday_demand"].isna().any()
+

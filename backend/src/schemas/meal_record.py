@@ -24,6 +24,10 @@ class MealRecordBase(BaseModel):
         ge=0,
         description="Portions remaining uneaten/wasted at end of meal session."
     )
+    category: Optional[str] = Field(
+        default=None,
+        description="Culinary category: main, curry, rice, bread, side, beverage, dessert"
+    )
     is_synthetic: bool = Field(
         default=False,
         description="Flag indicating whether this record was synthetically generated."

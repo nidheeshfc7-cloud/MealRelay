@@ -85,10 +85,16 @@ class ForecastService:
         record_id = f"rec_{date.today().strftime('%Y%m%d')}_{uuid.uuid4().hex[:6]}"
         derived_day = record_in.meal_date.weekday() if record_in.day_of_week is None else record_in.day_of_week
 
+        dish_obj = self.dishes.get(record_in.dish_id)
+        category_val = (
+            record_in.category
+            or (dish_obj.category.value if dish_obj and hasattr(dish_obj.category, "value") else getattr(dish_obj, "category", "main"))
+        )
+
         new_record = MealRecord(
             id=record_id,
             dish_id=record_in.dish_id,
-            dish_name=record_in.dish_name or self.dishes.get(record_in.dish_id, Dish(id=record_in.dish_id, name=record_in.dish_id, meal_type="lunch", category="main")).name,
+            dish_name=record_in.dish_name or (dish_obj.name if dish_obj else record_in.dish_id),
             meal_date=record_in.meal_date,
             meal_type=record_in.meal_type,
             day_of_week=derived_day,
@@ -96,6 +102,7 @@ class ForecastService:
             prepared_portions=record_in.prepared_portions,
             served_portions=record_in.served_portions,
             leftover_portions=record_in.leftover_portions,
+            category=category_val,
             is_synthetic=False,
         )
 
@@ -110,11 +117,16 @@ class ForecastService:
         for record_in in records_in:
             record_id = f"rec_{date.today().strftime('%Y%m%d')}_{uuid.uuid4().hex[:6]}"
             derived_day = record_in.meal_date.weekday() if record_in.day_of_week is None else record_in.day_of_week
+            dish_obj = self.dishes.get(record_in.dish_id)
+            category_val = (
+                record_in.category
+                or (dish_obj.category.value if dish_obj and hasattr(dish_obj.category, "value") else getattr(dish_obj, "category", "main"))
+            )
 
             new_record = MealRecord(
                 id=record_id,
                 dish_id=record_in.dish_id,
-                dish_name=record_in.dish_name or self.dishes.get(record_in.dish_id, Dish(id=record_in.dish_id, name=record_in.dish_id, meal_type="lunch", category="main")).name,
+                dish_name=record_in.dish_name or (dish_obj.name if dish_obj else record_in.dish_id),
                 meal_date=record_in.meal_date,
                 meal_type=record_in.meal_type,
                 day_of_week=derived_day,
@@ -122,6 +134,7 @@ class ForecastService:
                 prepared_portions=record_in.prepared_portions,
                 served_portions=record_in.served_portions,
                 leftover_portions=record_in.leftover_portions,
+                category=category_val,
                 is_synthetic=False,
             )
             self.records.append(new_record)
@@ -139,6 +152,22 @@ class ForecastService:
         buffer_pct = request.safety_buffer_pct if request.safety_buffer_pct is not None else DEFAULT_SAFETY_BUFFER
         day_name = target_date.strftime("%A")
         is_weekend = target_date.weekday() in [5, 6]
+
+        # Compute session menu context (rice pairing, competing curries)
+        session_categories = []
+        for itm in request.dishes:
+            d_obj = self.dishes.get(itm.dish_id)
+            c_val = (
+                d_obj.category.value
+                if d_obj and hasattr(d_obj.category, "value")
+                else (d_obj.category if d_obj else "main")
+            )
+            session_categories.append((itm.dish_id, str(c_val).lower()))
+
+        has_rice = int(any("rice" in c or "rice" in did for did, c in session_categories))
+        competing_curries = int(sum(1 for _, c in session_categories if c in ["curry", "main"]))
+        if competing_curries < 1:
+            competing_curries = 1
 
         recommendations: List[DishForecastRecommendation] = []
 
@@ -161,13 +190,16 @@ class ForecastService:
 
             # Decision branch: ML model vs Fallback baseline
             if self.is_trained and data_points_count >= MIN_DATA_THRESHOLD:
-                # Prepare single-row feature vector
+                # Prepare single-row feature vector with domain features
                 X_infer = FeaturePreprocessor.prepare_inference_features(
                     dish_id=dish_id,
                     meal_type=target_meal_type,
                     meal_date=target_date,
                     expected_attendance=attendance,
                     historical_records=self.records,
+                    category=category_val,
+                    competing_curries_count=competing_curries,
+                    is_paired_with_rice=has_rice,
                 )
                 pred_portions, explanations = self.rf_model.predict_with_explanation(
                     X_infer, dish_name=dish_name

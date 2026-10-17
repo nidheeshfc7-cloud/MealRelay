@@ -88,20 +88,20 @@ Eliminate confusing data-science telemetry from the API response and output clea
 
 Give the Random Forest regressor rich institutional mess signals to boost prediction accuracy.
 
-- [ ] **3.1: Ratio-Based Demand Modeling**
-  - [ ] Model target as continuous per-student consumption ratio:
+- [x] **3.1: Ratio-Based Demand Modeling**
+  - [x] Model target as continuous per-student consumption ratio:
     $$y = \frac{\text{served\_portions}}{\text{attendance}}$$
-  - [ ] Reconstruct recommended preparation at inference time:
+  - [x] Reconstruct recommended preparation at inference time:
     $$\text{cook\_portions} = \lceil \text{predicted\_ratio} \times \text{expected\_attendance} \rceil$$
-  - [ ] Prevents model distortion when student headcount swings between weekends (110 students) and weekdays (195 students).
-- [ ] **3.2: Same-Weekday Rolling Demand Lags**
-  - [ ] Replace the generic 7-day average with a **same-weekday rolling lag** (e.g., average demand over the last 3 Tuesdays for a Tuesday meal).
-  - [ ] Captures cyclical weekly routines (e.g., Friday dinner peaks, Sunday breakfast sleep-ins).
-- [ ] **3.3: Dish Category Encoding**
-  - [ ] Include dish `category` (`curry`, `rice`, `bread`, `main`, `side`, `dessert`, `beverage`) in the `ColumnTransformer`.
-  - [ ] Allows the model to generalize intake baselines (e.g., rotis typically eaten at $\sim 2.2$ per student vs. sweet desserts strictly $1.0$ per student).
-- [ ] **3.4: Menu Synergy & Co-Occurrence Appetite Splits**
-  - [ ] Include session menu context flags (e.g. `is_paired_with_rice`, `competing_curries_count`) to account for appetite splits when multiple curries/dishes are offered simultaneously.
+  - [x] Prevents model distortion when student headcount swings between weekends (110 students) and weekdays (195 students).
+- [x] **3.2: Same-Weekday Rolling Demand Lags**
+  - [x] Replace the generic 7-day average with a **same-weekday rolling lag** (e.g., average demand over the last 3 Tuesdays for a Tuesday meal).
+  - [x] Captures cyclical weekly routines (e.g., Friday dinner peaks, Sunday breakfast sleep-ins).
+- [x] **3.3: Dish Category Encoding**
+  - [x] Include dish `category` (`curry`, `rice`, `bread`, `main`, `side`, `dessert`, `beverage`) in the `ColumnTransformer`.
+  - [x] Allows the model to generalize intake baselines (e.g., rotis typically eaten at $\sim 2.2$ per student vs. sweet desserts strictly $1.0$ per student).
+- [x] **3.4: Menu Synergy & Co-Occurrence Appetite Splits**
+  - [x] Include session menu context flags (e.g. `is_paired_with_rice`, `competing_curries_count`) to account for appetite splits when multiple curries/dishes are offered simultaneously.
 
 ---
 
@@ -147,6 +147,6 @@ Keep the backend fast, lightweight, and deployable on edge kitchen hardware or c
 |---|---|---|
 | **Phase 1** | Real-Time Kitchen Log Ingestion & Closed-Loop Learning | 🟢 Completed |
 | **Phase 2** | Customer-Friendly Backend Output Schema (Single-Target Output) | 🟢 Completed |
-| **Phase 3** | Domain Feature Engineering & Seasonality Signals | ⚪ Planned |
+| **Phase 3** | Domain Feature Engineering & Seasonality Signals | 🟢 Completed |
 | **Phase 4** | AI Pattern Recognition vs. Hardcoded Physical Guardrails | ⚪ Planned |
 | **Phase 5** | Model Optimization, Persistence & Edge Deployment | 🟡 In Progress (Thread-safe execution live; Supabase planned) |
