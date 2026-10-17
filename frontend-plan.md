@@ -150,3 +150,42 @@ Institutional kitchen operators (hostel mess supervisors, college canteen manage
   - Adjust buffer or edit portions $\rightarrow$
   - Confirm cooking plan $\rightarrow$
   - Log actual served and leftover outcomes.
+
+---
+
+## 4. Phase 6: Awwwards-Caliber Visual & UX Craft Redesign (Anti-AI-Slop Overhaul)
+
+### 4.1 Design Philosophy: From "AI Template" to "Luxury Enterprise Operations"
+- **Zero Gimmicks / Emojis**: Replace cartoonish pastel emoji bubbles with bespoke culinary station tags, dietary badges (`100% VEG`, `HIGH PROTEIN`), and ingredient classification chips.
+- **Architectural Radii & Hairline Precision**: Replace exaggerated 32px (`rounded-3xl`) bubbles with crisp, refined `rounded-2xl` and `rounded-xl` geometries with sub-pixel borders (`border-line-light/80`) and subtle ambient elevation (`shadow-[0_1px_3px_rgba(0,47,36,0.04),0_6px_20px_rgba(0,47,36,0.03)]`).
+- **Cohesive Metric Instrument Deck**: Harmonize the 3 top metric cards. Rather than a jarring, all-dark green card next to an empty white card with the giant word "High", all three cards will share consistent visual dignity:
+  - **Card 1: Expected Diner Turnout** (185 diners, 92.5% occupancy, Tuesday curve comparison).
+  - **Card 2: Target Kitchen Production** (720 portions, 683 base + 37 buffer split, ~14.2 kg waste prevented).
+  - **Card 3: ML Model Intelligence & Telemetry** (91% accuracy score, Random Forest Ensemble badge, 848 historical meal sessions, ±3.8% confidence interval).
+- **Culinary Domain Realism**: Real commercial kitchens need raw batch weights and station routing. Add dynamic raw batch conversion (e.g. `188 portions ≈ 37.6 kg dry rice`) and kitchen prep stations (`Steamer 1`, `Kadai 2`, `Roti Press`).
+- **Tabular Figures & Editorial Typography**: Implement `font-mono tabular-nums` for all quantities, weights, and percentages for razor-sharp alignment.
+- **Brand Palette Adherence**: Strictly leverage the core design tokens:
+  - `forest` (`#003F2F`, `#002F24`, `#143928`, `#245C40`)
+  - `lime` (`#D5FB53`, `#E6FCA8`)
+  - `canvas` & `ivory` (`#F6F7F1`, `#FFFFFF`)
+  - `ink` (`#172A21`, `#718078`, `#8B9C92`)
+  - `line` (`#E5EBE1`, `#123D2E`)
+  - `sage` (`#EDF2E7`)
+
+### 4.2 Component Work Breakdown
+- [ ] **6.1 DashboardHeader.tsx**:
+  - Live facility context bar (`Sreenidhi Central Dining • Hall 1 • Capacity: 200`).
+  - Segmented meal service selector with active timing (`Breakfast`, `Lunch (12:30–14:30)`, `Dinner`).
+  - Integrated safety buffer cushion group (`+5% Standard`, `+8% Surge`, `+10% Special`).
+  - Refined date picker with quick shortcuts ("Today", "Tomorrow").
+- [ ] **6.2 MetricCards.tsx**:
+  - Executive 3-card instrument cluster with micro visual meters, tabular numbers, and zero awkward whitespace.
+- [ ] **6.3 DishPreparationTable.tsx**:
+  - Commercial kitchen production sheet layout.
+  - Columns: Dish & Station, Modeled Appetite, Safety Cushion, Target Batch Output (portions + raw kg weight), 7-Day Trend Spark, and ML Factor Insight.
+- [ ] **6.4 KeyInsightsPanel.tsx**:
+  - Structured "Operational Intelligence Brief" replacing repetitive grey boxes.
+  - Three distinct cards: Attendance Trajectory, Culinary Pairing Momentum, and Waste Guard.
+- [ ] **6.5 DashboardActionBar.tsx**:
+  - Docked glassmorphic production bar with batch summary, edit quantities trigger, shift actuals logging, and print/confirmation state.
+
