@@ -6,9 +6,11 @@ import pytest
 from src.services.recommendation import (
     calculate_safety_buffer_portions,
     build_dish_recommendation,
+    determine_kitchen_unit,
+    build_simple_reason,
 )
 from src.services.forecast_service import ForecastService
-from src.schemas.forecast import ForecastRequest, ForecastItemRequest
+from src.schemas.forecast import ForecastRequest, ForecastItemRequest, ForecastResponse, DishForecastRecommendation
 from src.schemas.meal_record import MealRecordCreate
 
 
@@ -204,4 +206,119 @@ def test_kitchen_guardrails_validation():
             prepared_portions=100,
             served_portions=50,
         )
+
+
+def test_kitchen_unit_mapping():
+    """Verifies that culinary categories map to intuitive everyday kitchen units."""
+    assert determine_kitchen_unit("rice") == "portions"
+    assert determine_kitchen_unit("main curry") == "bowls"
+    assert determine_kitchen_unit("fresh bread") == "pieces"
+    assert determine_kitchen_unit("main") == "plates"
+    assert determine_kitchen_unit("side dish") == "bowls"
+    assert determine_kitchen_unit("beverage") == "cups"
+    assert determine_kitchen_unit("dessert") == "pieces"
+    assert determine_kitchen_unit("unknown_category") == "plates"
+    assert determine_kitchen_unit(None) == "plates"
+
+
+def test_simple_reason_generation():
+    """Verifies that human-friendly explanation sentences are generated without math jargon."""
+    # 1. Fallback or sparse data
+    reason_sparse = build_simple_reason("Paneer Tikka", "dinner", 180, is_fallback=True)
+    assert "Covers Dinner for 180 students" in reason_sparse
+    assert "standard campus averages" in reason_sparse
+
+    # 2. Weekend turnout
+    reason_weekend = build_simple_reason("Poha", "breakfast", 120, is_weekend=True)
+    assert "Covers Breakfast for 120 students" in reason_weekend
+    assert "weekend mess turnout" in reason_weekend
+
+    # 3. Weekday preference
+    reason_weekday = build_simple_reason("Rajma", "lunch", 200, day_name="Wednesday")
+    assert "Covers Lunch for 200 students" in reason_weekday
+    assert "Wednesday" in reason_weekday
+
+
+def test_customer_friendly_forecast_schema():
+    """Verifies that generate_forecast outputs single preparation target, units, confidence, and reasons."""
+    service = ForecastService.get_instance()
+    request = ForecastRequest(
+        meal_date=date(2026, 10, 22),
+        meal_type="lunch",
+        expected_attendance=185,
+        dishes=[
+            ForecastItemRequest(dish_id="d_rice_lunch"),
+            ForecastItemRequest(dish_id="d_dal_tadka"),
+        ],
+    )
+
+    response = service.generate_forecast(request)
+
+    # Check session-level customer-friendly fields
+    assert response.expected_students == 185
+    assert response.expected_attendance == 185
+    assert response.total_cook_portions > 0
+    assert response.total_cook_portions == response.total_recommended_portions
+    assert len(response.dishes) == 2
+    assert response.dishes == response.recommendations
+
+    # Check dish-level single-target output
+    rice_rec = next(d for d in response.dishes if d.dish_id == "d_rice_lunch")
+    assert rice_rec.cook_portions > 0
+    assert rice_rec.cook_portions == rice_rec.recommended_portions
+    assert rice_rec.unit == "portions"
+    assert rice_rec.confidence in ["High", "Moderate"]
+    assert "Covers Lunch for 185 students" in rice_rec.simple_reason
+    assert rice_rec.suggested_step == 5
+
+    dal_rec = next(d for d in response.dishes if d.dish_id == "d_dal_tadka")
+    assert dal_rec.cook_portions > 0
+    assert dal_rec.unit == "bowls"
+    assert dal_rec.suggested_step == 5
+
+
+def test_forecast_response_validator_synchronization():
+    """Verifies that ForecastResponse model_validator synchronizes new and legacy keys bi-directionally."""
+    sample_item = DishForecastRecommendation(
+        dish_id="d_test",
+        dish_name="Test Dish",
+        meal_type="dinner",
+        category="main",
+        cook_portions=150,
+        unit="plates",
+        confidence="High",
+        simple_reason="Covers dinner well.",
+        suggested_step=5,
+        predicted_portions=140.0,
+        safety_buffer_pct=0.10,
+        recommended_portions=150,
+        model_used="random_forest",
+        data_points_count=20,
+        is_fallback=False,
+    )
+
+    # 1. Supplied with new customer-friendly fields only
+    resp1 = ForecastResponse.model_validate({
+        "meal_date": date(2026, 10, 22),
+        "meal_type": "dinner",
+        "expected_students": 160,
+        "total_cook_portions": 150,
+        "dishes": [sample_item],
+    })
+    assert resp1.expected_attendance == 160
+    assert resp1.total_recommended_portions == 150
+    assert len(resp1.recommendations) == 1
+
+    # 2. Supplied with legacy fields only
+    resp2 = ForecastResponse.model_validate({
+        "meal_date": date(2026, 10, 22),
+        "meal_type": "dinner",
+        "expected_attendance": 175,
+        "total_recommended_portions": 150,
+        "recommendations": [sample_item],
+    })
+    assert resp2.expected_students == 175
+    assert resp2.total_cook_portions == 150
+    assert len(resp2.dishes) == 1
+
 

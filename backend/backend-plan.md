@@ -58,8 +58,8 @@ Close the operational loop so the AI model dynamically improves every time a mea
 
 Eliminate confusing data-science telemetry from the API response and output clean, everyday kitchen terms.
 
-- [ ] **2.1: Transition to Single-Target Preparation Schema (`cook_portions`)**
-  - [ ] Update `DishForecastRecommendation` schema to replace `predicted_portions`, `safety_buffer_pct`, and `recommended_portions` with:
+- [x] **2.1: Transition to Single-Target Preparation Schema (`cook_portions`)**
+  - [x] Update `DishForecastRecommendation` schema to replace `predicted_portions`, `safety_buffer_pct`, and `recommended_portions` with:
     ```python
     class DishForecastRecommendation(BaseModel):
         dish_id: str
@@ -72,12 +72,12 @@ Eliminate confusing data-science telemetry from the API response and output clea
         simple_reason: str               # One clear, friendly sentence
         suggested_step: int = 5          # Stepper increment for manual adjustment
     ```
-- [ ] **2.2: Plain-Language Reason Generator**
-  - [ ] Replace mathematical formula strings with natural kitchen explanations:
+- [x] **2.2: Plain-Language Reason Generator**
+  - [x] Replace mathematical formula strings with natural kitchen explanations:
     - *Good*: *"Based on 185 students expected for lunch. Sunday special curry sees high turnout."*
     - *Avoid*: *"+10% safety buffer applied (+16 extra portions) with modeled ratio 0.83x."*
-- [ ] **2.3: Non-Technical Session Response**
-  - [ ] Update `ForecastResponse` to present clear session totals:
+- [x] **2.3: Non-Technical Session Response**
+  - [x] Update `ForecastResponse` to present clear session totals:
     - `total_cook_portions: int` (sum across all dishes in the session)
     - `expected_students: int`
     - `dishes: List[DishForecastRecommendation]`
@@ -146,7 +146,7 @@ Keep the backend fast, lightweight, and deployable on edge kitchen hardware or c
 | Phase | Description | Status |
 |---|---|---|
 | **Phase 1** | Real-Time Kitchen Log Ingestion & Closed-Loop Learning | 🟢 Completed |
-| **Phase 2** | Customer-Friendly Backend Output Schema (Single-Target Output) | ⚪ Ready for Implementation |
+| **Phase 2** | Customer-Friendly Backend Output Schema (Single-Target Output) | 🟢 Completed |
 | **Phase 3** | Domain Feature Engineering & Seasonality Signals | ⚪ Planned |
 | **Phase 4** | AI Pattern Recognition vs. Hardcoded Physical Guardrails | ⚪ Planned |
 | **Phase 5** | Model Optimization, Persistence & Edge Deployment | 🟡 In Progress (Thread-safe execution live; Supabase planned) |

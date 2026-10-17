@@ -137,12 +137,20 @@ class ForecastService:
         target_meal_type = request.meal_type.lower()
         attendance = request.expected_attendance
         buffer_pct = request.safety_buffer_pct if request.safety_buffer_pct is not None else DEFAULT_SAFETY_BUFFER
+        day_name = target_date.strftime("%A")
+        is_weekend = target_date.weekday() in [5, 6]
 
         recommendations: List[DishForecastRecommendation] = []
 
         for item in request.dishes:
             dish_id = item.dish_id
-            dish_name = item.dish_name or (self.dishes[dish_id].name if dish_id in self.dishes else dish_id)
+            dish_obj = self.dishes.get(dish_id)
+            dish_name = item.dish_name or (dish_obj.name if dish_obj else dish_id)
+            category_val = (
+                dish_obj.category.value
+                if dish_obj and hasattr(dish_obj.category, "value")
+                else (dish_obj.category if dish_obj else "Main")
+            )
 
             # Count historical observations with valid effective demand
             history = [
@@ -189,17 +197,24 @@ class ForecastService:
                 data_points_count=data_points_count,
                 is_fallback=is_fallback,
                 base_explanations=explanations,
+                category=category_val,
+                attendance=attendance,
+                day_name=day_name,
+                is_weekend=is_weekend,
             )
             recommendations.append(recommendation)
 
-        total_portions = sum(r.recommended_portions for r in recommendations)
+        total_cook = sum(r.cook_portions for r in recommendations)
 
         return ForecastResponse(
             meal_date=target_date,
             meal_type=target_meal_type,
+            expected_students=attendance,
+            total_cook_portions=total_cook,
+            dishes=recommendations,
             expected_attendance=attendance,
             safety_buffer_pct=buffer_pct,
             recommendations=recommendations,
-            total_recommended_portions=total_portions,
+            total_recommended_portions=total_cook,
             generated_at=datetime.now(timezone.utc),
         )
