@@ -437,6 +437,12 @@
     transparent 37px 55px
   );
 }
+.workflow::before {
+  opacity: 1;
+  background:
+    linear-gradient(#002f2426, #002f2426),
+    url("/images/landing-workflow.webp") center / cover no-repeat;
+}
 .workflowGrid {
   position: relative;
   display: grid;
