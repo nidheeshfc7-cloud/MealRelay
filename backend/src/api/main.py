@@ -1,8 +1,8 @@
-"""FastAPI entrypoint for MealRelay backend."""
-
+import asyncio
+import os
 from datetime import datetime, timezone
 from contextlib import asynccontextmanager
-from typing import Dict, Any
+from typing import Dict, Any, List
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -15,9 +15,9 @@ from src.services.forecast_service import ForecastService
 async def lifespan(app: FastAPI):
     """Initializes model training and synthetic records on startup."""
     service = ForecastService.get_instance()
-    # Ensure models are trained
+    # Ensure models are trained without blocking the async event loop
     if not service.is_trained:
-        service.reset_to_synthetic_data()
+        await asyncio.to_thread(service.reset_to_synthetic_data)
     yield
 
 
@@ -28,15 +28,24 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Enable CORS for Next.js frontend communication
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
+# Parse configured CORS origins or default to standard local ports
+_cors_origins_env = os.getenv("CORS_ORIGINS", "")
+_allowed_origins: List[str] = (
+    [origin.strip() for origin in _cors_origins_env.split(",") if origin.strip()]
+    if _cors_origins_env.strip()
+    else [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://localhost:3001",
         "http://127.0.0.1:3001",
-    ],
+    ]
+)
+
+# Enable CORS with support for Vercel preview and production domains
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_allowed_origins,
+    allow_origin_regex=os.getenv("CORS_ORIGIN_REGEX", r"^https:\/\/.*\.vercel\.app$"),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
