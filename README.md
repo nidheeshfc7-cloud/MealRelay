@@ -127,11 +127,62 @@ To protect commercial kitchens against stockouts while curtailing waste:
 - **Nutritional Safety Floor**: Enforces a strict minimum portion ratio ($\ge 0.15\text{ portions/student}$ for staples) to eliminate zero-portion prediction edge cases.
 - **Ceiling Rounding**: Recommendations always round up to discrete portion integers ($\lceil \text{portions} \rceil$).
 
-### C. Continuous Learning Engine (3.0× Real Log Weighting)
-When kitchen staff logs shift outcomes via `POST /api/records`:
-1. The new record is stored in memory and synced to Supabase (if configured).
-2. The model immediately triggers an asynchronous retrain in **$< 80\text{ ms}$**.
-3. Real kitchen logs receive **$3.0\times$ sample weighting**, while initial synthetic records have weight **$1.0\times$**. Authentic student eating habits rapidly tune future prep targets.
+### C. How the AI Operates & Adapts from User Feedback
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                                CLOSED-LOOP AI FEEDBACK CYCLE                           │
+│                                                                                        │
+│   1. KITCHEN SHIFT               2. TELEMETRY LOG             3. INFLUENCE ON NEXT RUN │
+│   ┌───────────────────┐          ┌───────────────────┐        ┌──────────────────────┐ │
+│   │ Chef serves meal  │ ───────► │ Staff logs actual │ ─────► │ Model retrains in    │ │
+│   │ based on forecast │          │ headcount, served │        │ < 80ms with 3.0×     │ │
+│   │ recommendations   │          │ & leftover counts │        │ sample weighting     │ │
+│   └───────────────────┘          └───────────────────┘        └──────────┬───────────┘ │
+│                                                                          │             │
+│                                  4. UPDATED PREDICTION                   │             │
+│                                  ┌───────────────────┐                   │             │
+│                                  │ Tomorrow's prep   │ ◄─────────────────┘             │
+│                                  │ sheet reflects    │                                 │
+│                                  │ student appetite  │                                 │
+│                                  └───────────────────┘                                 │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 1. Where the AI Works
+- **Inference & Training Core**: The machine learning engine lives inside the Python microservice at [`backend/src/models/random_forest.py`](backend/src/models/random_forest.py) and [`backend/src/services/forecast_service.py`](backend/src/services/forecast_service.py).
+- **API Boundary**: Serves predictions over HTTP via `POST /api/forecast` (Port 8000).
+- **User Surfaces**: The Next.js Operations Dashboard ([`/dashboard`](http://localhost:3000/dashboard)), the Forecasting Engine ([`/forecasts`](http://localhost:3000/forecasts)), and the React Native Mobile app query this microservice directly via the `useMealForecast` hook.
+
+#### 2. How the AI Uses New User Data
+At the conclusion of each meal service, the kitchen supervisor opens the **"Log Shift Outcomes"** modal or submits to `POST /api/records` with three ground-truth values per dish:
+1. **Actual Headcount**: The exact number of students who swiped into the dining hall (e.g., 185 actual vs. 200 expected).
+2. **Portions Consumed**: The actual quantity eaten by students.
+3. **Portions Leftover**: The unserved surplus remaining in warming trays.
+
+From this telemetry, the engine computes the authentic **Ground-Truth Turnout Ratio**:
+
+$$\text{Actual Ratio} = \frac{\text{Portions Consumed}}{\text{Actual Headcount}}$$
+
+This record is instantly stored in memory (and synchronized to Supabase PostgreSQL when cloud credentials are provided).
+
+#### 3. How New Results Influence Upcoming Predictions
+1. **Immediate Asynchronous Retraining ($< 80\text{ ms}$)**:
+   Calling `POST /api/records` immediately triggers `service.retrain_models()` in a background thread via `asyncio.to_thread`. Kitchen staff never experience lag or server downtime.
+2. **$3.0\times$ Real-World Sample Weighting**:
+   In `random_forest.py`, synthetic bootstrap priors receive a base weight of **$1.0\times$**, while authentic user-logged shift records receive a **$3.0\times$ sample weight**. The `RandomForestRegressor` actively favors decision splits that fit real kitchen observations over simulated baseline data.
+3. **Dynamic Feature Recalibration**:
+   - **7-Day Rolling Momentum**: If students have eaten more paneer and less rice over recent days, the rolling ratio updates immediately to favor this trend.
+   - **Calendar Dynamics**: If Thursday lunches experienced lower turnout due to campus events, the sine/cosine cyclic features adjust the day-of-week curve.
+   - **Menu Synergy Interactions**: If serving Paneer Butter Masala reduced consumption of Plain Dal, cross-dish correlation weights update.
+4. **Adaptive Buffer Expansion or Contraction**:
+   The engine recalculates the historical Coefficient of Variation ($\text{CV} = \sigma_{\text{ratio}} / \mu_{\text{ratio}}$):
+   - **Low-Variance Dishes**: When actuals prove student demand is predictable with minimal leftovers, the safety buffer contracts towards **$+4\%$ to $+5\%$**, curtailing over-prep waste.
+   - **High-Surge Dishes**: If unexpected student rushes cause stockouts, the buffer automatically expands towards **$+18\%$**, ensuring adequate safety margins.
+5. **Direct Impact on Tomorrow's Answers**:
+   When the kitchen manager opens tomorrow's prep sheet and enters an expected attendance of 220 students:
+   $$\text{Tomorrow's Recommendation} = \max\left(\left\lceil 220 \times \text{Updated Predicted Ratio} \times (1 + \beta_{\text{adaptive}})\right\rceil, Q_{\text{floor}}\right)$$
+   Tomorrow's recommendations reflect the student body's latest dining habits, eliminating guesswork while guaranteeing food safety.
 
 ### D. Dual-Mode Storage: Cloud PostgreSQL & Offline Edge
 - **Offline Edge Mode (Default)**: Runs with **zero API keys, zero internet connection, and zero database setup**. Pre-trains on a 60-day synthetic dataset and retains all state in memory.
