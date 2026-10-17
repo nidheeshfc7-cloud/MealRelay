@@ -112,13 +112,20 @@
   overflow: hidden;
   padding: 64px 0 68px;
 }
+@media (min-width: 801px) {
+  .hero {
+    min-height: calc(100svh - 80px);
+    display: flex;
+    align-items: center;
+  }
+}
 .heroGrid {
   display: flex;
   justify-content: center;
 }
 .heroCopy {
   width: 100%;
-  max-width: 760px;
+  max-width: 900px;
   text-align: center;
 }
 .heroCopy > p,
