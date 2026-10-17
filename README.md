@@ -61,54 +61,17 @@ MealRelay bridges this gap with a **closed-loop feedback cycle**: predictions dr
 
 ## 🔄 Complete System Workflow & Architecture
 
-The following diagram illustrates how the **Frontend** and **Backend** communicate bidirectionally, from initial forecasting to real-time kitchen logging and model retraining:
-
 ```mermaid
-flowchart TD
-    %% Styling Definitions
-    classDef client fill:#EDF2E7,stroke:#003F2F,stroke-width:2px,color:#172A21;
-    classDef server fill:#003F2F,stroke:#D5FB53,stroke-width:2px,color:#FFFFFF;
-    classDef storage fill:#143928,stroke:#D5FB53,stroke-width:1px,color:#D5FB53;
-    classDef loop fill:#F6F7F1,stroke:#FFAE70,stroke-width:2px,stroke-dasharray: 5 5,color:#172A21;
+graph LR
+    A[Attendance Input] --> B[ML Portion Forecast]
+    B --> C[Kitchen Preparation]
+    C --> D[Actuals & Leftovers]
+    D -.->|Retrain| B
 
-    subgraph FRONTEND ["💻 Frontend Client Ecosystem (Next.js 15 & Expo Mobile)"]
-        UI_Head["1. Kitchen Supervisor selects Date & Meal Shift<br/><i>(e.g., Tomorrow's Lunch · 185 Students)</i>"]:::client
-        UI_Dash["3. Operations Dashboard (/dashboard)<br/>• Real-time Demand & Recommendation KPIs<br/>• Dish Preparation Table with Units & Baselines<br/>• Plain-language Factor Explanations"]:::client
-        UI_Edit["4. Chef Review & Optional Overrides<br/>• Stepper Adjustments (-5 / +5 Portions)<br/>• Safety Cushion Buffer Toggle (+5%, +8%, +10%)<br/>• Confirm Preparation Plan"]:::client
-        UI_Log["5. Post-Service Shift Logging (/dashboard Modal)<br/>• Actual Student Attendance Count<br/>• Portions Prepared, Served & Leftover"]:::client
-        UI_Analytics["7. Executive Waste Intelligence (/analytics)<br/>• Total Food Waste Diverted (kg)<br/>• Leftover Rate Reduction Benchmark"]:::client
-    end
-
-    subgraph BACKEND ["🧠 Machine Learning Microservice (FastAPI & scikit-learn)"]
-        API_Forecast["2. POST /api/forecast<br/>Receives Headcount, Date, Shift & Dishes"]:::server
-        ML_Model["Random Forest Regressor & Baseline Pipeline<br/>• Ratio-Based Demand Modeling (Portions / Headcount)<br/>• Day-of-Week, Momentum & Interaction Features<br/>• Adaptive Volatility Buffer & Safety Floor<br/>• Data Sufficiency Level Indicator"]:::server
-        API_Records["6. POST /api/records<br/>Ingests Actual Kitchen Consumption Numbers"]:::server
-        ML_Retrain["Continuous Retraining Engine<br/>• Incremental In-Memory Retrain (< 80 ms)<br/>• 3.0x Sample Weighting on Real Kitchen Logs<br/>• Zero Service Downtime"]:::server
-    end
-
-    subgraph PERSISTENCE ["🗄️ Dual-Mode Persistence Layer"]
-        DB_Edge["In-Memory Edge Resilience<br/>(100% Offline Capable · 60-Day Memory Buffer)"]:::storage
-        DB_Cloud["Supabase PostgreSQL<br/>(Multi-tenant RLS Schema · Cloud Sync)"]:::storage
-    end
-
-    %% Workflow Connections
-    UI_Head -->|JSON Request| API_Forecast
-    API_Forecast --> ML_Model
-    ML_Model -->|Predictions + Safety Buffer + Explainability| UI_Dash
-    UI_Dash --> UI_Edit
-    UI_Edit --> UI_Log
-    UI_Log -->|POST Actual Consumption Logs| API_Records
-    API_Records --> DB_Edge
-    API_Records -.->|Optional Cloud Sync| DB_Cloud
-    API_Records --> ML_Retrain
-    ML_Retrain -->|Updates Weights for Tomorrow's Run| ML_Model
-    API_Records -->|Updated Service Metrics| UI_Analytics
-
-    %% Class assignments
-    class UI_Head,UI_Dash,UI_Edit,UI_Log,UI_Analytics client;
-    class API_Forecast,ML_Model,API_Records,ML_Retrain server;
-    class DB_Edge,DB_Cloud storage;
+    style B fill:#003F2F,stroke:#003F2F,color:#FFFFFF
 ```
+
+*Closed-loop workflow: Frontend captures attendance and logs $\longleftrightarrow$ Backend computes ML forecasts and continuous model updates.*
 
 ---
 
@@ -120,13 +83,10 @@ The backend (`backend/`) is an ultra-fast Python machine learning microservice t
 backend/
 ├── src/
 │   ├── api/
-│   │   ├── main.py                  # FastAPI application, lifespan handler & dynamic CORS
+│   │   ├── main.py                  # FastAPI app, lifespan handler, CORS & GET /health
 │   │   └── routes/
-│   │       ├── forecast.py          # POST /api/forecast recommendation endpoint
-│   │       ├── records.py           # GET/POST /api/records shift outcome logger
-│   │       ├── metrics.py           # GET /api/metrics aggregate waste tracking
-│   │       ├── dishes.py            # GET /api/dishes active kitchen catalog
-│   │       └── health.py            # GET /health edge diagnostics
+│   │       ├── forecast.py          # POST /api/forecast & GET /api/metrics benchmark endpoint
+│   │       └── records.py           # GET/POST /api/records, batch logger & GET /api/dishes
 │   ├── models/
 │   │   ├── random_forest.py         # RandomForestRegressor with Ratio Feature Pipeline
 │   │   ├── baseline.py              # 3-tier moving average sparse fallback
@@ -140,8 +100,8 @@ backend/
 │   ├── database/
 │   │   └── supabase_client.py       # Dual-mode Supabase REST adapter & memory fallback
 │   ├── config.py                    # Environment settings, single-core thread safeguards
-│   └── schemas/                     # Pydantic v2 domain schemas (forecast, records, dishes)
-├── tests/                           # 28 comprehensive pytest unit & integration tests
+│   └── schemas/                     # Pydantic v2 domain schemas (dish, forecast, meal_record)
+├── tests/                           # 36 automated pytest unit & integration tests
 ├── pyproject.toml                   # uv project definition (Python 3.12/3.13)
 └── Procfile                         # Render / Railway dynamic port production spec
 ```
@@ -182,10 +142,12 @@ When kitchen staff logs shift outcomes via `POST /api/records`:
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
 | `POST` | `/api/forecast` | Generates dish portion recommendations with buffer breakdown & explainability. |
-| `GET` | `/api/records` | Lists historical meal logs with prepared, served, and leftover counts. |
+| `GET` | `/api/records` | Lists historical meal logs with prepared, served, and leftover counts (with query filters). |
 | `POST` | `/api/records` | Logs post-service actuals and triggers immediate **$< 80\text{ ms}$** retraining. |
-| `GET` | `/api/metrics` | Calculates total portions cooked, waste prevented (kg), and leftover rates. |
+| `POST` | `/api/records/batch` | Submits batch of post-service meal records and bulk-retrains models. |
+| `POST` | `/api/records/reset-synthetic` | Resets memory records to standard 60-day synthetic baseline dataset. |
 | `GET` | `/api/dishes` | Retrieves active dish catalog with baseline portions and categories. |
+| `GET` | `/api/metrics` | Exposes chronological holdout benchmark metrics (Random Forest vs. Historical Average). |
 | `GET` | `/health` | Diagnostics endpoint checking ML model readiness, storage mode, and record counts. |
 
 ---
@@ -195,7 +157,7 @@ When kitchen staff logs shift outcomes via `POST /api/records`:
 The frontend (`Frontend/`) is an **npm-workspaces monorepo** delivering a luxury, Awwwards-tier web application and a native mobile companion app.
 
 ```text
-frontend/
+Frontend/
 ├── apps/
 │   ├── web/                         # Next.js 15 App Router web application
 │   │   ├── src/
@@ -205,11 +167,15 @@ frontend/
 │   │   │   │   ├── planner/         # Forward-looking preparation schedule
 │   │   │   │   ├── forecasts/       # Historical baseline vs. predictive charts
 │   │   │   │   ├── analytics/       # Food surplus & cost savings reporting
-│   │   │   │   └── settings/        # Buffer parameters & kitchen configuration
+│   │   │   │   ├── settings/        # Buffer parameters & kitchen configuration
+│   │   │   │   ├── login/           # Authentication portal
+│   │   │   │   └── onboarding/      # First-time dining hall configuration wizard
 │   │   │   ├── components/
 │   │   │   │   ├── dashboard/       # DashboardHeader, MetricCards, DishPreparationTable,
 │   │   │   │   │                    # KeyInsightsPanel, DashboardActionBar, Modals
 │   │   │   │   ├── landing/         # BentoGridSection (d3 visual curve charts)
+│   │   │   │   ├── CinematicIntro.tsx # Dynamic brand animation sequence
+│   │   │   │   ├── UnifiedPlatformSection.tsx # Web & mobile synchrony showcase
 │   │   │   │   ├── Sidebar.tsx      # Hover-expanding / pinned desktop rail
 │   │   │   │   └── BrandLogo.tsx    # Responsive SVG brand mark
 │   │   │   └── lib/hooks/           # useMealForecast React hook for live FastAPI polling
@@ -217,7 +183,8 @@ frontend/
 │   │
 │   └── mobile/                      # Expo SDK 57 React Native mobile app
 │       ├── App.tsx                  # Native root, tab routing & offline cache
-│       ├── components/              # Native portion steppers & video splash
+│       ├── Intro.tsx                # Hardware-accelerated video brand reel
+│       ├── src/intro/               # Mobile splash & onboarding animations
 │       └── package.json
 │
 ├── packages/
@@ -337,9 +304,9 @@ MealRelay's Random Forest Regressor is benchmarked against an empirical 60-day m
 
 | Metric | Historical Moving Baseline | MealRelay Random Forest | Improvement |
 | :--- | :---: | :---: | :---: |
-| **Mean Absolute Error (MAE)** | `6.45 portions` | **`5.64 portions`** | **+12.6% Accuracy** |
-| **Root Mean Squared Error (RMSE)** | `8.23 portions` | **`7.10 portions`** | **+13.7% Fewer Outliers** |
-| **Severe Under-Prep Instances** | `14 instances` | **`2 instances`** | **-85.7% Stockout Risk** |
+| **Mean Absolute Error (MAE)** | `6.40 portions` | **`5.31 portions`** | **+17.0% Accuracy** |
+| **Root Mean Squared Error (RMSE)** | `7.81 portions` | **`6.44 portions`** | **+17.5% Fewer Outliers** |
+| **Directional Bias** | `-0.78 portions` | **`-0.39 portions`** | **50.0% Closer to Neutral** |
 | **Cold-Start Fallback Grace** | N/A | **3-Tier Fallback** | **Zero Model Failures** |
 
 Run the benchmark reproduction script:
@@ -354,7 +321,7 @@ uv run python -m src.models.evaluation
 
 MealRelay maintains high test coverage across both frontend contracts and backend ML logic:
 
-### Backend Tests (28 Automated Tests)
+### Backend Tests (36 Automated Tests)
 ```bash
 cd backend
 uv run pytest -v
