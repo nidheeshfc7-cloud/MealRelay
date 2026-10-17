@@ -10,8 +10,7 @@ from src.api.main import app
 @pytest.fixture(scope="module")
 def client():
     """Provides a TestClient for FastAPI endpoints."""
-    with TestClient(app) as test_client:
-        yield test_client
+    return TestClient(app)
 
 
 def test_health_check_endpoint(client: TestClient):

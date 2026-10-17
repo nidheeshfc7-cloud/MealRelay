@@ -55,6 +55,30 @@ def create_meal_record(record_in: MealRecordCreate) -> MealRecord:
 
 
 @router.post(
+    "/records/batch",
+    response_model=List[MealRecord],
+    status_code=status.HTTP_201_CREATED,
+    summary="Create multiple historical meal records and retrain models on the batch",
+)
+def create_meal_records_batch(records_in: List[MealRecordCreate]) -> List[MealRecord]:
+    """Logs multiple kitchen meal records simultaneously and retrains the model on the batch."""
+    if not records_in:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="At least one meal record must be provided in the batch.",
+        )
+    service = ForecastService.get_instance()
+    try:
+        new_records = service.add_records_batch(records_in)
+        return new_records
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to record meal batch: {str(e)}",
+        )
+
+
+@router.post(
     "/records/reset-synthetic",
     response_model=Dict[str, Any],
     status_code=status.HTTP_200_OK,

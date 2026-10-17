@@ -102,15 +102,18 @@ class FeaturePreprocessor:
     @classmethod
     def prepare_training_dataset(
         cls,
-        records: List[MealRecord]
-    ) -> Tuple[pd.DataFrame, pd.Series]:
+        records: List[MealRecord],
+        return_weights: bool = False,
+    ) -> Tuple[pd.DataFrame, pd.Series, Optional[np.ndarray]]:
         """Prepares feature matrix X and continuous target vector y for model training."""
         df = cls.records_to_dataframe(records)
         
         # Filter out records without valid ground truth demand (explicit null preservation)
         df_valid = df.dropna(subset=["target_demand"]).copy()
         if df_valid.empty:
-            return pd.DataFrame(columns=cls.FEATURE_COLUMNS), pd.Series(dtype=float)
+            empty_x = pd.DataFrame(columns=cls.FEATURE_COLUMNS)
+            empty_y = pd.Series(dtype=float)
+            return (empty_x, empty_y, np.array([])) if return_weights else (empty_x, empty_y)
 
         df_featured = cls.compute_lagged_averages(df_valid)
 
@@ -120,6 +123,11 @@ class FeaturePreprocessor:
 
         X = df_featured[cls.FEATURE_COLUMNS].copy()
         y = df_featured["target_demand"].astype(float).copy()
+
+        if return_weights:
+            # Real kitchen records get 3.0x higher weighting than synthetic data
+            weights = np.where(df_featured["is_synthetic"] == False, 3.0, 1.0)
+            return X, y, weights
 
         return X, y
 

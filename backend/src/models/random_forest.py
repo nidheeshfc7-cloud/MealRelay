@@ -44,7 +44,7 @@ class DemandRandomForestModel:
             min_samples_split=4,
             min_samples_leaf=2,
             random_state=self.random_state,
-            n_jobs=-1,
+            n_jobs=1,
         )
 
         self.pipeline: Pipeline = Pipeline(
@@ -57,12 +57,16 @@ class DemandRandomForestModel:
         self.feature_names_: List[str] = []
         self.feature_importances_: Dict[str, float] = {}
 
-    def fit(self, X: pd.DataFrame, y: pd.Series) -> "DemandRandomForestModel":
+    def fit(self, X: pd.DataFrame, y: pd.Series, sample_weight: Optional[np.ndarray] = None) -> "DemandRandomForestModel":
         """Fits the pipeline on feature matrix X and continuous target vector y."""
         if X.empty or y.empty:
             raise ValueError("Training feature set and target series cannot be empty.")
 
-        self.pipeline.fit(X, y)
+        fit_params = {}
+        if sample_weight is not None:
+            fit_params["regressor__sample_weight"] = sample_weight
+
+        self.pipeline.fit(X, y, **fit_params)
         self.is_fitted = True
         self._extract_feature_importances()
         return self

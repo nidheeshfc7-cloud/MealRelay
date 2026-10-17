@@ -46,10 +46,10 @@ class ForecastService:
         # 1. Fit baseline model
         self.baseline_model.fit(self.records)
 
-        # 2. Extract features and fit Random Forest
-        X, y = FeaturePreprocessor.prepare_training_dataset(self.records)
+        # 2. Extract features and fit Random Forest with priority sample weights for real records
+        X, y, weights = FeaturePreprocessor.prepare_training_dataset(self.records, return_weights=True)
         if not X.empty and not y.empty:
-            self.rf_model.fit(X, y)
+            self.rf_model.fit(X, y, sample_weight=weights)
             self.is_trained = True
 
     def get_dishes(self) -> List[Dish]:
@@ -81,7 +81,7 @@ class ForecastService:
         return sorted_results[:limit]
 
     def add_record(self, record_in: MealRecordCreate) -> MealRecord:
-        """Adds a new historical meal record and updates model state."""
+        """Adds a new historical meal record and immediately retrains models."""
         record_id = f"rec_{date.today().strftime('%Y%m%d')}_{uuid.uuid4().hex[:6]}"
         derived_day = record_in.meal_date.weekday() if record_in.day_of_week is None else record_in.day_of_week
 
@@ -100,9 +100,36 @@ class ForecastService:
         )
 
         self.records.append(new_record)
-        # Update baseline model immediately
-        self.baseline_model.fit(self.records)
+        # Immediately retrain models on updated dataset incorporating real user outcomes
+        self._retrain_models()
         return new_record
+
+    def add_records_batch(self, records_in: List[MealRecordCreate]) -> List[MealRecord]:
+        """Adds multiple historical meal records and triggers retraining once for the batch."""
+        created_records: List[MealRecord] = []
+        for record_in in records_in:
+            record_id = f"rec_{date.today().strftime('%Y%m%d')}_{uuid.uuid4().hex[:6]}"
+            derived_day = record_in.meal_date.weekday() if record_in.day_of_week is None else record_in.day_of_week
+
+            new_record = MealRecord(
+                id=record_id,
+                dish_id=record_in.dish_id,
+                dish_name=record_in.dish_name or self.dishes.get(record_in.dish_id, Dish(id=record_in.dish_id, name=record_in.dish_id, meal_type="lunch", category="main")).name,
+                meal_date=record_in.meal_date,
+                meal_type=record_in.meal_type,
+                day_of_week=derived_day,
+                attendance=record_in.attendance,
+                prepared_portions=record_in.prepared_portions,
+                served_portions=record_in.served_portions,
+                leftover_portions=record_in.leftover_portions,
+                is_synthetic=False,
+            )
+            self.records.append(new_record)
+            created_records.append(new_record)
+
+        # Retrain once for the entire batch
+        self._retrain_models()
+        return created_records
 
     def generate_forecast(self, request: ForecastRequest) -> ForecastResponse:
         """Generates next-day preparation recommendations for all requested dishes."""
