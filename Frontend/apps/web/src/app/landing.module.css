@@ -607,6 +607,10 @@
 .platform {
   padding: 55px 0 65px;
 }
+.platform::before {
+  opacity: 1;
+  background: url("/images/landing-platform.webp") center / cover no-repeat;
+}
 .platformGrid {
   position: relative;
   display: grid;
