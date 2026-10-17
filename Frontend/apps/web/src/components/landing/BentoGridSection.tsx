@@ -3,17 +3,18 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, Leaf, Utensils, BarChart3 } from "lucide-react";
+import { ArrowRight, Check, Utensils } from "lucide-react";
 import { area, curveMonotoneX, line } from "d3-shape";
 import { scaleLinear, scalePoint } from "d3-scale";
 import { DEFAULT_MEALS, formatPortionNumber } from "@mealrelay/core";
 import styles from "./BentoGridSection.module.css";
-import ingredientPhoto from "../../../../mobile/assets/images/mealrelay-impact-still.jpg";
+import ingredientPhoto from "../../../public/images/veggie box.png";
+import dashboardMockup from "../../../public/images/MealRelay Dashboard Mockup.png";
+import analyticsPhone from "../../../public/images/Angled Mealrelay Kitchen Dashboard Phone.png";
 
 const TREND = [480, 560, 530, 720, 820, 620, 580];
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const planned = DEFAULT_MEALS.reduce((sum, meal) => sum + meal.base, 0);
-const served = DEFAULT_MEALS.reduce((sum, meal) => sum + meal.actual, 0);
 const x = scalePoint<number>()
   .domain(TREND.map((_, i) => i))
   .range([22, 398]);
@@ -148,38 +149,14 @@ function PreparationList() {
 
 function AnalyticsPhone() {
   return (
-    <div className={styles.phone}>
-      <div className={styles.phoneNotch} aria-hidden="true" />
-      <div className={styles.phoneBrand}>
-        <Leaf size={17} aria-hidden="true" />
-        mealrelay.
-      </div>
-      <p>
-        Service overview <span>Sample data</span>
-      </p>
-      {[
-        { label: "Planned portions", value: planned, Icon: Utensils },
-        { label: "Served portions", value: served, Icon: BarChart3 },
-        { label: "Preparation gap", value: planned - served, Icon: Leaf },
-      ].map(({ label, value, Icon }, index) => (
-        <div className={styles.phoneMetric} key={label}>
-          <Icon size={17} aria-hidden="true" />
-          <div>
-            <span>{label}</span>
-            <strong>{formatPortionNumber(value)}</strong>
-            <small>
-              {index === 2
-                ? "Planned minus served"
-                : "Illustrative service count"}
-            </small>
-          </div>
-          <div className={styles.miniBars} aria-hidden="true">
-            {[35, 58, 45, 72, 63].map((height, i) => (
-              <i key={i} style={{ height: `${height}%` }} />
-            ))}
-          </div>
-        </div>
-      ))}
+    <div className={styles.phoneVisual}>
+      <Image
+        src={analyticsPhone}
+        alt="Illustrative MealRelay analytics dashboard on a tilted phone"
+        sizes="(max-width: 650px) 48vw, (max-width: 1000px) 26vw, 310px"
+        quality={90}
+        className={styles.phoneImage}
+      />
     </div>
   );
 }
@@ -233,10 +210,9 @@ export function BentoGridSection() {
           </div>
           <div className={styles.productVisual}>
             <Image
-              src="/images/MealRelay Dashboard Mockup.png"
+              src={dashboardMockup}
               alt="MealRelay dashboard displayed on a laptop and phone, with meal quantities and service charts"
-              width={1448}
-              height={1086}
+              quality={90}
               sizes="(max-width: 650px) 92vw, (max-width: 1000px) 90vw, 720px"
               className={styles.productImage}
             />
@@ -283,7 +259,7 @@ export function BentoGridSection() {
               alt=""
               fill
               sizes="(max-width: 650px) 45vw, 340px"
-              style={{ objectFit: "cover", objectPosition: "center 60%" }}
+              style={{ objectFit: "cover", objectPosition: "center right" }}
             />
           </div>
           <div className={styles.bottomCopy}>

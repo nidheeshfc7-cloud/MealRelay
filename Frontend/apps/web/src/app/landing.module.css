@@ -2,7 +2,7 @@
   --forest: #003f2f;
   --dark: #002f24;
   --lime: #d5fb53;
-  --canvas: #f6f7f1;
+  --canvas: #f7fdf4;
   --ink: #172a21;
   --muted: #718078;
   --line: #e5ebe1;
@@ -38,7 +38,7 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(254, 255, 254, 0.94);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
 }
@@ -93,11 +93,11 @@
 }
 .secondary {
   border: 1px solid #71807870;
-  background: #ffffffb3;
+  background: #fefffeb3;
   color: var(--forest);
 }
 .secondary:hover {
-  background: white;
+  background: #fefffe;
 }
 .hero .primary,
 .hero .secondary {
@@ -565,7 +565,7 @@
   isolation: isolate;
   overflow: hidden;
   padding: 45px 0;
-  background: var(--canvas);
+  background: #f7fdf4;
 }
 .comparisonGrid {
   display: grid;
@@ -575,7 +575,7 @@
   margin: auto;
 }
 .comparisonCard {
-  background: #ffffffed;
+  background: #fefffe;
   padding: 30px;
   border: 1px solid var(--line);
   border-radius: 13px;

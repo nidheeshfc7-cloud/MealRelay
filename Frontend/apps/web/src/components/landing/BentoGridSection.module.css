@@ -2,9 +2,9 @@
   --forest: #003f2f;
   --ink: #172a21;
   --lime: #d5fb53;
-  --ivory: #f6f7f1;
+  --ivory: #f7fdf4;
   padding: 60px 32px;
-  background: white;
+  background: #f7fdf4;
   color: var(--ink);
   scroll-margin-top: 80px;
 }
@@ -20,8 +20,9 @@
   isolation: isolate;
   overflow: hidden;
   border-radius: 26px;
-  border: 1px solid #e5ebe17a;
-  background: linear-gradient(140deg, #fafbf7, var(--ivory));
+  border: 1px solid #dce8d7;
+  background: #fefffe;
+  box-shadow: 0 4px 18px #003f2f08;
   padding: 30px;
   transition:
     transform 0.35s ease,
@@ -108,6 +109,7 @@
   margin-block: 10px;
 }
 .productImage {
+  mask-image: linear-gradient(to bottom, transparent, #000 5% 95%, transparent);
   width: 100%;
   height: auto;
   object-fit: contain;
@@ -321,15 +323,9 @@
 .wastePhoto {
   position: absolute;
   inset: 0 0 0 45%;
-  border-radius: 48% 0 0 12%;
   overflow: hidden;
   z-index: -1;
-}
-.wastePhoto::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, #f6f7f1, transparent 55%);
+  mask-image: linear-gradient(90deg, transparent, #000 55%);
 }
 .analytics::after {
   content: "";
@@ -342,98 +338,18 @@
   border-radius: 50%;
   z-index: -1;
 }
-.phone {
+.phoneVisual {
   position: absolute;
-  left: 59%;
-  top: 29px;
-  width: 38%;
-  min-width: 190px;
-  padding: 26px 12px 20px;
-  background: white;
-  border: 5px solid #172a21;
-  border-radius: 31px;
-  transform: rotate(9deg);
-  box-shadow: 0 12px 24px #003f2f14;
-  font-variant-numeric: tabular-nums;
+  left: 55%;
+  top: 17px;
+  width: 49%;
+  pointer-events: none;
 }
-.phoneNotch {
-  position: absolute;
-  top: 0;
-  left: 26%;
-  width: 48%;
-  height: 15px;
-  background: #172a21;
-  border-radius: 0 0 11px 11px;
-}
-.phoneBrand {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--forest);
-  letter-spacing: -0.04em;
-}
-.phoneBrand svg {
-  color: #245c40;
-}
-.phone > p {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 10px;
-  margin-block: 17px 12px;
-  color: #52665a;
-}
-.phone > p span {
-  font-size: 8px;
-}
-.phoneMetric {
-  display: flex;
-  gap: 7px;
-  position: relative;
-  padding: 13px 8px;
-  margin-top: 8px;
-  border: 1px solid #e5ebe1;
-  border-radius: 10px;
-  background: #fafbf7;
-}
-.phoneMetric > svg {
-  color: var(--forest);
-  flex-shrink: 0;
-}
-.phoneMetric span {
+.phoneImage {
   display: block;
-  font-size: 9px;
-}
-.phoneMetric strong {
-  display: block;
-  font-size: 21px;
-  font-weight: 800;
-  margin-top: 4px;
-  letter-spacing: -0.03em;
-}
-.phoneMetric small {
-  display: block;
-  font-size: 7px;
-  margin-top: 4px;
-  color: #52665a;
-}
-.miniBars {
-  position: absolute;
-  right: 8px;
-  bottom: 15px;
-  display: flex;
-  align-items: end;
-  gap: 3px;
-  width: 31px;
-  height: 28px;
-  opacity: 0.65;
-}
-.miniBars i {
-  width: 4px;
-  background: #e6fca8;
-  border-radius: 1px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 .section[data-animated="true"]
   .card:not([data-visible="true"]):not(:focus-within) {
@@ -476,6 +392,7 @@
     max-width: 680px;
   }
   .productImage {
+    mix-blend-mode: multiply;
     max-height: 410px;
   }
   .forecast,
@@ -513,11 +430,10 @@
   .bottomCopy .description {
     font-size: 13px;
   }
-  .phone {
-    left: 65%;
-    width: 47%;
-    min-width: 170px;
-    top: 55px;
+  .phoneVisual {
+    left: 60%;
+    width: 56%;
+    top: 45px;
   }
 }
 @media (max-width: 650px) {
@@ -585,11 +501,10 @@
   .bottomCopy h3 {
     font-size: 34px;
   }
-  .phone {
-    left: 63%;
-    top: 45px;
-    width: 45%;
-    min-width: 175px;
+  .phoneVisual {
+    left: 58%;
+    top: 40px;
+    width: 57%;
   }
 }
 @media (prefers-reduced-motion: reduce) {
