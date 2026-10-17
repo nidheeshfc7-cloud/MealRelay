@@ -380,3 +380,177 @@ export const calculateEsgMetrics = (
     targetProgressPercent,
   };
 };
+
+export interface DailyRecordSummary {
+  dayNumber: number;
+  date: string;
+  dayOfWeekShort: string;
+  isWeekend: boolean;
+  totalPrepared: number;
+  totalServed: number;
+  totalLeftovers: number;
+  leftoverPercent: number;
+  rupeesSaved: number;
+  kgSaved: number;
+  portionsRescued: number;
+  hasShortage: boolean;
+  recordsCount: number;
+}
+
+export const groupRecordsByDayOfMonth = (
+  records: MealRecord[],
+  monthKey: string
+): DailyRecordSummary[] => {
+  if (records.length === 0) return [];
+
+  // Determine effective year and month
+  let effectiveYear = 2026;
+  let effectiveMonth = 10;
+
+  if (monthKey && monthKey.includes('-')) {
+    const [y, m] = monthKey.split('-').map(Number);
+    if (!isNaN(y) && !isNaN(m)) {
+      effectiveYear = y;
+      effectiveMonth = m;
+    }
+  } else {
+    // Default to the first record's month
+    const firstDate = records[0]?.meal_date;
+    if (firstDate && firstDate.includes('-')) {
+      const [y, m] = firstDate.split('-').map(Number);
+      effectiveYear = y;
+      effectiveMonth = m;
+    }
+  }
+
+  // Days in month
+  const totalDays = new Date(effectiveYear, effectiveMonth, 0).getDate();
+
+  // Index records by date
+  const dateMap = new Map<string, MealRecord[]>();
+  for (const r of records) {
+    if (!r.meal_date) continue;
+    if (!dateMap.has(r.meal_date)) {
+      dateMap.set(r.meal_date, []);
+    }
+    dateMap.get(r.meal_date)!.push(r);
+  }
+
+  const dayShorts = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const dailySummaries: DailyRecordSummary[] = [];
+
+  for (let day = 1; day <= totalDays; day++) {
+    const dayStr = String(day).padStart(2, '0');
+    const monthStr = String(effectiveMonth).padStart(2, '0');
+    const dateStr = `${effectiveYear}-${monthStr}-${dayStr}`;
+
+    const dateObj = new Date(effectiveYear, effectiveMonth - 1, day);
+    const dayOfWeek = dateObj.getDay(); // 0=Sun, 6=Sat
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    const dayOfWeekShort = dayShorts[dayOfWeek];
+
+    const dayRecords = dateMap.get(dateStr) || [];
+    let prep = 0;
+    let served = 0;
+    let leftovers = 0;
+    let rescued = 0;
+    let kg = 0;
+    let rupees = 0;
+    let hasShortage = false;
+
+    for (const r of dayRecords) {
+      const m = calculateRecordMetrics(r);
+      prep += m.prepared;
+      served += m.served;
+      leftovers += m.leftovers;
+      rescued += m.portionsRescued;
+      kg += m.kgSaved;
+      rupees += m.rupeesSaved;
+      if (m.hadShortage) hasShortage = true;
+    }
+
+    const leftoverPercent = prep > 0 ? Math.round((leftovers / prep) * 1000) / 10 : 0;
+
+    dailySummaries.push({
+      dayNumber: day,
+      date: dateStr,
+      dayOfWeekShort,
+      isWeekend,
+      totalPrepared: prep,
+      totalServed: served,
+      totalLeftovers: leftovers,
+      leftoverPercent,
+      rupeesSaved: rupees,
+      kgSaved: Math.round(kg * 10) / 10,
+      portionsRescued: rescued,
+      hasShortage,
+      recordsCount: dayRecords.length,
+    });
+  }
+
+  return dailySummaries;
+};
+
+export interface MealSessionSummary {
+  session: 'breakfast' | 'lunch' | 'dinner';
+  name: string;
+  timeRange: string;
+  totalPrepared: number;
+  totalServed: number;
+  totalLeftovers: number;
+  leftoverPercent: number;
+  rupeesSaved: number;
+  kgSaved: number;
+  portionsRescued: number;
+  accuracyRate: number;
+}
+
+export const groupRecordsByMealSession = (records: MealRecord[]): MealSessionSummary[] => {
+  const sessions: { key: 'breakfast' | 'lunch' | 'dinner'; name: string; time: string }[] = [
+    { key: 'breakfast', name: 'Breakfast Service', time: '7:30 – 9:30 AM' },
+    { key: 'lunch', name: 'Lunch Service', time: '12:30 – 2:30 PM' },
+    { key: 'dinner', name: 'Dinner Service', time: '7:00 – 9:00 PM' },
+  ];
+
+  return sessions.map((s) => {
+    const sessionRecords = records.filter((r) => r.meal_type === s.key);
+    let prep = 0;
+    let served = 0;
+    let leftovers = 0;
+    let rescued = 0;
+    let kg = 0;
+    let rupees = 0;
+    let shortages = 0;
+
+    for (const r of sessionRecords) {
+      const m = calculateRecordMetrics(r);
+      prep += m.prepared;
+      served += m.served;
+      leftovers += m.leftovers;
+      rescued += m.portionsRescued;
+      kg += m.kgSaved;
+      rupees += m.rupeesSaved;
+      if (m.hadShortage) shortages += 1;
+    }
+
+    const leftoverPercent = prep > 0 ? Math.round((leftovers / prep) * 1000) / 10 : 0;
+    const accuracyRate = sessionRecords.length > 0
+      ? Math.round(((sessionRecords.length - shortages) / sessionRecords.length) * 1000) / 10
+      : 100;
+
+    return {
+      session: s.key,
+      name: s.name,
+      timeRange: s.time,
+      totalPrepared: prep,
+      totalServed: served,
+      totalLeftovers: leftovers,
+      leftoverPercent,
+      rupeesSaved: rupees,
+      kgSaved: Math.round(kg * 10) / 10,
+      portionsRescued: rescued,
+      accuracyRate,
+    };
+  });
+};
+
