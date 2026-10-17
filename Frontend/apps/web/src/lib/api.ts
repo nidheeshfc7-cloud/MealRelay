@@ -11,6 +11,7 @@ import {
   MealRecord,
   MealRecordsFilterParams,
   DishCatalogItem,
+  EvaluationReport,
 } from "./types/api";
 
 const getApiBaseUrl = (): string => {
@@ -187,4 +188,26 @@ export const checkBackendHealth = async (): Promise<{
   }
 
   return response.json();
+};
+
+/**
+ * Retrieves the ML model chronological holdout evaluation report (Random Forest vs Historical Average).
+ */
+export const fetchModelMetrics = async (): Promise<EvaluationReport> => {
+  const baseUrl = getApiBaseUrl();
+  const endpoint = `${baseUrl}/api/metrics`;
+
+  const response = await fetch(endpoint, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch model evaluation metrics (${response.status})`);
+  }
+
+  const data: EvaluationReport = await response.json();
+  return data;
 };

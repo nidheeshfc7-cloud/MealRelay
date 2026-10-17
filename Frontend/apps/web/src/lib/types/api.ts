@@ -75,3 +75,25 @@ export interface DishCatalogItem {
   description?: string;
 }
 
+export interface ModelMetrics {
+  model_name: string;
+  mae: number;
+  rmse: number;
+  over_prediction_rate_pct: number;
+  under_prediction_rate_pct: number;
+  mean_bias_portions: number;
+  sample_count: number;
+}
+
+export interface EvaluationReport {
+  random_forest: ModelMetrics;
+  baseline: ModelMetrics;
+  mae_improvement_pct: number;
+  train_samples_count: number;
+  test_samples_count: number;
+  train_days_count: number;
+  test_days_count: number;
+  is_synthetic: boolean;
+  disclaimer: string;
+}
+
