@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   BarChart3,
@@ -12,7 +13,6 @@ import {
 } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { CinematicIntro } from "@/components/CinematicIntro";
-import { LandingPreview } from "@/components/LandingPreview";
 import Footer from "@/components/footer";
 import { DEFAULT_MEALS, formatPortionNumber } from "@mealrelay/core";
 import s from "./landing.module.css";
@@ -98,9 +98,6 @@ export default function LandingPage() {
         <section className={s.hero} aria-labelledby="hero-title">
           <div className={`${s.container} ${s.heroGrid}`}>
             <div className={s.heroCopy}>
-              <span className={s.pill}>
-                Demand forecasting for institutional kitchens
-              </span>
               <h1 id="hero-title">
                 Every meal planned.
                 <br />
@@ -262,24 +259,16 @@ export default function LandingPage() {
                 Explore the Platform <ArrowRight size={16} aria-hidden="true" />
               </Link>
             </div>
-            <div className={s.devices}>
-              <div className={s.laptop}>
-                <LandingPreview compact />
-              </div>
-              <div className={s.phone}>
-                <span>Tomorrow’s plan</span>
-                <strong>{total}</strong>
-                <small>Sample planned portions</small>
-                <ul>
-                  {DEFAULT_MEALS.map((meal) => (
-                    <li key={meal.key}>
-                      <span>{meal.name}</span>
-                      <b>{meal.base}</b>
-                    </li>
-                  ))}
-                </ul>
-                <Link href="/planner">Review meal plan</Link>
-              </div>
+            <div className={s.mockupWrapper}>
+              <Image
+                src="/MealRelay Dashboard Mockup.png"
+                alt="MealRelay Dashboard Mockup on Laptop and Mobile"
+                width={1448}
+                height={1086}
+                priority
+                sizes="(max-width: 540px) 100vw, (max-width: 1100px) 60vw, 650px"
+                className={s.mockupImage}
+              />
             </div>
             <div className={s.features}>
               {features.map(({ title, description, Icon }) => (

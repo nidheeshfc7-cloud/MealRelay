@@ -12,6 +12,7 @@ import { EditQuantitiesModal } from "@/components/dashboard/EditQuantitiesModal"
 import { LogOutcomesModal } from "@/components/dashboard/LogOutcomesModal";
 import { DishItem, KeyInsight, MealShiftKey } from "@/components/dashboard/types";
 import { useMealForecast } from "@/lib/hooks/useMealForecast";
+import { ForecastResponse } from "@/lib/types/api";
 
 interface BaseDishConfig {
   id: string;
@@ -183,22 +184,28 @@ export default function DashboardPage() {
   const baseDishes = CANONICAL_DISHES_BY_SHIFT[selectedShift];
 
   // Query live ML forecasting service from FastAPI backend
-  const {
-    forecast,
-    isLoading,
-    error,
-    refetch,
-    isOffline,
-  } = useMealForecast({
-    date: selectedDate,
-    mealType: selectedShift,
-    expectedAttendance,
-    safetyBufferPct,
-    dishes: baseDishes.map((d) => ({
-      dish_id: d.id,
-      dish_name: d.name,
-    })),
-  });
+  // const {
+  //   forecast,
+  //   isLoading,
+  //   error,
+  //   refetch,
+  //   isOffline,
+  // } = useMealForecast({
+  //   date: selectedDate,
+  //   mealType: selectedShift,
+  //   expectedAttendance,
+  //   safetyBufferPct,
+  //   dishes: baseDishes.map((d) => ({
+  //     dish_id: d.id,
+  //     dish_name: d.name,
+  //   })),
+  // });
+  const forecast = null as ForecastResponse | null;
+  const isLoading = false;
+  const error: string | null = null;
+  const refetch = async () => {};
+  const isOffline = false;
+
 
   // Merge ML recommendations with UI dish presentation and manual overrides
   const currentDishes: DishItem[] = useMemo(() => {
@@ -397,7 +404,7 @@ export default function DashboardPage() {
           />
 
           {/* Backend Error / Offline Warning Banner (Zero Fallback Policy) */}
-          {error && (
+          {/* {error && (
             <div className="p-4 rounded-2xl bg-amber-500/10 border-2 border-amber-600/30 text-ink text-xs sm:text-sm font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm animate-fadeIn">
               <div className="flex items-center gap-2.5">
                 <AlertCircle size={20} className="text-amber-700 shrink-0" />
@@ -419,7 +426,7 @@ export default function DashboardPage() {
                 <span>Retry ML Query</span>
               </button>
             </div>
-          )}
+          )} */}
 
           {/* 2. Top Metric Cards: Estimated Demand, Recommended Prep, Forecast Confidence */}
           <MetricCards
