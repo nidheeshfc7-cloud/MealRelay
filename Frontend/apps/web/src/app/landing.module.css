@@ -112,28 +112,24 @@
   overflow: hidden;
   padding: 64px 0 68px;
 }
-.hero::before,
-.comparison::before {
+.hero::before {
   content: "";
   position: absolute;
-  inset: -20px;
+  inset: 0;
   z-index: -2;
-  background: url("/images/landing-food.webp") center 56% / cover;
-  filter: blur(8px);
-  opacity: 0.3;
+  background: url("/images/landing-hero.webp") center / cover no-repeat;
 }
-.hero::after,
-.comparison::after {
+.hero::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
   background: linear-gradient(
     90deg,
-    #f6f7f1fa 0%,
-    #f6f7f1ef 34%,
-    #f6f7f1c9 65%,
-    #f6f7f18c
+    #ffffff70 0%,
+    #f6f7f166 34%,
+    #f6f7f130 65%,
+    #ffffff10
   );
 }
 .heroGrid {
@@ -538,12 +534,19 @@
   padding: 45px 0;
 }
 .comparison::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
   inset: 0;
   background: url("/images/landing-kitchen.webp") center / cover no-repeat;
   filter: none;
   opacity: 1;
 }
 .comparison::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: linear-gradient(90deg, #ffffff30, #f6f7f166 30% 70%, #ffffff30);
 }
 .comparisonGrid {
