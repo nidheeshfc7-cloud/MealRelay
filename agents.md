@@ -154,6 +154,11 @@ To maintain a polished, award-winning feel, follow these animation standards acr
 - Never expose secrets or service credentials in client-side code.
 - Do not invent customer data, pilot results, savings, or model accuracy.
 - Commit message convention: Inspect previous git commit records and strictly follow the established sequential two-digit numbered prefix format (e.g., `01: initial commit`, `02: fixed something`, `03: ...`). After completing each successful step, make a commit following this exact format.
+- **Premium Utility Class Standards (Zero Fractional / Decimal Classes):**
+  - Avoid using arbitrary decimal values or micro-brackets (e.g., do NOT use `p-4.5`, `gap-3.5`, `text-[11px]`, `shadow-2xs`, `h-1.5`, or arbitrary pixel bracket hacks).
+  - Strictly use default, standard Tailwind classes that are guaranteed to work across all environments (`text-xs`, `text-sm`, `text-base`, `text-lg`, `text-xl`, `p-3`, `p-4`, `p-5`, `p-6`, `gap-2`, `gap-3`, `gap-4`, `gap-6`, `h-2`, `h-3`, `rounded-xl`, `rounded-2xl`).
+  - Prioritize eye comfort and legibility: avoid tiny straining text; use comfortable baseline sizes (`text-sm` for notes/captions, `text-base` for primary items).
 - Keep this document focused on persistent MVP requirements. Put detailed architecture, tasks, database schemas, APIs, and implementation phases in `PLAN.md`.
 
 **Core principle:** Build a reliable, explainable, minimal meal-planning web app first. Future mobile apps and production-scale features are outside the current MVP scope.
+

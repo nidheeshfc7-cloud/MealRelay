@@ -21,10 +21,10 @@ export const DishPreparationTable: React.FC<DishPreparationTableProps> = ({
         {/* Table Top Header */}
         <div className="flex items-center justify-between pb-5 border-b border-line-light/70">
           <div>
-            <h2 className="text-lg sm:text-xl font-extrabold text-ink tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-ink tracking-tight">
               Dish-wise Preparation Plan
             </h2>
-            <p className="text-xs text-ink-secondary mt-0.5 font-medium">
+            <p className="text-sm text-ink-secondary mt-1 font-medium">
               Targeted cooking portions calculated per menu dish
             </p>
           </div>
@@ -32,29 +32,29 @@ export const DishPreparationTable: React.FC<DishPreparationTableProps> = ({
           <button
             onClick={onViewFullMenu}
             type="button"
-            className="text-xs font-semibold text-forest hover:text-forest-dark flex items-center gap-1.5 transition-colors px-3 py-1.5 rounded-xl hover:bg-canvas border border-line-light/80"
+            className="text-sm font-semibold text-forest hover:text-forest-dark flex items-center gap-2 transition-colors px-4 py-2 rounded-xl hover:bg-canvas border border-line-light/80"
           >
-            <Utensils size={13} className="text-forest" />
+            <Utensils size={16} className="text-forest" />
             <span>View full menu</span>
           </button>
         </div>
 
         {/* Minimalist Data Table */}
-        <div className="overflow-x-auto mt-1">
+        <div className="overflow-x-auto mt-2">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-line-light/60 text-[11px] font-bold uppercase tracking-wider text-ink-secondary">
-                <th className="py-4 px-2 font-bold">Dish</th>
+              <tr className="border-b border-line-light/60 text-xs font-bold uppercase tracking-wider text-ink-secondary">
+                <th className="py-4 px-3 font-bold">Dish</th>
                 <th className="py-4 px-4 font-bold">
-                  <span className="inline-flex items-center gap-1">
+                  <span className="inline-flex items-center gap-2">
                     Predicted Demand
-                    <Info size={11} className="text-ink-secondary/60" />
+                    <Info size={15} className="text-ink-secondary" />
                   </span>
                 </th>
                 <th className="py-4 px-4 font-bold">
-                  <span className="inline-flex items-center gap-1">
+                  <span className="inline-flex items-center gap-2">
                     Recommended Qty
-                    <Info size={11} className="text-ink-secondary/60" />
+                    <Info size={15} className="text-ink-secondary" />
                   </span>
                 </th>
                 <th className="py-4 px-4 font-bold">Notes</th>
@@ -64,20 +64,20 @@ export const DishPreparationTable: React.FC<DishPreparationTableProps> = ({
               {isLoading ? (
                 Array.from({ length: 4 }).map((_, idx) => (
                   <tr key={`skeleton-${idx}`} className="animate-pulse">
-                    <td className="py-4 px-2">
-                      <div className="space-y-1.5">
-                        <div className="h-4 w-32 bg-line-light/70 rounded" />
-                        <div className="h-3 w-16 bg-line-light/50 rounded" />
+                    <td className="py-5 px-3">
+                      <div className="space-y-2">
+                        <div className="h-4 w-36 bg-line-light/70 rounded" />
+                        <div className="h-3 w-20 bg-line-light/50 rounded" />
                       </div>
                     </td>
-                    <td className="py-4 px-4">
-                      <div className="h-4 w-14 bg-line-light/60 rounded" />
+                    <td className="py-5 px-4">
+                      <div className="h-5 w-20 bg-line-light/60 rounded" />
                     </td>
-                    <td className="py-4 px-4">
-                      <div className="h-7 w-16 bg-line-light/70 rounded-xl" />
+                    <td className="py-5 px-4">
+                      <div className="h-8 w-20 bg-line-light/70 rounded-xl" />
                     </td>
-                    <td className="py-4 px-4">
-                      <div className="h-3 w-40 bg-line-light/50 rounded" />
+                    <td className="py-5 px-4">
+                      <div className="h-4 w-48 bg-line-light/50 rounded" />
                     </td>
                   </tr>
                 ))
@@ -88,34 +88,34 @@ export const DishPreparationTable: React.FC<DishPreparationTableProps> = ({
                     className="hover:bg-canvas/40 transition-colors group"
                   >
                     {/* Dish Name & Category - Minimalist Typography */}
-                    <td className="py-4 px-2">
-                      <div className="space-y-0.5">
-                        <span className="font-bold text-sm text-ink group-hover:text-forest transition-colors block">
+                    <td className="py-5 px-3">
+                      <div className="space-y-1">
+                        <span className="font-extrabold text-base text-ink group-hover:text-forest transition-colors block">
                           {dish.name}
                         </span>
-                        <span className="text-xs text-ink-secondary block font-medium">
+                        <span className="text-sm text-ink-secondary block font-medium">
                           {dish.category}
                         </span>
                       </div>
                     </td>
 
                     {/* Predicted Demand */}
-                    <td className="py-4 px-4 font-semibold text-sm text-ink font-mono tabular-nums">
+                    <td className="py-5 px-4 font-bold text-base text-ink font-mono tabular-nums">
                       {dish.predictedDemand}{" "}
-                      <span className="text-xs font-sans font-normal text-ink-secondary">
+                      <span className="text-sm font-sans font-normal text-ink-secondary">
                         {dish.unit}
                       </span>
                     </td>
 
                     {/* Recommended Qty: Highlighted Card-Style Box */}
-                    <td className="py-4 px-4">
-                      <div className="inline-flex items-center justify-center px-3.5 py-1.5 rounded-xl bg-forest text-lime font-mono font-bold text-sm shadow-xs min-w-[64px]">
+                    <td className="py-5 px-4">
+                      <div className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-forest text-lime font-mono font-extrabold text-base shadow-sm w-20">
                         {dish.recommendedQty}
                       </div>
                     </td>
 
                     {/* Notes */}
-                    <td className="py-4 px-4 text-xs font-medium text-ink-secondary leading-relaxed max-w-xs">
+                    <td className="py-5 px-4 text-sm font-normal text-ink-secondary leading-relaxed max-w-sm">
                       {dish.note}
                     </td>
                   </tr>
@@ -128,4 +128,5 @@ export const DishPreparationTable: React.FC<DishPreparationTableProps> = ({
     </div>
   );
 };
+
 

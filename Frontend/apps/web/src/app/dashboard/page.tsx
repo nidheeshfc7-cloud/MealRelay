@@ -398,8 +398,8 @@ export default function DashboardPage() {
 
           {/* Backend Error / Offline Warning Banner (Zero Fallback Policy) */}
           {error && (
-            <div className="p-4 rounded-2xl bg-amber-500/10 border-2 border-amber-600/30 text-ink text-xs sm:text-sm font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm animate-fadeIn">
-              <div className="flex items-center gap-2.5">
+            <div className="p-4 rounded-2xl bg-amber-500/10 border-2 border-amber-600/30 text-ink text-sm font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm animate-fadeIn">
+              <div className="flex items-center gap-3">
                 <AlertCircle size={20} className="text-amber-700 shrink-0" />
                 <div>
                   <span className="font-extrabold text-amber-900 block">
@@ -413,9 +413,9 @@ export default function DashboardPage() {
               <button
                 onClick={() => refetch()}
                 type="button"
-                className="px-3.5 py-1.5 rounded-xl bg-forest text-lime text-xs font-black flex items-center justify-center gap-1.5 hover:bg-forest-dark transition-all self-start sm:self-auto shrink-0"
+                className="px-4 py-2 rounded-xl bg-forest text-lime text-xs font-black flex items-center justify-center gap-2 hover:bg-forest-dark transition-all self-start sm:self-auto shrink-0"
               >
-                <RefreshCw size={12} className="text-lime" />
+                <RefreshCw size={14} className="text-lime" />
                 <span>Retry ML Query</span>
               </button>
             </div>
@@ -481,23 +481,23 @@ export default function DashboardPage() {
             <div
               role="status"
               aria-live="polite"
-              className="fixed bottom-6 right-6 z-50 max-w-sm sm:max-w-md p-4 rounded-2xl bg-forest text-white border border-lime/30 shadow-2xl flex items-center justify-between gap-3.5 transition-all duration-300 ease-out transform translate-y-0 opacity-100"
+              className="fixed bottom-6 right-6 z-50 max-w-sm sm:max-w-md p-4 rounded-2xl bg-forest text-white border border-lime/30 shadow-2xl flex items-center justify-between gap-4 transition-all duration-300 ease-out transform translate-y-0 opacity-100"
             >
               <div className="w-8 h-8 rounded-xl bg-lime/20 text-lime flex items-center justify-center shrink-0 border border-lime/30">
-                <CheckCircle2 size={16} className="text-lime stroke-[2.5]" />
+                <CheckCircle2 size={16} strokeWidth={2} className="text-lime" />
               </div>
               <div className="flex-1 min-w-0">
-                <span className="text-xs sm:text-sm font-bold text-white block leading-snug">
+                <span className="text-sm font-bold text-white block leading-snug">
                   {toastMessage}
                 </span>
               </div>
               <button
                 onClick={() => setToastMessage(null)}
                 type="button"
-                className="p-1.5 rounded-lg text-white/70 hover:text-lime hover:bg-forest-dark transition-colors shrink-0"
+                className="p-2 rounded-lg text-white/70 hover:text-lime hover:bg-forest-dark transition-colors shrink-0"
                 title="Dismiss notification"
               >
-                <X size={15} />
+                <X size={16} />
               </button>
             </div>
           )}

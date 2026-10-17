@@ -41,16 +41,16 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         <h1 className="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight">
           Good morning, {chefName}
         </h1>
-        <p className="text-xs text-ink-secondary mt-1 font-medium">
+        <p className="text-sm text-ink-secondary mt-1 font-medium">
           Here&apos;s the preparation plan for tomorrow.
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2.5">
+      <div className="flex flex-wrap items-center gap-3">
         {/* Safety Cushion Buffer Toggle */}
-        <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-line-light shadow-xs">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary px-2 flex items-center gap-1">
-            <Shield size={11} className="text-forest" />
+        <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-line-light shadow-sm">
+          <span className="text-xs font-bold uppercase tracking-wider text-ink-secondary px-2 flex items-center gap-2">
+            <Shield size={14} className="text-forest" />
             <span className="hidden sm:inline">Cushion:</span>
           </span>
           {[0.05, 0.08, 0.10].map((pct) => {
@@ -60,9 +60,9 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 key={pct}
                 onClick={() => onBufferChange?.(pct)}
                 type="button"
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                   isSelected
-                    ? "bg-forest text-lime shadow-xs font-bold"
+                    ? "bg-forest text-lime shadow-sm font-bold"
                     : "text-ink-secondary hover:text-ink hover:bg-canvas"
                 }`}
                 title={`Apply +${Math.round(pct * 100)}% safety buffer`}
@@ -81,16 +81,16 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               setShiftDropdownOpen(false);
             }}
             type="button"
-            className="px-3.5 py-2 rounded-xl bg-white border border-line-light hover:border-forest/30 text-xs font-semibold text-ink shadow-xs flex items-center gap-2 transition-all active:scale-95"
+            className="px-4 py-2 rounded-xl bg-white border border-line-light hover:border-forest/30 text-sm font-semibold text-ink shadow-sm flex items-center gap-2 transition-all active:scale-95"
           >
-            <Calendar size={13} className="text-forest" />
+            <Calendar size={15} className="text-forest" />
             <span className="font-mono">{selectedDate}</span>
-            <ChevronDown size={13} className="text-ink-secondary" />
+            <ChevronDown size={15} className="text-ink-secondary" />
           </button>
 
           {dateDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-64 rounded-xl bg-white border border-line-light shadow-lg p-1.5 z-30 animate-fadeIn">
-              <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-ink-secondary">
+            <div className="absolute right-0 mt-2 w-64 rounded-xl bg-white border border-line-light shadow-lg p-2 z-30 animate-fadeIn">
+              <p className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-ink-secondary">
                 Select Planning Date
               </p>
               {[
@@ -110,14 +110,14 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                       setDateDropdownOpen(false);
                     }}
                     type="button"
-                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-between transition-colors ${
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-between transition-colors ${
                       isCurrent
-                        ? "bg-forest text-lime font-bold shadow-xs"
+                        ? "bg-forest text-lime font-bold shadow-sm"
                         : "text-ink hover:bg-canvas"
                     }`}
                   >
                     <span>{item.label}</span>
-                    {isCurrent && <span className="text-lime text-xs font-bold">✓</span>}
+                    {isCurrent && <span className="text-lime text-sm font-bold">✓</span>}
                   </button>
                 );
               })}
@@ -133,16 +133,16 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               setDateDropdownOpen(false);
             }}
             type="button"
-            className="px-3.5 py-2 rounded-xl bg-white border border-line-light hover:border-forest/30 text-xs font-semibold text-ink shadow-xs flex items-center gap-2 transition-all active:scale-95"
+            className="px-4 py-2 rounded-xl bg-white border border-line-light hover:border-forest/30 text-sm font-semibold text-ink shadow-sm flex items-center gap-2 transition-all active:scale-95"
           >
-            <ActiveShiftIcon size={14} className="text-forest" />
+            <ActiveShiftIcon size={16} className="text-forest" />
             <span className="capitalize">{activeShiftOption.key}</span>
-            <ChevronDown size={13} className="text-ink-secondary" />
+            <ChevronDown size={15} className="text-ink-secondary" />
           </button>
 
           {shiftDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-64 rounded-xl bg-white border border-line-light shadow-lg p-1.5 z-30 animate-fadeIn">
-              <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-ink-secondary">
+            <div className="absolute right-0 mt-2 w-64 rounded-xl bg-white border border-line-light shadow-lg p-2 z-30 animate-fadeIn">
+              <p className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-ink-secondary">
                 Switch Meal Service
               </p>
               {SHIFT_OPTIONS.map((opt) => {
@@ -155,11 +155,11 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                       onShiftChange(opt.key);
                       setShiftDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2.5 transition-colors ${
-                      isCurrent ? "bg-forest text-lime font-bold shadow-xs" : "text-ink hover:bg-canvas"
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-3 transition-colors ${
+                      isCurrent ? "bg-forest text-lime font-bold shadow-sm" : "text-ink hover:bg-canvas"
                     }`}
                   >
-                    <Icon size={13} className={isCurrent ? "text-lime" : "text-ink-secondary"} />
+                    <Icon size={15} className={isCurrent ? "text-lime" : "text-ink-secondary"} />
                     <span>{opt.label}</span>
                   </button>
                 );

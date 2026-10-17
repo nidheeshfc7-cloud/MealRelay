@@ -129,13 +129,13 @@ export const LogOutcomesModal: React.FC<LogOutcomesModalProps> = ({
       >
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-3 border-b border-line-light shrink-0">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-forest text-lime flex items-center justify-center shrink-0">
-              <Sparkles size={18} className="stroke-[2.3]" />
+              <Sparkles size={18} strokeWidth={2} />
             </div>
             <div>
               <h2 className="text-xl font-black text-ink">Log Shift Outcomes</h2>
-              <p className="text-xs text-ink-secondary mt-0.5">
+              <p className="text-sm text-ink-secondary mt-1">
                 Feed actual consumption numbers back into the Random Forest model
               </p>
             </div>
@@ -151,7 +151,7 @@ export const LogOutcomesModal: React.FC<LogOutcomesModalProps> = ({
 
         {/* Error Alert if Submission Fails */}
         {errorMessage && (
-          <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center gap-2 shrink-0">
+          <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-semibold flex items-center gap-2 shrink-0">
             <AlertCircle size={16} className="text-rose-600 shrink-0" />
             <span>{errorMessage}</span>
           </div>
@@ -165,7 +165,7 @@ export const LogOutcomesModal: React.FC<LogOutcomesModalProps> = ({
               <label htmlFor="actual-headcount" className="font-extrabold text-sm text-ink block">
                 Actual Shift Attendance
               </label>
-              <p className="text-xs text-ink-secondary mt-0.5">
+              <p className="text-sm text-ink-secondary mt-1">
                 Total observed student turnout for {shift}
               </p>
             </div>
@@ -180,13 +180,13 @@ export const LogOutcomesModal: React.FC<LogOutcomesModalProps> = ({
                 className="w-24 px-3 py-2 rounded-xl bg-white border border-line-light text-ink font-black text-sm text-center focus:outline-none focus:border-forest"
                 required
               />
-              <span className="text-xs font-semibold text-ink-secondary">students</span>
+              <span className="text-sm font-semibold text-ink-secondary">students</span>
             </div>
           </div>
 
           {/* Dish-by-dish Breakdown */}
           <div className="space-y-3">
-            <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary">
+            <p className="text-xs font-bold uppercase tracking-wider text-ink-secondary">
               Dish Portions Consumed & Leftover
             </p>
             {outcomes.map((item) => {
@@ -197,17 +197,17 @@ export const LogOutcomesModal: React.FC<LogOutcomesModalProps> = ({
                   className="p-4 rounded-2xl bg-canvas border border-line-light space-y-3"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-3">
                       <div
                         className={`w-9 h-9 rounded-full flex items-center justify-center text-sm ${
                           matchingDish?.imageBg || "bg-white"
                         } shrink-0`}
                       >
-                        {matchingDish?.imageEmoji || <Utensils size={14} />}
+                        {matchingDish?.imageEmoji || <Utensils size={16} />}
                       </div>
                       <div>
                         <h4 className="font-extrabold text-sm text-ink">{item.dishName}</h4>
-                        <p className="text-[11px] text-ink-secondary">
+                        <p className="text-xs text-ink-secondary">
                           Prepared: <span className="font-bold text-forest">{item.preparedPortions}</span> portions
                         </p>
                       </div>
@@ -217,7 +217,7 @@ export const LogOutcomesModal: React.FC<LogOutcomesModalProps> = ({
                   <div className="grid grid-cols-2 gap-3 pt-1">
                     {/* Served Portions */}
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-wider text-ink-secondary block mb-1">
+                      <label className="text-xs font-bold uppercase tracking-wider text-ink-secondary block mb-1">
                         Served Portions
                       </label>
                       <input
@@ -227,14 +227,14 @@ export const LogOutcomesModal: React.FC<LogOutcomesModalProps> = ({
                         onChange={(e) =>
                           handlePortionChange(item.dishId, "servedPortions", parseInt(e.target.value))
                         }
-                        className="w-full px-3 py-2 rounded-xl bg-white border border-line-light text-ink font-bold text-xs focus:outline-none focus:border-forest"
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-line-light text-ink font-bold text-sm focus:outline-none focus:border-forest"
                         required
                       />
                     </div>
 
                     {/* Leftover Portions */}
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-wider text-ink-secondary block mb-1">
+                      <label className="text-xs font-bold uppercase tracking-wider text-ink-secondary block mb-1">
                         Leftover Uneaten
                       </label>
                       <input
@@ -244,7 +244,7 @@ export const LogOutcomesModal: React.FC<LogOutcomesModalProps> = ({
                         onChange={(e) =>
                           handlePortionChange(item.dishId, "leftoverPortions", parseInt(e.target.value))
                         }
-                        className="w-full px-3 py-2 rounded-xl bg-white border border-line-light text-ink font-bold text-xs focus:outline-none focus:border-forest"
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-line-light text-ink font-bold text-sm focus:outline-none focus:border-forest"
                         required
                       />
                     </div>
@@ -260,23 +260,23 @@ export const LogOutcomesModal: React.FC<LogOutcomesModalProps> = ({
               onClick={onClose}
               disabled={isSubmitting}
               type="button"
-              className="px-4 py-2.5 rounded-xl text-xs font-bold text-ink-secondary hover:text-ink transition-colors disabled:opacity-50"
+              className="px-4 py-2 rounded-xl text-sm font-semibold text-ink-secondary hover:text-ink transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl bg-forest text-lime hover:bg-forest-dark font-black text-xs transition-all shadow-md flex items-center gap-2 disabled:opacity-50"
+              className="px-5 py-2 rounded-xl bg-forest text-lime hover:bg-forest-dark font-bold text-sm transition-all shadow-md flex items-center gap-2 disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 size={14} className="animate-spin text-lime" />
+                  <Loader2 size={16} className="animate-spin text-lime" />
                   <span>Logging to ML Model...</span>
                 </>
               ) : (
                 <>
-                  <Check size={14} />
+                  <Check size={16} />
                   <span>Submit Actuals to ML Model</span>
                 </>
               )}

@@ -37,39 +37,39 @@ export const KeyInsightsPanel: React.FC<KeyInsightsPanelProps> = ({
   return (
     <div className="p-6 rounded-2xl bg-white border border-line-light shadow-sm flex flex-col justify-between">
       <div>
-        <div className="flex items-center gap-2.5 pb-4 border-b border-line-light/70">
-          <div className="w-8 h-8 rounded-lg bg-sage text-forest flex items-center justify-center shrink-0">
-            <Lightbulb size={16} className="stroke-[2.2]" />
+        <div className="flex items-center gap-3 pb-5 border-b border-line-light/70">
+          <div className="w-10 h-10 rounded-xl bg-sage text-forest flex items-center justify-center shrink-0">
+            <Lightbulb size={18} strokeWidth={2} />
           </div>
-          <h2 className="text-base font-bold text-ink tracking-tight">
+          <h2 className="text-lg font-extrabold text-ink tracking-tight">
             Key Insights
           </h2>
         </div>
 
-        <div className="space-y-3 mt-4">
+        <div className="space-y-4 mt-5">
           {insights.map((insight) => {
             return (
               <div
                 key={insight.id}
-                className="p-3.5 rounded-xl bg-canvas border border-line-light/70 hover:border-forest/20 transition-all flex items-start gap-3"
+                className="p-4 rounded-xl bg-canvas border border-line-light/80 hover:border-forest/20 transition-all flex items-start gap-4"
               >
                 {/* Minimalist Micro Icon */}
-                <div className="w-7 h-7 rounded-lg bg-white border border-line-light text-forest flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
+                <div className="w-9 h-9 rounded-xl bg-white border border-line-light text-forest flex items-center justify-center shrink-0 shadow-sm mt-1">
                   {insight.type === "down" ? (
-                    <ArrowDown size={14} className="text-amber-700 stroke-[2.4]" />
+                    <ArrowDown size={18} strokeWidth={2} className="text-amber-700" />
                   ) : insight.type === "up" ? (
-                    <ArrowUp size={14} className="text-forest stroke-[2.4]" />
+                    <ArrowUp size={18} strokeWidth={2} className="text-forest" />
                   ) : (
-                    <Info size={14} className="text-forest stroke-[2.4]" />
+                    <Info size={18} strokeWidth={2} className="text-forest" />
                   )}
                 </div>
 
                 {/* Insight Content */}
                 <div>
-                  <h3 className="text-xs font-bold text-ink">
+                  <h3 className="text-sm font-bold text-ink">
                     {insight.title}
                   </h3>
-                  <p className="text-xs text-ink-secondary mt-1 leading-relaxed font-medium">
+                  <p className="text-sm text-ink-secondary mt-1 leading-relaxed font-normal">
                     {insight.description}
                   </p>
                 </div>
@@ -81,4 +81,5 @@ export const KeyInsightsPanel: React.FC<KeyInsightsPanelProps> = ({
     </div>
   );
 };
+
 

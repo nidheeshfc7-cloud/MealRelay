@@ -56,7 +56,7 @@ export const EditQuantitiesModal: React.FC<EditQuantitiesModalProps> = ({
         <div className="flex items-center justify-between pb-3 border-b border-line-light">
           <div>
             <h2 className="text-xl font-black text-ink">Edit Cooking Portions</h2>
-            <p className="text-xs text-ink-secondary mt-0.5">
+            <p className="text-sm text-ink-secondary mt-1">
               Customize recommended quantities for tomorrow&apos;s meal
             </p>
           </div>
@@ -72,7 +72,7 @@ export const EditQuantitiesModal: React.FC<EditQuantitiesModalProps> = ({
           {draftDishes.map((dish) => (
             <div
               key={dish.id}
-              className="p-3.5 rounded-2xl bg-canvas border border-line-light flex items-center justify-between gap-3"
+              className="p-4 rounded-2xl bg-canvas border border-line-light flex items-center justify-between gap-3"
             >
               <div className="flex items-center gap-3">
                 <div
@@ -82,22 +82,22 @@ export const EditQuantitiesModal: React.FC<EditQuantitiesModalProps> = ({
                 </div>
                 <div>
                   <h4 className="font-bold text-sm text-ink">{dish.name}</h4>
-                  <p className="text-xs text-ink-secondary">
+                  <p className="text-sm text-ink-secondary">
                     Baseline: {dish.predictedDemand} {dish.unit}
                   </p>
                 </div>
               </div>
 
               {/* Stepper Controls */}
-              <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-line-light shadow-sm">
+              <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-line-light shadow-sm">
                 <button
                   onClick={() => handleAdjust(dish.id, -5)}
                   type="button"
                   className="w-8 h-8 rounded-lg bg-canvas hover:bg-line-light active:scale-90 text-ink flex items-center justify-center transition-all font-bold"
                 >
-                  <Minus size={14} />
+                  <Minus size={16} />
                 </button>
-                <span className="font-black text-sm text-forest min-w-[36px] text-center px-1">
+                <span className="font-mono font-bold text-sm text-forest w-10 text-center">
                   {dish.recommendedQty}
                 </span>
                 <button
@@ -105,7 +105,7 @@ export const EditQuantitiesModal: React.FC<EditQuantitiesModalProps> = ({
                   type="button"
                   className="w-8 h-8 rounded-lg bg-forest text-lime hover:bg-forest-dark active:scale-90 flex items-center justify-center transition-all font-bold"
                 >
-                  <Plus size={14} />
+                  <Plus size={16} />
                 </button>
               </div>
             </div>
@@ -116,16 +116,16 @@ export const EditQuantitiesModal: React.FC<EditQuantitiesModalProps> = ({
           <button
             onClick={onClose}
             type="button"
-            className="px-4 py-2.5 rounded-xl text-xs font-bold text-ink-secondary hover:text-ink transition-colors"
+            className="px-4 py-2 rounded-xl text-sm font-semibold text-ink-secondary hover:text-ink transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             type="button"
-            className="px-5 py-2.5 rounded-xl bg-forest text-lime hover:bg-forest-dark font-black text-xs transition-all shadow-md flex items-center gap-2"
+            className="px-5 py-2 rounded-xl bg-forest text-lime hover:bg-forest-dark font-bold text-sm transition-all shadow-md flex items-center gap-2"
           >
-            <Check size={14} />
+            <Check size={16} />
             <span>Save Quantities</span>
           </button>
         </div>

@@ -85,7 +85,7 @@ export const Sidebar: React.FC = () => {
                 <BrandLogo light size="md" />
                 <button
                   onClick={() => setMobileOpen(false)}
-                  className="p-1.5 rounded-lg text-white/70 hover:text-white"
+                  className="p-2 rounded-lg text-white/70 hover:text-white"
                 >
                   <X size={20} />
                 </button>
@@ -93,19 +93,19 @@ export const Sidebar: React.FC = () => {
 
               {/* Kitchen Badge */}
               <div className="mb-6 p-3 rounded-xl bg-forest/60 border border-white/10 text-xs">
-                <p className="text-white/50 uppercase font-semibold text-[10px] tracking-wider">
+                <p className="text-white/50 uppercase font-semibold text-xs tracking-wider">
                   Active Facility
                 </p>
-                <p className="text-white font-bold truncate mt-0.5">
+                <p className="text-white font-bold truncate mt-1">
                   Sreenidhi Campus Kitchen
                 </p>
-                <span className="inline-block mt-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-lime/20 text-lime border border-lime/30">
+                <span className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold bg-lime/20 text-lime border border-lime/30">
                   Buffer +4.8% Active
                 </span>
               </div>
 
               {/* Links */}
-              <nav className="space-y-1.5">
+              <nav className="space-y-2">
                 {NAV_ITEMS.map((item) => {
                   const active = pathname === item.href;
                   const Icon = item.icon;
@@ -114,7 +114,7 @@ export const Sidebar: React.FC = () => {
                       key={item.href}
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all ${
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
                         active
                           ? "bg-lime text-forest-dark shadow-sm"
                           : "text-white/75 hover:bg-white/10 hover:text-white"
@@ -150,7 +150,7 @@ export const Sidebar: React.FC = () => {
       <aside
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`hidden lg:flex flex-col justify-between bg-forest text-white border-r border-line-dark h-screen sticky top-0 shrink-0 select-none px-3.5 py-5 overflow-hidden transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`hidden lg:flex flex-col justify-between bg-forest text-white border-r border-line-dark h-screen sticky top-0 shrink-0 select-none px-4 py-5 overflow-hidden transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           isExpanded ? "w-[260px]" : "w-[72px]"
         }`}
       >
@@ -159,10 +159,10 @@ export const Sidebar: React.FC = () => {
           <div className="flex items-center h-11 mb-6 relative">
             <Link
               href="/"
-              className="flex items-center gap-2.5 shrink-0 group active:scale-95"
+              className="flex items-center gap-3 shrink-0 group active:scale-95"
             >
               <div className="w-11 h-11 rounded-xl bg-lime text-forest-dark flex items-center justify-center -rotate-6 shadow-sm shrink-0 transition-transform">
-                <Leaf size={20} className="stroke-[2.5]" />
+                <Leaf size={20} strokeWidth={2} />
               </div>
               <div
                 className={`overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
@@ -206,7 +206,7 @@ export const Sidebar: React.FC = () => {
           {/* Active Facility Widget */}
           <div
             className={`mb-6 rounded-2xl bg-forest-dark/70 border border-white/10 overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-              isExpanded ? "p-3.5 h-[104px]" : "p-0 h-11 w-11"
+              isExpanded ? "p-4 h-[104px]" : "p-0 h-11 w-11"
             }`}
             title={
               !isExpanded
@@ -217,7 +217,7 @@ export const Sidebar: React.FC = () => {
             {isExpanded ? (
               <div className="w-full">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-white/50">
+                  <span className="text-xs font-bold uppercase tracking-widest text-white/50">
                     FACILITY
                   </span>
                   <span className="flex h-2 w-2 relative">
@@ -228,7 +228,7 @@ export const Sidebar: React.FC = () => {
                 <p className="text-sm font-bold text-white mt-1 truncate">
                   Sreenidhi Campus Kitchen
                 </p>
-                <div className="mt-2 flex items-center justify-between text-[11px] text-white/70">
+                <div className="mt-2 flex items-center justify-between text-xs text-white/70">
                   <span className="flex items-center gap-1">
                     <UtensilsCrossed size={12} className="text-lime" /> 3
                     Services
@@ -239,16 +239,16 @@ export const Sidebar: React.FC = () => {
             ) : (
               <div className="w-11 h-11 flex items-center justify-center relative">
                 <UtensilsCrossed size={18} className="text-lime" />
-                <span className="absolute top-2.5 right-2.5 flex h-1.5 w-1.5">
+                <span className="absolute top-2.5 right-2.5 flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-lime"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-lime"></span>
                 </span>
               </div>
             )}
           </div>
 
           {/* Navigation Links */}
-          <nav className="space-y-1.5">
+          <nav className="space-y-2">
             {NAV_ITEMS.map((item) => {
               const active = pathname === item.href;
               const Icon = item.icon;
@@ -292,9 +292,9 @@ export const Sidebar: React.FC = () => {
         </div>
 
         {/* Sidebar Footer / User Account */}
-        <div className="border-t border-white/10 pt-3.5 mt-auto flex items-center">
+        <div className="border-t border-white/10 pt-4 mt-auto flex items-center">
           <div
-            className="w-10 h-10 min-w-[40px] min-h-[40px] aspect-square rounded-full shrink-0 bg-lime/20 border border-lime/40 text-lime font-bold text-xs flex items-center justify-center select-none"
+            className="w-10 h-10 min-w-10 min-h-10 aspect-square rounded-full shrink-0 bg-lime/20 border border-lime/40 text-lime font-bold text-xs flex items-center justify-center select-none"
             title="Campus Chef (chef@sreenidhi.edu)"
           >
             SC
@@ -308,19 +308,19 @@ export const Sidebar: React.FC = () => {
             }`}
           >
             <div className="truncate">
-              <p className="text-xs font-bold text-white truncate">
+              <p className="text-sm font-bold text-white truncate">
                 Campus Chef
               </p>
-              <p className="text-[10px] text-white/50 truncate max-w-[110px]">
+              <p className="text-xs text-white/50 truncate max-w-[120px]">
                 chef@sreenidhi.edu
               </p>
             </div>
             <Link
               href="/settings"
-              className="p-1.5 rounded-lg text-white/40 hover:text-lime hover:bg-white/10 transition-colors shrink-0 ml-2"
+              className="p-2 rounded-lg text-white/40 hover:text-lime hover:bg-white/10 transition-colors shrink-0 ml-2"
               title="Settings"
             >
-              <SlidersHorizontal size={15} />
+              <SlidersHorizontal size={16} />
             </Link>
           </div>
         </div>
