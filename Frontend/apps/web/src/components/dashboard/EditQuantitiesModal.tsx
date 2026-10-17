@@ -50,7 +50,7 @@ export const EditQuantitiesModal: React.FC<EditQuantitiesModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg bg-white rounded-3xl p-6 sm:p-7 shadow-2xl border border-line-light space-y-5 animate-scaleUp"
+        className="w-full max-w-lg bg-white rounded-2xl p-6 sm:p-7 shadow-2xl border border-line-light space-y-5 animate-scaleUp"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between pb-3 border-b border-line-light">

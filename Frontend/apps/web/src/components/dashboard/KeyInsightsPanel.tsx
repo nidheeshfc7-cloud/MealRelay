@@ -35,41 +35,41 @@ export const KeyInsightsPanel: React.FC<KeyInsightsPanelProps> = ({
   insights = DEFAULT_INSIGHTS,
 }) => {
   return (
-    <div className="p-6 sm:p-7 rounded-3xl bg-white border border-line-light shadow-sm flex flex-col justify-between">
+    <div className="p-6 rounded-2xl bg-white border border-line-light shadow-sm flex flex-col justify-between">
       <div>
-        <div className="flex items-center gap-2 pb-5 border-b border-line-light/60">
-          <div className="w-8 h-8 rounded-xl bg-sage text-forest flex items-center justify-center">
-            <Lightbulb size={18} className="stroke-[2.2]" />
+        <div className="flex items-center gap-2.5 pb-4 border-b border-line-light/70">
+          <div className="w-8 h-8 rounded-lg bg-sage text-forest flex items-center justify-center shrink-0">
+            <Lightbulb size={16} className="stroke-[2.2]" />
           </div>
-          <h2 className="text-xl font-black text-ink tracking-tight">
+          <h2 className="text-base font-bold text-ink tracking-tight">
             Key Insights
           </h2>
         </div>
 
-        <div className="space-y-4 mt-5">
+        <div className="space-y-3 mt-4">
           {insights.map((insight) => {
             return (
               <div
                 key={insight.id}
-                className="p-4 rounded-2xl bg-canvas border border-line-light hover:border-forest/20 transition-all flex items-start gap-3.5"
+                className="p-3.5 rounded-xl bg-canvas border border-line-light/70 hover:border-forest/20 transition-all flex items-start gap-3"
               >
-                {/* Circular Icon Avatar */}
-                <div className="w-9 h-9 min-w-[36px] min-h-[36px] rounded-full bg-forest text-lime flex items-center justify-center shrink-0 shadow-sm">
+                {/* Minimalist Micro Icon */}
+                <div className="w-7 h-7 rounded-lg bg-white border border-line-light text-forest flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
                   {insight.type === "down" ? (
-                    <ArrowDown size={16} className="text-lime stroke-[2.5]" />
+                    <ArrowDown size={14} className="text-amber-700 stroke-[2.4]" />
                   ) : insight.type === "up" ? (
-                    <ArrowUp size={16} className="text-lime stroke-[2.5]" />
+                    <ArrowUp size={14} className="text-forest stroke-[2.4]" />
                   ) : (
-                    <Info size={16} className="text-lime stroke-[2.5]" />
+                    <Info size={14} className="text-forest stroke-[2.4]" />
                   )}
                 </div>
 
                 {/* Insight Content */}
                 <div>
-                  <h3 className="text-xs sm:text-sm font-bold text-ink">
+                  <h3 className="text-xs font-bold text-ink">
                     {insight.title}
                   </h3>
-                  <p className="text-xs text-ink-secondary mt-0.5 leading-relaxed font-medium">
+                  <p className="text-xs text-ink-secondary mt-1 leading-relaxed font-medium">
                     {insight.description}
                   </p>
                 </div>
@@ -81,3 +81,4 @@ export const KeyInsightsPanel: React.FC<KeyInsightsPanelProps> = ({
     </div>
   );
 };
+

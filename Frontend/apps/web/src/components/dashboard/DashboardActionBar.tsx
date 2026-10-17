@@ -17,14 +17,14 @@ export const DashboardActionBar: React.FC<DashboardActionBarProps> = ({
   isConfirmed,
 }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-1">
       {/* 1. Edit Quantities Button */}
       <button
         onClick={onEditQuantities}
         type="button"
-        className="py-4 px-6 rounded-2xl border-2 border-line-light bg-white hover:bg-canvas hover:border-forest/40 text-forest font-black text-sm transition-all flex items-center justify-center gap-2.5 shadow-sm active:scale-95"
+        className="py-3 px-5 rounded-xl border border-line-light bg-white hover:bg-canvas text-forest font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-2xs active:scale-95"
       >
-        <FileEdit size={17} className="text-forest stroke-[2.3]" />
+        <FileEdit size={15} className="text-forest stroke-[2.2]" />
         <span>Edit Quantities</span>
       </button>
 
@@ -32,13 +32,13 @@ export const DashboardActionBar: React.FC<DashboardActionBarProps> = ({
       <button
         onClick={onConfirmPlan}
         type="button"
-        className={`py-4 px-6 rounded-2xl font-black text-sm transition-all flex items-center justify-center gap-2.5 shadow-lg active:scale-95 ${
+        className={`py-3 px-5 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-xs active:scale-95 ${
           isConfirmed
-            ? "bg-sage text-forest border-2 border-forest/20"
-            : "bg-forest text-lime hover:bg-forest-dark shadow-forest/20 border-2 border-forest"
+            ? "bg-sage text-forest border border-forest/20"
+            : "bg-forest text-lime hover:bg-forest-dark border border-forest"
         }`}
       >
-        <CheckCircle2 size={18} className={isConfirmed ? "text-forest" : "text-lime"} />
+        <CheckCircle2 size={16} className={isConfirmed ? "text-forest" : "text-lime"} />
         <span>
           {isConfirmed
             ? "Preparation Plan Confirmed ✓"
@@ -50,15 +50,16 @@ export const DashboardActionBar: React.FC<DashboardActionBarProps> = ({
       <button
         onClick={onLogOutcomes}
         type="button"
-        className={`py-4 px-6 rounded-2xl font-black text-sm transition-all flex items-center justify-center gap-2.5 shadow-sm active:scale-95 sm:col-span-2 lg:col-span-1 ${
+        className={`py-3 px-5 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-2xs active:scale-95 sm:col-span-2 lg:col-span-1 ${
           isConfirmed
-            ? "bg-white border-2 border-forest text-forest hover:bg-sage/40"
-            : "bg-white border-2 border-line-light text-ink-secondary hover:border-forest/30 hover:text-ink"
+            ? "bg-white border border-forest/40 text-forest hover:bg-sage/40"
+            : "bg-white border border-line-light text-ink-secondary hover:text-ink hover:bg-canvas"
         }`}
       >
-        <ClipboardCheck size={18} className="text-forest stroke-[2.3]" />
+        <ClipboardCheck size={16} className="text-forest stroke-[2.2]" />
         <span>Log Shift Outcomes</span>
       </button>
     </div>
   );
 };
+

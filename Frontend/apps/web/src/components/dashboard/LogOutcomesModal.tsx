@@ -124,7 +124,7 @@ export const LogOutcomesModal: React.FC<LogOutcomesModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xl bg-white rounded-3xl p-6 sm:p-7 shadow-2xl border border-line-light space-y-5 animate-scaleUp max-h-[90vh] flex flex-col"
+        className="w-full max-w-xl bg-white rounded-2xl p-6 sm:p-7 shadow-2xl border border-line-light space-y-5 animate-scaleUp max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
