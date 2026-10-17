@@ -12,7 +12,8 @@ from src.services.recommendation import (
 )
 from src.services.forecast_service import ForecastService
 from src.schemas.forecast import ForecastRequest, ForecastItemRequest, ForecastResponse, DishForecastRecommendation
-from src.schemas.meal_record import MealRecordCreate
+from src.schemas.meal_record import MealRecordCreate, MealRecord
+from src.data.supabase_client import SupabaseStorageAdapter
 
 
 def test_safety_buffer_math():
@@ -398,6 +399,97 @@ def test_data_sufficiency_indicator():
     new_rec = response.dishes[0]
     assert new_rec.confidence == "Moderate (Building kitchen history)"
     assert "standard campus averages" in new_rec.simple_reason
+
+
+def test_continuous_learning_dynamic_adaptation():
+    """Verifies that logging real high-consumption meals immediately increases future cook recommendations."""
+    service = ForecastService.get_instance()
+    target_date = date(2026, 10, 27)
+
+    request = ForecastRequest(
+        meal_date=target_date,
+        meal_type="lunch",
+        expected_attendance=200,
+        dishes=[
+            ForecastItemRequest(dish_id="d_paneer_lunch"),
+        ],
+    )
+
+    # 1. Baseline forecast before logging real kitchen surge
+    initial_response = service.generate_forecast(request)
+    initial_cook = initial_response.dishes[0].cook_portions
+
+    # 2. Kitchen logs 3 consecutive high-consumption lunch sessions (students ate extra paneer)
+    surge_logs = [
+        MealRecordCreate(
+            dish_id="d_paneer_lunch",
+            dish_name="Paneer Butter Masala",
+            meal_date=date(2026, 10, 24),
+            meal_type="lunch",
+            attendance=200,
+            prepared_portions=240,
+            served_portions=235,
+            leftover_portions=5,
+            category="curry",
+        ),
+        MealRecordCreate(
+            dish_id="d_paneer_lunch",
+            dish_name="Paneer Butter Masala",
+            meal_date=date(2026, 10, 25),
+            meal_type="lunch",
+            attendance=200,
+            prepared_portions=240,
+            served_portions=238,
+            leftover_portions=2,
+            category="curry",
+        ),
+        MealRecordCreate(
+            dish_id="d_paneer_lunch",
+            dish_name="Paneer Butter Masala",
+            meal_date=date(2026, 10, 26),
+            meal_type="lunch",
+            attendance=200,
+            prepared_portions=245,
+            served_portions=240,
+            leftover_portions=5,
+            category="curry",
+        ),
+    ]
+
+    service.add_records_batch(surge_logs)
+
+    # 3. Forecast again for the target lunch date
+    updated_response = service.generate_forecast(request)
+    updated_cook = updated_response.dishes[0].cook_portions
+
+    # The dynamic model must have increased recommended cook portions in response to higher consumption
+    assert updated_cook > initial_cook
+
+
+def test_supabase_storage_adapter_offline_mode():
+    """Verifies that Supabase adapter operates in offline edge mode when credentials are not configured."""
+    adapter = SupabaseStorageAdapter(supabase_url=None, supabase_key=None)
+    assert adapter.is_configured() is False
+    assert adapter.mode == "in_memory_edge"
+
+    # Edge sync operations must return safely without raising network exceptions
+    sample_record = MealRecord(
+        id="rec_offline_test",
+        dish_id="d_test",
+        meal_date=date(2026, 10, 25),
+        meal_type="lunch",
+        day_of_week=6,
+        attendance=150,
+        prepared_portions=160,
+        served_portions=150,
+        leftover_portions=10,
+        category="main",
+        is_synthetic=False,
+    )
+
+    assert adapter.sync_record(sample_record) is False
+    assert adapter.sync_records_batch([sample_record]) == 0
+
 
 
 

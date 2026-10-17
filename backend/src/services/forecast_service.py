@@ -13,6 +13,7 @@ from src.models.baseline import HistoricalAverageBaseline
 from src.models.random_forest import DemandRandomForestModel
 from src.services.recommendation import build_dish_recommendation
 from src.config import MIN_DATA_THRESHOLD, DEFAULT_SAFETY_BUFFER
+from src.data.supabase_client import SupabaseStorageAdapter
 
 
 class ForecastService:
@@ -25,6 +26,7 @@ class ForecastService:
         self.records: List[MealRecord] = []
         self.baseline_model = HistoricalAverageBaseline(min_threshold=MIN_DATA_THRESHOLD)
         self.rf_model = DemandRandomForestModel()
+        self.supabase_adapter = SupabaseStorageAdapter()
         self.is_trained: bool = False
         self.reset_to_synthetic_data()
 
@@ -107,6 +109,8 @@ class ForecastService:
         )
 
         self.records.append(new_record)
+        # Cloud PostgreSQL persistence (runs gracefully offline if unconfigured)
+        self.supabase_adapter.sync_record(new_record)
         # Immediately retrain models on updated dataset incorporating real user outcomes
         self._retrain_models()
         return new_record
@@ -140,6 +144,8 @@ class ForecastService:
             self.records.append(new_record)
             created_records.append(new_record)
 
+        # Cloud PostgreSQL persistence (runs gracefully offline if unconfigured)
+        self.supabase_adapter.sync_records_batch(created_records)
         # Retrain once for the entire batch
         self._retrain_models()
         return created_records

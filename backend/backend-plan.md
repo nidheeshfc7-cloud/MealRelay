@@ -130,14 +130,14 @@ Keep the backend fast, lightweight, and deployable on edge kitchen hardware or c
 - [x] **5.1: Thread-Safe Single-Core Execution (`n_jobs=1`)**
   - [x] Set `n_jobs=1` in `DemandRandomForestModel` to eliminate inter-process socket locks on Windows and single-board edge computers.
   - [x] Retain lightning-fast training times ($< 80\text{ ms}$ for 850 records).
-- [ ] **5.2: In-Memory Cache + Direct Supabase Integration (No SQLite)**
-  - [ ] Maintain the lightweight in-memory collection for zero-setup local speed and hackathon testing.
-  - [ ] Prepare direct Supabase PostgreSQL connector for persistent production storage (skipping temporary SQLite complexity).
-- [ ] **5.3: Offline-First Edge Readiness**
-  - [ ] Verify that the complete FastAPI service runs locally on a kitchen terminal, Intel NUC, or Raspberry Pi 4/5 with $< 50\text{ MB}$ RAM footprint.
-  - [ ] Allow kitchen staff to generate plans and log outcomes with zero internet connectivity.
-- [ ] **5.4: Automated Test Suite for Continuous Learning**
-  - [ ] Write integration test verifying that logging 3 high-consumption meals immediately increases the next day's `cook_portions` for that dish.
+- [x] **5.2: In-Memory Cache + Direct Supabase Integration (No SQLite)**
+  - [x] Maintain the lightweight in-memory collection for zero-setup local speed and hackathon testing.
+  - [x] Prepare direct Supabase PostgreSQL connector for persistent production storage (skipping temporary SQLite complexity).
+- [x] **5.3: Offline-First Edge Readiness**
+  - [x] Verify that the complete FastAPI service runs locally on a kitchen terminal, Intel NUC, or Raspberry Pi 4/5 with $< 50\text{ MB}$ RAM footprint.
+  - [x] Allow kitchen staff to generate plans and log outcomes with zero internet connectivity.
+- [x] **5.4: Automated Test Suite for Continuous Learning**
+  - [x] Write integration test verifying that logging 3 high-consumption meals immediately increases the next day's `cook_portions` for that dish.
 
 ---
 
@@ -149,4 +149,4 @@ Keep the backend fast, lightweight, and deployable on edge kitchen hardware or c
 | **Phase 2** | Customer-Friendly Backend Output Schema (Single-Target Output) | 🟢 Completed |
 | **Phase 3** | Domain Feature Engineering & Seasonality Signals | 🟢 Completed |
 | **Phase 4** | AI Pattern Recognition vs. Hardcoded Physical Guardrails | 🟢 Completed |
-| **Phase 5** | Model Optimization, Persistence & Edge Deployment | 🟡 In Progress (Thread-safe execution live; Supabase planned) |
+| **Phase 5** | Model Optimization, Persistence & Edge Deployment | 🟢 Completed |
