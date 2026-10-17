@@ -136,38 +136,6 @@
   display: flex;
   justify-content: center;
 }
-.heroVine {
-  position: absolute;
-  top: 4%;
-  width: clamp(125px, 15vw, 240px);
-  height: min(780px, 90%);
-  background: url("/images/hero-vine.svg") center / contain no-repeat;
-  pointer-events: none;
-}
-.heroVineLeft {
-  left: -25px;
-}
-.heroVineRight {
-  right: -25px;
-  top: 9%;
-  transform: scaleX(-1);
-}
-@media (max-width: 1100px) {
-  .heroVine {
-    width: 120px;
-    opacity: 0.6;
-  }
-  .heroVineLeft { left: -50px; }
-  .heroVineRight { right: -50px; }
-}
-@media (max-width: 600px) {
-  .heroVine {
-    width: 85px;
-    opacity: 0.35;
-  }
-  .heroVineLeft { left: -42px; }
-  .heroVineRight { right: -42px; }
-}
 .heroCopy {
   width: 100%;
   max-width: 900px;

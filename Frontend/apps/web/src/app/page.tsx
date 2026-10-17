@@ -96,8 +96,6 @@ export default function LandingPage() {
       </header>
       <main id="main-content">
         <section className={s.hero} aria-labelledby="hero-title">
-          <span className={`${s.heroVine} ${s.heroVineLeft}`} aria-hidden="true" />
-          <span className={`${s.heroVine} ${s.heroVineRight}`} aria-hidden="true" />
           <div className={`${s.container} ${s.heroGrid}`}>
             <div className={s.heroCopy}>
               <h1 id="hero-title">
