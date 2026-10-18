@@ -1,35 +1,51 @@
 "use client";
 import Link from "next/link";
+import { Bell, Building2, ChevronRight, Info, LockKeyhole, Monitor, Settings2, ShieldCheck, UserRound } from "lucide-react";
 import { Sidebar } from "@/components/Sidebar";
-import { Header } from "@/components/Header";
 import { useAccountIdentity } from "@/components/auth/AccountIdentity";
 import { ProfileSettingsForm } from "@/components/auth/ProfileSettingsForm";
 import { LogoutButton } from "@/components/auth/LogoutButton";
+import styles from "./settings.module.css";
 
-export default function SettingsPage(){
-  const account=useAccountIdentity();
-  return <div className="min-h-screen bg-canvas text-ink flex flex-col lg:flex-row">
-    <Sidebar/>
-    <main className="flex-1 min-w-0 p-4 sm:p-8 max-w-7xl mx-auto w-full space-y-6">
-      <Header title="Kitchen & account settings" subtitle="Manage your profile, workspace names and account security."/>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <section className="lg:col-span-7 rounded-3xl bg-white border border-line-light p-5 sm:p-8 space-y-5">
-          <div><h2 className="text-xl font-bold">Your profile & kitchen</h2><p className="mt-2 text-sm text-ink-secondary">These names appear in your workspace. Your saved records stay private to your account.</p></div>
-          <ProfileSettingsForm/>
+export default function SettingsPage() {
+  const account = useAccountIdentity();
+  return <div className={styles.shell}>
+    <Sidebar />
+    <main className={styles.main}>
+      <header className={styles.header}>
+        <div><p className={styles.eyebrow}>Settings</p><h1>Kitchen &amp; account settings</h1><p className={styles.subtitle}>Manage your kitchen profile, workspace information and account security.</p></div>
+        <a href="#workspace" className={styles.summary}>
+          <span className={styles.summaryIcon}><Building2 size={25} /></span>
+          <span><small>Your kitchen</small><strong>{account.kitchenName || account.organization || "Complete your kitchen profile"}</strong><small>Account workspace</small></span>
+          <ChevronRight size={19} />
+        </a>
+      </header>
+      <nav className={styles.tabs} aria-label="Settings sections">
+        <a href="#profile" className={styles.activeTab}><UserRound size={20} />Profile</a>
+        <a href="#workspace"><Building2 size={20} />Workspace</a>
+        <a href="#security"><LockKeyhole size={20} />Security</a>
+        <a href="#notifications"><Bell size={20} />Notifications</a>
+      </nav>
+      <div className={styles.columns}>
+        <section id="profile" className={`${styles.card} ${styles.profile}`}>
+          <div className={styles.cardHeading}><span className={styles.icon}><UserRound size={23} /></span><h2>Profile &amp; Kitchen</h2></div>
+          <p className={styles.description}>These details appear in your workspace and help us personalise your experience.</p>
+          <ProfileSettingsForm />
         </section>
-        <div className="lg:col-span-5 space-y-6">
-          <section className="rounded-3xl bg-forest text-white border border-line-dark p-5 sm:p-8 space-y-4">
-            <h2 className="text-xl font-bold">Account security</h2>
-            <div><p className="text-sm text-white/70">Signed in as</p><p className="font-semibold break-all">{account.email}</p></div>
-            <Link href="/forgot-password" className="inline-flex rounded-xl px-4 py-3 bg-lime text-forest font-bold">Reset password</Link>
-            <p className="text-sm text-white/70">A secure recovery link is sent to your email. Use a different password from other sites.</p>
+        <div className={styles.aside}>
+          <section id="security" className={`${styles.card} ${styles.security}`}>
+            <div className={styles.securityHeading}><span className={styles.securityIcon}><LockKeyhole size={26} /></span><div><h2>Account security</h2><p>Keep your account safe with a strong password and secure sign-in.</p></div></div>
+            <div className={styles.securityFooter}><div><small>Signed in as</small><strong>{account.email}</strong></div><Link href="/forgot-password" className={styles.resetPassword}>Reset password</Link></div>
           </section>
-          <section className="rounded-3xl bg-white border border-line-light p-5 sm:p-8 space-y-3">
-            <h2 className="text-xl font-bold">Sessions</h2><p className="text-sm text-ink-secondary">Log out here, or revoke sign-ins across your devices.</p>
-            <LogoutButton light/><LogoutButton light allDevices/>
+          <section className={styles.card} aria-labelledby="sessions-title">
+            <div className={styles.cardHeading}><span className={styles.icon}><Monitor size={22} /></span><div><h2 id="sessions-title">Sessions</h2><p className={styles.description}>Control access to your account across devices.</p></div></div>
+            <div className={styles.sessionRow}><Monitor size={22} /><div><strong>This signed-in browser <span className={styles.badge}>Current session</span></strong><p>Device and location details are unavailable.</p></div><ShieldCheck size={19} /></div>
+            <div className={styles.sessionActions}><LogoutButton light /><LogoutButton light allDevices /></div>
           </section>
-          <section className="rounded-3xl bg-white border border-line-light p-5 space-y-2">
-            <h2 className="font-bold">Notifications</h2><p className="text-sm text-ink-secondary">Scheduled email notifications are not configured yet. Your saved menus and activity remain available in this workspace.</p>
+          <section id="notifications" className={styles.card}>
+            <div className={styles.cardHeading}><span className={styles.icon}><Bell size={22} /></span><div><h2>Notifications</h2><p className={styles.description}>Updates from your MealRelay workspace.</p></div></div>
+            <div className={styles.notice}><Info size={20} /><p><strong>Scheduled email notifications are not configured yet.</strong><span>Your saved menus and activity remain available in this workspace.</span></p></div>
+            <button type="button" disabled className={styles.unavailable}><Settings2 size={19} /><span>Configure email notifications</span><small>Coming soon</small></button>
           </section>
         </div>
       </div>
