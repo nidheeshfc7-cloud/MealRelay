@@ -14,6 +14,7 @@ import { CinematicIntro } from "@/components/CinematicIntro";
 import Footer from "@/components/footer";
 import { UnifiedPlatformSection } from "@/components/UnifiedPlatformSection";
 import { BentoGridSection } from "@/components/landing/BentoGridSection";
+import { KitchensWeServe } from "@/components/landing/KitchensWeServe";
 import { DEFAULT_MEALS, formatPortionNumber } from "@mealrelay/core";
 import s from "./landing.module.css";
 
@@ -152,6 +153,7 @@ export default function LandingPage() {
           </div>
         </section>
         <BentoGridSection />
+        <KitchensWeServe />
         <section
           className={s.comparison}
           aria-label="From kitchen challenges to a clearer plan"
