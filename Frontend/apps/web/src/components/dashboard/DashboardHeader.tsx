@@ -21,7 +21,7 @@ const SHIFT_OPTIONS: { key: MealShiftKey; label: string; icon: React.ComponentTy
 ];
 
 export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
-  chefName = "Sunil",
+  chefName = "Chef",
   selectedDate,
   selectedShift,
   safetyBufferPct = 0.05,

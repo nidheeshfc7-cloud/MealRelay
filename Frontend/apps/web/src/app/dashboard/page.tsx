@@ -2,6 +2,8 @@
 
 import React, { useMemo, useState } from "react";
 import { AlertCircle, CheckCircle2, RefreshCw, X } from "lucide-react";
+import { useAccountIdentity } from "@/components/auth/AccountIdentity";
+import { KitchenRecordsSummary } from "@/components/kitchen/KitchenRecordsSummary";
 import { Sidebar } from "@/components/Sidebar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { MetricCards } from "@/components/dashboard/MetricCards";
@@ -167,6 +169,7 @@ const CANONICAL_DISHES_BY_SHIFT: Record<MealShiftKey, BaseDishConfig[]> = {
 };
 
 export default function DashboardPage() {
+  const account = useAccountIdentity();
   const [selectedShift, setSelectedShift] = useState<MealShiftKey>("lunch");
   const [selectedDate, setSelectedDate] = useState<string>("Tue, 12 Aug 2025");
   const [expectedAttendance, setExpectedAttendance] = useState<number>(185);
@@ -385,9 +388,10 @@ export default function DashboardPage() {
         <Sidebar />
 
         <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 w-full space-y-7">
+          <KitchenRecordsSummary />
           {/* 1. Header with Chef Greeting, Date Selector, Shift Selector, and Buffer Pills */}
           <DashboardHeader
-            chefName="Sunil"
+            chefName={account.name}
             selectedDate={selectedDate}
             selectedShift={selectedShift}
             safetyBufferPct={safetyBufferPct}

@@ -19,13 +19,16 @@ async function authenticate(form: FormData, signup: boolean): Promise<AuthResult
       const site = process.env.AUTH_SITE_URL;
       if (!site) return failure("AUTH_NOT_CONFIGURED", "Authentication setup is incomplete.");
       const destination = new URL("/auth/callback", site);
-      const { data, error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: destination.toString() } });
+      destination.searchParams.set("next", safeNext(field(form, "next")));
+      const { data, error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: destination.toString(), data: { full_name: field(form, "fullName").trim().slice(0,120), organization: field(form, "organization").trim().slice(0,120) } } });
       if (error) return failure("SIGNUP_FAILED", "Unable to create an account. Check your details or try signing in.");
       revalidatePath("/", "layout");
       return { ok: true, redirectTo: data.session ? "/dashboard" : "/login", requiresEmailConfirmation: !data.session };
     }
     const { error } = await client.auth.signInWithPassword({ email, password });
-    if (error) return failure("LOGIN_FAILED", "Unable to sign in. Check your credentials and email confirmation, then retry.");
+    if (error) return error.code === "email_not_confirmed"
+      ? failure("EMAIL_NOT_CONFIRMED", "Confirm your email once to activate this account, then sign in normally.")
+      : failure("LOGIN_FAILED", "Unable to sign in. Check your email and password, then retry.");
     revalidatePath("/", "layout");
     return { ok: true, redirectTo: safeNext(field(form, "next")) };
   } catch (error) {

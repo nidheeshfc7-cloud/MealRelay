@@ -17,7 +17,7 @@ import { BrandLogo } from '@/components/BrandLogo';
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [orgName, setOrgName] = useState('Sreenidhi Campus Dining');
+  const [orgName, setOrgName] = useState('');
   const [kitchenName, setKitchenName] = useState('Central Production Kitchen');
   const [capacity, setCapacity] = useState('1200');
   const [buffer, setBuffer] = useState('4.8');
@@ -80,7 +80,7 @@ export default function OnboardingPage() {
                     value={orgName}
                     onChange={(e) => setOrgName(e.target.value)}
                     className="w-full pl-11 pr-4 py-3 rounded-xl border border-line-light focus:outline-none focus:border-forest text-sm text-ink bg-canvas"
-                    placeholder="e.g. Sreenidhi Hospitality Services"
+                    placeholder="Your kitchen or restaurant name"
                   />
                 </div>
               </div>

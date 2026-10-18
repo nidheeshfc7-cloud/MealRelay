@@ -1,7 +1,7 @@
 import { signIn, signUp, signOut } from "./auth/actions";
 
 export interface UserSession { id: string; email: string; fullName?: string; role?: string; institution?: string; }
-export interface LoginCredentials { email: string; password: string; rememberMe?: boolean; }
+export interface LoginCredentials { email: string; password: string; rememberMe?: boolean; next?: string; }
 export interface SignupCredentials { fullName: string; email: string; password: string; organization?: string; role?: string; }
 export interface AuthResult { success: boolean; user?: UserSession; error?: string; pendingIntegration?: boolean; requiresEmailConfirmation?: boolean; redirectTo?: string; }
 export const AUTH_CONFIG = { isIntegrationPending: !(process.env.NEXT_PUBLIC_SUPABASE_URL && (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)) };
@@ -10,6 +10,7 @@ function credentialsForm(credentials: LoginCredentials) {
   const form = new FormData();
   form.set("email", credentials.email);
   form.set("password", credentials.password);
+  if (credentials.next) form.set("next", credentials.next);
   return form;
 }
 export async function loginWithCredentials(credentials: LoginCredentials): Promise<AuthResult> {
@@ -17,7 +18,10 @@ export async function loginWithCredentials(credentials: LoginCredentials): Promi
   return result.ok ? { success: true, redirectTo: result.redirectTo } : { success: false, error: result.error, pendingIntegration: result.code === "AUTH_NOT_CONFIGURED" };
 }
 export async function signupWithCredentials(credentials: SignupCredentials): Promise<AuthResult> {
-  const result = await signUp(credentialsForm(credentials));
+  const form = credentialsForm(credentials);
+  form.set("fullName", credentials.fullName);
+  form.set("organization", credentials.organization || "");
+  const result = await signUp(form);
   if (!result.ok) return { success: false, error: result.error, pendingIntegration: result.code === "AUTH_NOT_CONFIGURED" };
   if (result.requiresEmailConfirmation) return { success: false, requiresEmailConfirmation: true, error: "Check your email to confirm your account, then sign in." };
   return { success: true, redirectTo: result.redirectTo };

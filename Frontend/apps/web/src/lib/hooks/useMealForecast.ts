@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { fetchMealForecast } from "../api";
+import { useAccountIdentity } from "@/components/auth/AccountIdentity";
 import {
   ForecastRequest,
   ForecastResponse,
@@ -71,9 +72,10 @@ export const useMealForecast = ({
   const [error, setError] = useState<string | null>(null);
   const [isOffline, setIsOffline] = useState<boolean>(false);
 
+  const account = useAccountIdentity();
   const isoDate = normalizeToIsoDate(date);
   const dishesKey = dishes.map((d) => d.dish_id).sort().join(",");
-  const cacheKey = `${isoDate}_${mealType}_${expectedAttendance}_${safetyBufferPct}_${dishesKey}`;
+  const cacheKey = `${account.id}_${isoDate}_${mealType}_${expectedAttendance}_${safetyBufferPct}_${dishesKey}`;
 
   // Keep track of ongoing request ID to prevent race conditions
   const requestIdRef = useRef<number>(0);

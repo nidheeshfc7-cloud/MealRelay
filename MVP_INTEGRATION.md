@@ -1,0 +1,67 @@
+# MealRelay kitchen-record integration
+
+## Implemented locally
+- `/menu`: review up to 200 menu rows per save, edit/delete persisted items, category and price validation.
+- Menu photo selection, preview and removal (10 files maximum, 10 MB each). Photos remain local. No OCR provider is configured; manual entry is explicit.
+- `/records`: add/edit/delete daily activity, date filtering, 100-row pages.
+- Prepared = served + leftover; nonnegative integer portions and attendance.
+- Protected layouts and middleware; ownership is derived server-side from verified Supabase Auth.
+- Account-specific dashboard saved-record summary and navigation. Existing forecasts remain separate and illustrative.
+
+## Database deployment — REQUIRED, not applied
+Apply `supabase/migrations/202610180001_account_kitchen_records.sql` using Supabase migrations or the project's SQL Editor.
+This adds account_menu_items and account_activity_logs without changing existing organizations, kitchens or records.
+This MVP gives each authenticated user a single private workspace. Organization display metadata does not grant access.
+Shared-team membership is not implemented.
+The composite foreign key prevents a log referencing another account's menu item.
+RLS and explicit authenticated-only CRUD grants follow [Supabase's RLS guidance](https://supabase.com/docs/guides/database/postgres/row-level-security).
+Ensure public is an exposed Data API schema; no anon CRUD grant is needed.
+No service-role key is used by these actions.
+
+Deployment is blocked here: Supabase MCP returns permission denied. Docker is installed but its daemon is unavailable.
+Until deployment, forms show an honest storage-setup error rather than pretending saves succeeded.
+Live CRUD and multi-account isolation have NOT been verified.
+Before publishing, verify two accounts cannot select/update/delete each other's rows or insert another owner_id, and cannot attach a log to another account's menu.
+
+## Frontend API
+Import from `@/lib/kitchen/actions`:
+- listMenuItems()
+- saveMenuItems(items, optionalExistingItemId)
+- deleteMenuItem(id)
+- listActivityLogs(optionalISODate, optionalOffset)
+- saveActivityLog(input, optionalExistingLogId)
+- deleteActivityLog(id)
+
+Every action returns `{ ok: true, data }` or `{ ok: false, error }`.
+Types live in `src/lib/kitchen/types.ts`; category values reuse the existing FastAPI contract.
+Menu amounts are numeric prices in the restaurant's chosen currency; currency configuration is not implemented.
+Use pagination for activity logs; the menu list currently supports 500 saved items.
+
+## Authentication
+Confirmed accounts sign in directly; confirmation is required only once for new accounts when enabled.
+Set AUTH_SITE_URL to the real application origin.
+In Supabase Authentication → URL Configuration:
+- Local Site URL: http://localhost:3000
+- Allowed redirect: http://localhost:3000/auth/callback
+- Add the exact deployment callback when hosting. Do not use 0.0.0.0 as a browser origin.
+Keep email confirmation enabled. Invalid confirmation links show a login error.
+Environment: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (or legacy ANON_KEY), AUTH_SITE_URL.
+NEXT_PUBLIC_API_URL continues to configure the existing demonstration forecasting engine.
+
+## Remaining limitations
+- New signup/email delivery and a fresh successful callback require a new email confirmation flow; no new mailbox was created in this check.
+- Private logs are not fed into the old shared FastAPI singleton/model. Its legacy records endpoints are not private account storage and remain outside these new RLS-backed workflows.
+- Dashboard forecasting and its existing Log Outcomes dialog still use that shared engine; do not enter private restaurant activity there. Use Daily Activity for private storage.
+- A complete deployment must secure or disable legacy shared writes before accepting real restaurant data there.
+- No OCR, permanent photo storage, team sharing, or per-account model training is claimed.
+- Browser rendering at desktop/mobile widths remains to be checked in an available browser environment.
+
+
+## Actual verification results
+- Targeted TypeScript check: passed.
+- Isolated Next.js production build including lint/type validation: passed.
+- App server actions: sample account login, intended destination and logout passed; HTTP-only cookies created and cleared.
+- Authenticated dashboard/menu/records responses: HTTP 200 and correct account email.
+- Anonymous menu/records responses: HTTP 307 to localhost login.
+- Server-side rejection passed for negative prices, invalid categories, invalid date and inconsistent quantities.
+- Live listMenuItems: storage not configured; migration has not been applied.

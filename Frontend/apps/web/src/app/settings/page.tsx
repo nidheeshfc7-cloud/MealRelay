@@ -16,11 +16,12 @@ import {
 } from 'lucide-react';
 import { Sidebar } from '@/components/Sidebar';
 import { Header } from '@/components/Header';
-import { APP_CONFIG } from '@mealrelay/config';
+import { useAccountIdentity } from '@/components/auth/AccountIdentity';
 
 export default function SettingsPage() {
-  const [kitchenName, setKitchenName] = useState(APP_CONFIG.defaultKitchenName);
-  const [orgName, setOrgName] = useState(APP_CONFIG.defaultOrgName);
+  const account = useAccountIdentity();
+  const [kitchenName, setKitchenName] = useState(account.organization);
+  const [orgName, setOrgName] = useState(account.organization);
   const [notifications, setNotifications] = useState(true);
   const [saved, setSaved] = useState(false);
 
@@ -32,8 +33,8 @@ export default function SettingsPage() {
 
   const handleReset = () => {
     if (confirm('Reset demo state back to factory defaults?')) {
-      setKitchenName(APP_CONFIG.defaultKitchenName);
-      setOrgName(APP_CONFIG.defaultOrgName);
+      setKitchenName(account.organization);
+      setOrgName(account.organization);
       setNotifications(true);
       alert('Demo data restored to initial campus baseline.');
     }
