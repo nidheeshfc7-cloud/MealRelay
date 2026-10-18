@@ -20,12 +20,6 @@ export default function SettingsPage() {
           <ChevronRight size={19} />
         </a>
       </header>
-      <nav className={styles.tabs} aria-label="Settings sections">
-        <a href="#profile" className={styles.activeTab}><UserRound size={20} />Profile</a>
-        <a href="#workspace"><Building2 size={20} />Workspace</a>
-        <a href="#security"><LockKeyhole size={20} />Security</a>
-        <a href="#notifications"><Bell size={20} />Notifications</a>
-      </nav>
       <div className={styles.columns}>
         <section id="profile" className={`${styles.card} ${styles.profile}`}>
           <div className={styles.cardHeading}><span className={styles.icon}><UserRound size={23} /></span><h2>Profile &amp; Kitchen</h2></div>
