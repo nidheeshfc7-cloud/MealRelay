@@ -324,7 +324,7 @@
   width: 38%;
 }
 .waste .bottomCopy h3 { font-size: clamp(29px, 3vw, 42px); }
-.wasteAccent { color: #84a800; }
+.keywordAccent { color: #84a800; }
 .wastePhoto {
   position: absolute;
   inset: 0;

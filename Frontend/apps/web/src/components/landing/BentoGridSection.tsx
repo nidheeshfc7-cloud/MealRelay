@@ -201,7 +201,7 @@ export function BentoGridSection() {
           className={`${styles.card} ${styles.showcase}`}
         >
           <div className={styles.showcaseCopy}>
-            <h2 id="bento-title">Plan smarter. Waste less.</h2>
+            <h2 id="bento-title">Plan <span className={styles.keywordAccent}>smarter.</span> Waste less.</h2>
             <p>
               Forecast demand, plan preparation, and serve the right amount. One
               clear view of the next service.
@@ -227,7 +227,7 @@ export function BentoGridSection() {
           className={`${styles.card} ${styles.forecast}`}
         >
           <p className={styles.label}>Demand forecasting</p>
-          <h3>Anticipate demand.</h3>
+          <h3>Anticipate <span className={styles.keywordAccent}>demand.</span></h3>
           <p className={styles.description}>
             Bring tomorrow’s service into focus before preparation begins.
           </p>
@@ -240,7 +240,7 @@ export function BentoGridSection() {
         >
           <div className={styles.prepCopy}>
             <p className={styles.label}>Preparation planning</p>
-            <h3>Plan the right quantities.</h3>
+            <h3>Plan the right <span className={styles.keywordAccent}>quantities.</span></h3>
             <p className={styles.description}>
               Clear portion guides for breakfast, lunch, and dinner.
             </p>
@@ -263,7 +263,7 @@ export function BentoGridSection() {
           </div>
           <div className={styles.bottomCopy}>
             <p className={styles.label}>Waste reduction</p>
-            <h3>Cut<br /><span className={styles.wasteAccent}>avoidable</span><br />waste.</h3>
+            <h3>Cut<br /><span className={styles.keywordAccent}>avoidable</span><br />waste.</h3>
             <p className={styles.description}>
               Prepare with purpose. Better portion planning can help reduce
               unnecessary leftovers.
