@@ -15,7 +15,11 @@ async function emailAction(form:FormData,recovery:boolean):Promise<AuthResult>{
     callback.searchParams.set("next",recovery?"/reset-password":"/dashboard");
     const {error}=recovery?await client.auth.resetPasswordForEmail(email,{redirectTo:callback.toString()})
       :await client.auth.resend({type:"signup",email,options:{emailRedirectTo:callback.toString()}});
-    if(error)return failed("EMAIL_UNAVAILABLE","Unable to send an email right now. Wait a moment, then retry.");
+    if(error){
+      if(error.status===429||error.code==="over_email_send_rate_limit")
+        return failed("EMAIL_RATE_LIMITED","Email sending is temporarily rate-limited. Please try again later.");
+      return failed("EMAIL_UNAVAILABLE","Unable to send an email right now. Wait a moment, then retry.");
+    }
     // Same response for unknown and known accounts.
     return {ok:true,redirectTo:"/login"};
   }catch{return failed("EMAIL_UNAVAILABLE","Unable to send an email right now. Please retry.");}
