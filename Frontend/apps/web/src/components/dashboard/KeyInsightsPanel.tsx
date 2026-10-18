@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "./Dashboard.module.css";
+
 import React from "react";
 import { ArrowDown, ArrowUp, Info, Lightbulb } from "lucide-react";
 import { KeyInsight } from "./types";
@@ -35,7 +37,7 @@ export const KeyInsightsPanel: React.FC<KeyInsightsPanelProps> = ({
   insights = DEFAULT_INSIGHTS,
 }) => {
   return (
-    <div className="p-6 rounded-2xl bg-white border border-line-light shadow-sm flex flex-col justify-between">
+    <div className={styles.insights}>
       <div>
         <div className="flex items-center gap-3 pb-5 border-b border-line-light/70">
           <div className="w-10 h-10 rounded-xl bg-sage text-forest flex items-center justify-center shrink-0">

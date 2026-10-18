@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "./Dashboard.module.css";
+
 import { planningDate, planningDateLabel } from "@/lib/date";
 import React, { useState } from "react";
 import { Calendar, ChevronDown, Coffee, Moon, Shield, Sun } from "lucide-react";
@@ -37,7 +39,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const ActiveShiftIcon = activeShiftOption.icon;
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
+    <div className={styles.header}>
       <div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight">
           Good morning, {chefName}

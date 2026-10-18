@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "./Dashboard.module.css";
+
 import React from "react";
 import { CheckCircle2, ClipboardCheck, FileEdit } from "lucide-react";
 
@@ -17,7 +19,7 @@ export const DashboardActionBar: React.FC<DashboardActionBarProps> = ({
   isConfirmed,
 }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+    <div className={styles.actions}>
       {/* 1. Edit Quantities Button */}
       <button
         onClick={onEditQuantities}

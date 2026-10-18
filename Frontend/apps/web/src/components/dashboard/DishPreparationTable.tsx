@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "./Dashboard.module.css";
+
 import React from "react";
 import { Info, Utensils } from "lucide-react";
 import { DishItem } from "./types";
@@ -16,17 +18,18 @@ export const DishPreparationTable: React.FC<DishPreparationTableProps> = ({
   isLoading = false,
 }) => {
   return (
-    <div className="p-6 sm:p-7 rounded-2xl bg-white border border-line-light shadow-sm flex flex-col justify-between">
+    <div className={styles.tableCard}>
       <div>
         {/* Table Top Header */}
         <div className="flex items-center justify-between pb-5 border-b border-line-light/70">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-ink tracking-tight">
+          <div className={styles.tableHeading}>
+            <span className={styles.tableIcon}><Utensils size={23} aria-hidden="true" /></span>
+            <div><h2 className="text-xl sm:text-2xl font-extrabold text-ink tracking-tight">
               Dish-wise Preparation Plan
             </h2>
             <p className="text-sm text-ink-secondary mt-1 font-medium">
               Targeted cooking portions calculated per menu dish
-            </p>
+            </p></div>
           </div>
 
           <button

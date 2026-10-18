@@ -1,5 +1,6 @@
 "use client";
 
+import styles from "@/components/dashboard/Dashboard.module.css";
 import { planningDate } from "@/lib/date";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
@@ -382,7 +383,7 @@ export default function DashboardPage() {
         {/* Preserved Unmodified Sidebar */}
         <Sidebar />
 
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 w-full space-y-7">
+        <main className={styles.main}>
           <KitchenRecordsSummary />
           {/* 1. Header with Chef Greeting, Date Selector, Shift Selector, and Buffer Pills */}
           <DashboardHeader
@@ -432,7 +433,7 @@ export default function DashboardPage() {
           />
 
           {/* 3. Middle Section: Dish-wise Preparation Plan Table + Key Insights */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+          <div className={styles.contentGrid}>
             {/* Left Column (Dish Table): 8 of 12 cols (~67%) */}
             <div className="lg:col-span-8">
               <DishPreparationTable
