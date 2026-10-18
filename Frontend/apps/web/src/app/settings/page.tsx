@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Bell, Building2, ChevronRight, Info, LockKeyhole, Monitor, Settings2, ShieldCheck, UserRound } from "lucide-react";
+import { Building2, ChevronRight, LockKeyhole, Monitor, ShieldCheck, UserRound } from "lucide-react";
 import { Sidebar } from "@/components/Sidebar";
 import { useAccountIdentity } from "@/components/auth/AccountIdentity";
 import { ProfileSettingsForm } from "@/components/auth/ProfileSettingsForm";
@@ -35,11 +35,6 @@ export default function SettingsPage() {
             <div className={styles.cardHeading}><span className={styles.icon}><Monitor size={22} /></span><div><h2 id="sessions-title">Sessions</h2><p className={styles.description}>Control access to your account across devices.</p></div></div>
             <div className={styles.sessionRow}><Monitor size={22} /><div><strong>This signed-in browser <span className={styles.badge}>Current session</span></strong><p>Device and location details are unavailable.</p></div><ShieldCheck size={19} /></div>
             <div className={styles.sessionActions}><LogoutButton light /><LogoutButton light allDevices /></div>
-          </section>
-          <section id="notifications" className={styles.card}>
-            <div className={styles.cardHeading}><span className={styles.icon}><Bell size={22} /></span><div><h2>Notifications</h2><p className={styles.description}>Updates from your MealRelay workspace.</p></div></div>
-            <div className={styles.notice}><Info size={20} /><p><strong>Scheduled email notifications are not configured yet.</strong><span>Your saved menus and activity remain available in this workspace.</span></p></div>
-            <button type="button" disabled className={styles.unavailable}><Settings2 size={19} /><span>Configure email notifications</span><small>Coming soon</small></button>
           </section>
         </div>
       </div>
