@@ -51,8 +51,8 @@ NEXT_PUBLIC_API_URL continues to configure the existing demonstration forecastin
 ## Remaining limitations
 - New signup/email delivery and a fresh successful callback require a new email confirmation flow; no new mailbox was created in this check.
 - Private logs are not fed into the old shared FastAPI singleton/model. Its legacy records endpoints are not private account storage and remain outside these new RLS-backed workflows.
-- Dashboard forecasting and its existing Log Outcomes dialog still use that shared engine; do not enter private restaurant activity there. Use Daily Activity for private storage.
-- A complete deployment must secure or disable legacy shared writes before accepting real restaurant data there.
+- Dashboard Log Outcomes now navigates to account-owned Daily Activity. Shared FastAPI POST /records and /records/batch return HTTP 410; shared GET /records returns synthetic rows only.
+- Deploy/restart the FastAPI service to activate the retired shared-write endpoints; an already-running process may still serve the old code. Private activity must use the new Supabase-backed actions.
 - No OCR, permanent photo storage, team sharing, or per-account model training is claimed.
 - Browser rendering at desktop/mobile widths remains to be checked in an available browser environment.
 
@@ -65,3 +65,10 @@ NEXT_PUBLIC_API_URL continues to configure the existing demonstration forecastin
 - Anonymous menu/records responses: HTTP 307 to localhost login.
 - Server-side rejection passed for negative prices, invalid categories, invalid date and inconsistent quantities.
 - Live listMenuItems: storage not configured; migration has not been applied.
+
+## Shared record boundary regression checks
+- Targeted backend regressions: 3 passed (shared single/batch writes denied before storage access; private rows omitted from shared reads).
+- TypeScript after dashboard navigation change: passed.
+
+- Complete backend suite after updating the intentionally retired shared-write contract: 39 passed.
+- Supabase management recheck: permission denied persists. Live CRUD/isolation remains unverified.

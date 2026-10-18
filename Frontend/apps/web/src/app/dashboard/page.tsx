@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
 import { AlertCircle, CheckCircle2, RefreshCw, X } from "lucide-react";
 import { useAccountIdentity } from "@/components/auth/AccountIdentity";
@@ -170,6 +171,7 @@ const CANONICAL_DISHES_BY_SHIFT: Record<MealShiftKey, BaseDishConfig[]> = {
 
 export default function DashboardPage() {
   const account = useAccountIdentity();
+  const router = useRouter();
   const [selectedShift, setSelectedShift] = useState<MealShiftKey>("lunch");
   const [selectedDate, setSelectedDate] = useState<string>("Tue, 12 Aug 2025");
   const [expectedAttendance, setExpectedAttendance] = useState<number>(185);
@@ -457,7 +459,7 @@ export default function DashboardPage() {
           <DashboardActionBar
             onEditQuantities={() => setIsEditModalOpen(true)}
             onConfirmPlan={handleConfirmPlan}
-            onLogOutcomes={() => setIsLogOutcomesModalOpen(true)}
+            onLogOutcomes={() => router.push("/records")}
             isConfirmed={isConfirmed}
           />
 

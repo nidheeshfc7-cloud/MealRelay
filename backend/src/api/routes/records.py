@@ -26,13 +26,13 @@ def get_meal_records(
 ) -> List[MealRecord]:
     """Retrieves chronological meal records. Preserves explicit nulls on served portions."""
     service = ForecastService.get_instance()
-    return service.get_records(
+    return [record for record in service.get_records(
         dish_id=dish_id,
         meal_type=meal_type,
         start_date=start_date,
         end_date=end_date,
         limit=limit,
-    )
+    ) if record.is_synthetic]
 
 
 @router.post(
@@ -42,16 +42,11 @@ def get_meal_records(
     summary="Create a new historical meal record",
 )
 def create_meal_record(record_in: MealRecordCreate) -> MealRecord:
-    """Logs a new kitchen meal preparation and consumption entry."""
-    service = ForecastService.get_instance()
-    try:
-        new_record = service.add_record(record_in)
-        return new_record
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to record meal: {str(e)}",
-        )
+    """Legacy shared storage is not an account-authorized write path."""
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail="Shared record writes are disabled. Use MealRelay Daily Activity for account-owned records.",
+    )
 
 
 @router.post(
@@ -61,21 +56,11 @@ def create_meal_record(record_in: MealRecordCreate) -> MealRecord:
     summary="Create multiple historical meal records and retrain models on the batch",
 )
 def create_meal_records_batch(records_in: List[MealRecordCreate]) -> List[MealRecord]:
-    """Logs multiple kitchen meal records simultaneously and retrains the model on the batch."""
-    if not records_in:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="At least one meal record must be provided in the batch.",
-        )
-    service = ForecastService.get_instance()
-    try:
-        new_records = service.add_records_batch(records_in)
-        return new_records
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to record meal batch: {str(e)}",
-        )
+    """Never ingest private restaurant records into the shared demo engine."""
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail="Shared record writes are disabled. Use MealRelay Daily Activity for account-owned records.",
+    )
 
 
 @router.post(
