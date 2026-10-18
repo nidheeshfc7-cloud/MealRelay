@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { authConfig } from "@/lib/auth/config";
 
 export async function middleware(request: NextRequest) {
-  const protectedRoute = /^\/(dashboard|forecasts|planner|analytics|settings|onboarding|menu|records)(?:\/|$)/.test(request.nextUrl.pathname);
+  const protectedRoute = /^\/(dashboard|forecasts|planner|analytics|settings|onboarding|menu|records|reset-password)(?:\/|$)/.test(request.nextUrl.pathname);
   let config;
   try { config = authConfig(); }
   catch {
@@ -43,4 +43,4 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
-export const config = { matcher: ["/menu/:path*", "/records/:path*", "/dashboard/:path*", "/forecasts/:path*", "/planner/:path*", "/analytics/:path*", "/settings/:path*", "/onboarding/:path*", "/login", "/signup", "/auth/:path*"] };
+export const config = { matcher: ["/reset-password", "/menu/:path*", "/records/:path*", "/dashboard/:path*", "/forecasts/:path*", "/planner/:path*", "/analytics/:path*", "/settings/:path*", "/onboarding/:path*", "/login", "/signup", "/auth/:path*"] };

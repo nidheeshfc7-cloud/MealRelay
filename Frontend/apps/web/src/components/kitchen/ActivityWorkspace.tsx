@@ -16,7 +16,7 @@ export function ActivityWorkspace(){
   const [busy,setBusy]=useState(true);
   const [error,setError]=useState("");
   const [message,setMessage]=useState("");
-  async function load(date=filter,offset=page*100){const result=await listActivityLogs(date||undefined,offset);if(result.ok)setLogs(result.data);else setError(result.error);}
+  async function load(date=filter,offset=page*100){try {const result=await listActivityLogs(date||undefined,offset);if(result.ok)setLogs(result.data);else setError(result.error);} catch {setError("Unable to refresh saved activity. Please retry.");}}
   useEffect(()=>{let active=true;setBusy(true);setError("");Promise.all([listMenuItems(),listActivityLogs(filter||undefined,page*100)]).then(([items,records])=>{if(!active)return;if(items.ok)setMenu(items.data);else setError(items.error);if(records.ok)setLogs(records.data);else setError(records.error);}).catch(()=>{if(active)setError("Unable to load kitchen records.");}).finally(()=>{if(active)setBusy(false);});return()=>{active=false;};},[filter,page]);
   async function save(event:React.FormEvent){
     event.preventDefault();setBusy(true);setError("");setMessage("");
@@ -54,4 +54,3 @@ export function ActivityWorkspace(){
     </section>
   </WorkspaceShell>;
 }
-

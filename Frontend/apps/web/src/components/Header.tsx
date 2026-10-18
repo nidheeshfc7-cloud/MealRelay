@@ -8,7 +8,7 @@ interface HeaderProps {
 }
 
 export function Header({ title, subtitle, action }: HeaderProps) {
-  const today = 'Saturday, 17 October 2026';
+  const today = new Intl.DateTimeFormat("en-IN", { dateStyle: "full", timeZone: "Asia/Kolkata" }).format(new Date());
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-line-light">
@@ -19,7 +19,7 @@ export function Header({ title, subtitle, action }: HeaderProps) {
           <span>•</span>
           <span className="text-forest font-extrabold flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-forest inline-block"></span>
-            LIVE
+            Workspace
           </span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-black text-ink tracking-tight">{title}</h1>

@@ -6,6 +6,6 @@ export function authConfig() {
 }
 
 export function safeNext(value: unknown) {
-  return typeof value === "string" && /^\/(dashboard|forecasts|planner|analytics|settings|onboarding|menu|records)(?:[/?]|$)/.test(value) && !value.includes("\\")
+  return typeof value === "string" && /^\/(dashboard|forecasts|planner|analytics|settings|onboarding|menu|records|reset-password)(?:[/?]|$)/.test(value) && !value.includes("\\")
     ? value : "/dashboard";
 }

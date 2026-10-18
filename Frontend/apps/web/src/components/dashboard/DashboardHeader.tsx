@@ -1,5 +1,6 @@
 "use client";
 
+import { planningDate, planningDateLabel } from "@/lib/date";
 import React, { useState } from "react";
 import { Calendar, ChevronDown, Coffee, Moon, Shield, Sun } from "lucide-react";
 import { MealShiftKey } from "./types";
@@ -93,14 +94,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               <p className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-ink-secondary">
                 Select Planning Date
               </p>
-              {[
-                { value: "Tue, 12 Aug 2025", label: "Tue, 12 Aug 2025 (Tomorrow)" },
-                { value: "Wed, 13 Aug 2025", label: "Wed, 13 Aug 2025" },
-                { value: "Thu, 14 Aug 2025", label: "Thu, 14 Aug 2025" },
-                { value: "Fri, 15 Aug 2025", label: "Fri, 15 Aug 2025" },
-                { value: "Sat, 16 Aug 2025", label: "Sat, 16 Aug 2025" },
-                { value: "Sun, 17 Aug 2025", label: "Sun, 17 Aug 2025" },
-              ].map((item) => {
+              {Array.from({length:6},(_,index)=>{const value=planningDate(index+1);return {value,label:planningDateLabel(value)+(index===0?" (Tomorrow)":"")};}).map((item) => {
                 const isCurrent = selectedDate === item.value || selectedDate.startsWith(item.value);
                 return (
                   <button

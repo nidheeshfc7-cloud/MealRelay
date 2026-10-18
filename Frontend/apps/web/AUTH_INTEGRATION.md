@@ -57,3 +57,11 @@ Run `node ../../node_modules/typescript/bin/tsc --noEmit --incremental false` fr
 Confirmed accounts sign in directly with email/password; confirmation is only required for new unconfirmed accounts according to Supabase policy. Keep confirmation enabled. Set Supabase Site URL to the actual app origin (localhost for local development), never `0.0.0.0`. Allow the exact `/auth/callback` URL. The callback and middleware redirect using `AUTH_SITE_URL`. Invalid/expired callbacks show a login error rather than looping. Already authenticated visitors to login/signup go to the dashboard.
 
 Protected page layouts obtain the verified user server-side, and provide only ID/email/display metadata to the sidebar and settings. Signup saves full_name and organization as presentation metadata; neither grants authorization. Accounts without organization show “Your kitchen”. Forecast memory caches are namespaced by user ID. No private restaurant storage is implemented by this identity repair; existing forecasting/demo results remain separate from account-owned records.
+
+## Site account controls
+
+- Desktop/mobile LogoutButton calls signOut("local"); settings also provides signOut("global"). Only these scope values are accepted. Redirect after success to /login and discard private client UI. Global logout revokes refresh sessions; issued access tokens may live until expiry.
+- saveProfile(form) from @/lib/auth/profile accepts fullName, organization and kitchenName, validates them and updates only the verified user's display metadata. Refresh the router after success. Metadata never grants permissions.
+- @/lib/auth/recovery exports requestPasswordReset(form), resendConfirmation(form) and updatePassword(form). Email forms send email; the update form sends password and confirmation. All return AuthResult. Wire generic email success messages to avoid revealing whether an account exists.
+- /forgot-password and /confirm-email are public; /reset-password requires a verified session. Recovery callbacks support code exchange and type=recovery token_hash verification.
+- Add the /auth/callback?next=/reset-password URL to the Supabase redirect allowlist. Fresh email delivery, all-device logout and two-account isolation are final manual checks.

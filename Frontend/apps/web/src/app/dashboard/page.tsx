@@ -1,5 +1,6 @@
 "use client";
 
+import { planningDate } from "@/lib/date";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
 import { AlertCircle, CheckCircle2, RefreshCw, X } from "lucide-react";
@@ -12,7 +13,6 @@ import { DishPreparationTable } from "@/components/dashboard/DishPreparationTabl
 import { KeyInsightsPanel } from "@/components/dashboard/KeyInsightsPanel";
 import { DashboardActionBar } from "@/components/dashboard/DashboardActionBar";
 import { EditQuantitiesModal } from "@/components/dashboard/EditQuantitiesModal";
-import { LogOutcomesModal } from "@/components/dashboard/LogOutcomesModal";
 import { DishItem, KeyInsight, MealShiftKey } from "@/components/dashboard/types";
 import { useMealForecast } from "@/lib/hooks/useMealForecast";
 
@@ -173,7 +173,7 @@ export default function DashboardPage() {
   const account = useAccountIdentity();
   const router = useRouter();
   const [selectedShift, setSelectedShift] = useState<MealShiftKey>("lunch");
-  const [selectedDate, setSelectedDate] = useState<string>("Tue, 12 Aug 2025");
+  const [selectedDate, setSelectedDate] = useState<string>(() => planningDate(1));
   const [expectedAttendance, setExpectedAttendance] = useState<number>(185);
   const [safetyBufferPct, setSafetyBufferPct] = useState<number>(0.05);
 
@@ -182,7 +182,6 @@ export default function DashboardPage() {
 
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [isLogOutcomesModalOpen, setIsLogOutcomesModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const baseDishes = CANONICAL_DISHES_BY_SHIFT[selectedShift];
@@ -360,7 +359,7 @@ export default function DashboardPage() {
   // Confirm plan handler
   const handleConfirmPlan = (): void => {
     setIsConfirmed(true);
-    setToastMessage("Tomorrow's preparation plan has been confirmed! Kitchen staff notified.");
+    setToastMessage("Plan reviewed for this browser session. Record actual service results in Services & Activity.");
     setTimeout(() => setToastMessage(null), 4000);
   };
 
@@ -376,12 +375,6 @@ export default function DashboardPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Success handler for logging shift outcomes
-  const handleLogSuccess = (msg: string): void => {
-    setToastMessage(msg);
-    refetch(); // Trigger forecast re-computation with new historical record
-    setTimeout(() => setToastMessage(null), 5000);
-  };
 
   return (
     <div className="min-h-screen bg-canvas flex flex-col font-sans selection:bg-lime selection:text-forest-dark">
@@ -471,16 +464,7 @@ export default function DashboardPage() {
             onSave={handleSaveDishes}
           />
 
-          {/* Modal 2: Log Shift Outcomes (Feedback Loop to ML) */}
-          <LogOutcomesModal
-            isOpen={isLogOutcomesModalOpen}
-            onClose={() => setIsLogOutcomesModalOpen(false)}
-            dishes={currentDishes}
-            date={selectedDate}
-            shift={selectedShift}
-            defaultAttendance={expectedAttendance}
-            onSuccess={handleLogSuccess}
-          />
+
 
           {/* Floating Bottom-Right Toast Notification Card (Zero Layout Shift) */}
           {toastMessage && (

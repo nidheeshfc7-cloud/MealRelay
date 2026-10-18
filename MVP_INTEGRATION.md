@@ -1,87 +1,74 @@
-# MealRelay kitchen-record integration
+# MealRelay MVP — implementation and final checks
 
-## Implemented locally
-- `/menu`: review up to 200 menu rows per save, edit/delete persisted items, category and price validation.
-- Menu photo selection, preview and removal (10 files maximum, 10 MB each). Photos remain local. No OCR provider is configured; manual entry is explicit.
-- `/records`: add/edit/delete daily activity, date filtering, 100-row pages.
-- Prepared = served + leftover; nonnegative integer portions and attendance.
-- Protected layouts and middleware; ownership is derived server-side from verified Supabase Auth.
-- Account-specific dashboard saved-record summary and navigation. Existing forecasts remain separate and illustrative.
+## Current completion scope (updated at the user's request)
+Finish the practical site workflows quickly: account identity and sessions, visible logout, persistent settings, menu management, daily activity, real account analytics and CSV export. Preserve the landing page, footer, palette, and existing forecast calculations.
+The user will complete the final Supabase connection/deployment steps and two-account isolation check afterward.
 
-## Database deployment — applied by the user and verified through the app
-The user applied `supabase/migrations/202610180001_account_kitchen_records.sql` in the SQL Editor. Real authenticated app actions verified the tables are usable.
-This adds account_menu_items and account_activity_logs without changing existing organizations, kitchens or records.
-This MVP gives each authenticated user a single private workspace. Organization display metadata does not grant access.
-Shared-team membership is not implemented.
-The composite foreign key prevents a log referencing another account's menu item.
-RLS and explicit authenticated-only CRUD grants follow [Supabase's RLS guidance](https://supabase.com/docs/guides/database/postgres/row-level-security).
-Ensure public is an exposed Data API schema; no anon CRUD grant is needed.
-No service-role key is used by these actions.
+## Implemented
+- Confirmed users log in directly. New accounts follow the provider's existing confirmation policy.
+- Server-verified session cookies and protected routes; canonical callbacks use AUTH_SITE_URL.
+- Actual user name/email/kitchen in authenticated navigation.
+- Visible Log out in desktop sidebar and mobile drawer; local-device and all-device logout in settings.
+- Logout failures show an error; success clears the session and fully navigates to login.
+- Settings and onboarding persist name, organization and kitchen name through Supabase Auth.
+- Job title is display metadata only, never authorization.
+- Forgot password, reset password and resend confirmation pages and server actions; expired recovery links return to a clear retry page.
+- Menu review/manual entry, price/category validation, create/edit/delete, up to 200 rows per save and 500 saved items listed.
+- Menu photo selection/preview/removal: up to 10 images at 10 MB each. Photos remain local; OCR is unavailable and manual entry is explicit.
+- Services & Activity: saved logs, editable quantities, date filter, deletion and 100-row pagination. Prepared = served + leftover.
+- Real analytics from the account's latest 100 logs: prepared, served, leftovers, leftover share, service/date breakdown and working CSV export.
+- CSV text is quoted and formula prefixes neutralized.
+- Forecast dates are current; examples and browser-session-only planner review are labeled. No false staff-notification or savings claims.
+- Shared FastAPI private writes are retired; shared record reads return synthetic records only.
+- No global stylesheet or marketing/footer changes; no new application dependency.
 
-The plugin MCP connection remains unavailable, so database administration cannot be inspected directly here. Application access with the configured public key and verified user session works.
-Forms show an honest storage-setup error if the tables are missing in another environment.
-Live menu/log CRUD, anonymous denial and ownership-spoofing rejection have been verified. Direct read/update/delete attempts from a second authenticated account remain unverified.
-Before publishing, verify two accounts cannot select/update/delete each other's rows or insert another owner_id, and cannot attach a log to another account's menu.
+## Database
+The user applied supabase/migrations/202610180001_account_kitchen_records.sql successfully.
+Live application verification confirmed account_menu_items and account_activity_logs work.
+Each user has one private workspace. Organization metadata is a display label, not a team-membership system.
+Explicit authenticated-only CRUD grants, ownership RLS, and a composite owner/menu foreign key are included.
+No service-role key is used by the app.
 
-## Frontend API
-Import from `@/lib/kitchen/actions`:
-- listMenuItems()
-- saveMenuItems(items, optionalExistingItemId)
-- deleteMenuItem(id)
-- listActivityLogs(optionalISODate, optionalOffset)
-- saveActivityLog(input, optionalExistingLogId)
-- deleteActivityLog(id)
+## Actual verification
+- Targeted TypeScript: passed.
+- Isolated Next.js production build, lint and type validation: passed.
+- Full backend tests: 39 passed.
+- Live app menu create/edit/reload/delete: passed.
+- Live app activity create/edit/date-filter/reload/delete: passed.
+- Referenced menu deletion: blocked correctly.
+- Anonymous SELECT: denied for both tables.
+- Forged ownership inserts and owner reassignment: denied.
+- Authenticated routes and account identity: passed.
+- Visible logout controls present in the rendered settings page; logout cookie clearing and subsequent private-route denial: passed.
+- Live profile save, fresh identity rendering and restoration of the original profile: passed.
+- Invalid reset/resend email, mismatched passwords and invalid logout scope: rejected.
+- Invalid recovery-link redirect: passed.
+- Analytics aggregation, empty totals, CSV quoting/formula neutralization: passed.
+- Temporary test menu/log rows were deleted; the original account profile was restored.
 
-Every action returns `{ ok: true, data }` or `{ ok: false, error }`.
-Types live in `src/lib/kitchen/types.ts`; category values reuse the existing FastAPI contract.
-Menu amounts are numeric prices in the restaurant's chosen currency; currency configuration is not implemented.
-Use pagination for activity logs; the menu list currently supports 500 saved items.
+## Final checks deferred to the user
+1. Register a second test account and run supabase/tests/account_isolation.sql to verify cross-account read/update/delete denial. One account cannot prove this check.
+2. Test a fresh confirmation email and password recovery email from the target browser. Passwords were not changed during automated verification.
+3. Test all-device logout when ready; this revokes refresh sessions across devices. Issued access tokens may remain valid until expiry.
+4. Check desktop/tablet/mobile rendering and keyboard/touch interaction in a browser. Source layouts are responsive; no browser screenshot test was available here.
+5. Restart/deploy FastAPI to activate the retired shared-write endpoints.
 
-## Authentication
-Confirmed accounts sign in directly; confirmation is required only once for new accounts when enabled.
-Set AUTH_SITE_URL to the real application origin.
-In Supabase Authentication → URL Configuration:
-- Local Site URL: http://localhost:3000
-- Allowed redirect: http://localhost:3000/auth/callback
-- Add the exact deployment callback when hosting. Do not use 0.0.0.0 as a browser origin.
-Keep email confirmation enabled. Invalid confirmation links show a login error.
-Environment: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (or legacy ANON_KEY), AUTH_SITE_URL.
-NEXT_PUBLIC_API_URL continues to configure the existing demonstration forecasting engine.
+## Environment and Supabase URLs
+Existing variables only:
+- NEXT_PUBLIC_SUPABASE_URL: project root URL, without /rest/v1/
+- NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, or legacy NEXT_PUBLIC_SUPABASE_ANON_KEY
+- AUTH_SITE_URL: actual app origin
+- NEXT_PUBLIC_API_URL: existing demonstration forecasting backend
 
-## Remaining limitations
-- New signup/email delivery and a fresh successful callback require a new email confirmation flow; no new mailbox was created in this check.
-- Private logs are not fed into the old shared FastAPI singleton/model. Its legacy records endpoints are not private account storage and remain outside these new RLS-backed workflows.
-- Dashboard Log Outcomes now navigates to account-owned Daily Activity. Shared FastAPI POST /records and /records/batch return HTTP 410; shared GET /records returns synthetic rows only.
-- Deploy/restart the FastAPI service to activate the retired shared-write endpoints; an already-running process may still serve the old code. Private activity must use the new Supabase-backed actions.
-- No OCR, permanent photo storage, team sharing, or per-account model training is claimed.
-- Browser rendering at desktop/mobile widths remains to be checked in an available browser environment.
+For local development, set Site URL to http://localhost:3000.
+Allow the callback URL and its destinations in Supabase Auth URL Configuration:
+- http://localhost:3000/auth/callback
+- http://localhost:3000/auth/callback?next=/dashboard
+- http://localhost:3000/auth/callback?next=/reset-password
+Use equivalent exact URLs for the deployed origin. Never use 0.0.0.0 as a browser URL.
+Recovery follows [Supabase resetPasswordForEmail](https://supabase.com/docs/reference/javascript/auth-resetpasswordforemail), [updateUser](https://supabase.com/docs/reference/javascript/auth-updateuser), and [signOut](https://supabase.com/docs/reference/javascript/auth-signout).
 
-
-## Actual verification results
-- Targeted TypeScript check: passed.
-- Isolated Next.js production build including lint/type validation: passed.
-- App server actions: sample account login, intended destination and logout passed; HTTP-only cookies created and cleared.
-- Authenticated dashboard/menu/records responses: HTTP 200 and correct account email.
-- Anonymous menu/records responses: HTTP 307 to localhost login.
-- Server-side rejection passed for negative prices, invalid categories, invalid date and inconsistent quantities.
-- Initial listMenuItems check reported missing tables; after the user applied the migration, live CRUD passed.
-
-## Shared record boundary regression checks
-- Targeted backend regressions: 3 passed (shared single/batch writes denied before storage access; private rows omitted from shared reads).
-- TypeScript after dashboard navigation change: passed.
-
-- Complete backend suite after updating the intentionally retired shared-write contract: 39 passed.
-- Supabase management connector remains unavailable. Live app CRUD is now verified; full two-account isolation verification remains pending.
-
-## Live verification after SQL Editor deployment
-- Authenticated menu creation, price/category/name editing and fresh reload passed.
-- Activity creation, editing and date-filtered reload passed.
-- Deleting a menu referenced by activity was rejected.
-- Activity and menu deletions passed; all temporary verification rows were removed.
-- Public anonymous SELECT on both tables was denied (42501).
-- Direct public-key requests with a verified user JWT could not insert another owner_id, reassign an existing menu owner, or forge activity ownership (42501).
-- No administrative/service-role key was used.
-- Full second-account read/update/delete checks, fresh email confirmation and browser viewport checks remain unverified.
-
-## Final account-isolation verification
-Run supabase/tests/account_isolation.sql in SQL Editor with at least two registered accounts. It checks cross-account SELECT/UPDATE/DELETE denial for both tables, spoofed ownership, menu/log ownership consistency, anonymous denial and allowed owner operations. It uses temporary fixtures and rolls back all changes. This script has been prepared but has NOT been run here because administrative MCP SQL is unavailable.
+## Remaining product limitations
+No OCR service, permanent photo storage, scheduled notification delivery, team sharing, per-account model training or durable preparation-plan history is claimed.
+Private logs do not feed the existing shared demonstration forecasting model.
+The admin MCP connector remains unavailable in this chat; live app checks used the configured public key and verified user session.

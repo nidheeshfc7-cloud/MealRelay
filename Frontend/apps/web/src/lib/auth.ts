@@ -21,6 +21,7 @@ export async function signupWithCredentials(credentials: SignupCredentials): Pro
   const form = credentialsForm(credentials);
   form.set("fullName", credentials.fullName);
   form.set("organization", credentials.organization || "");
+  form.set("jobTitle", credentials.role || "");
   const result = await signUp(form);
   if (!result.ok) return { success: false, error: result.error, pendingIntegration: result.code === "AUTH_NOT_CONFIGURED" };
   if (result.requiresEmailConfirmation) return { success: false, requiresEmailConfirmation: true, error: "Check your email to confirm your account, then sign in." };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
+import { planningDate } from "@/lib/date";
 import { fetchMealForecast } from "../api";
 import { useAccountIdentity } from "@/components/auth/AccountIdentity";
 import {
@@ -53,7 +54,7 @@ export const normalizeToIsoDate = (inputDate: string): string => {
   }
 
   // Default fallback if unparseable
-  return "2025-08-12";
+  return planningDate(1);
 };
 
 /**

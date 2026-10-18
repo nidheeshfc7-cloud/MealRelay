@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext } from "react";
-export type AccountIdentity = { id: string; email: string; name: string; organization: string };
+export type AccountIdentity = { id: string; email: string; name: string; organization: string; kitchenName: string };
 const AccountContext = createContext<AccountIdentity | null>(null);
 export function AccountIdentityProvider({ account, children }: { account: AccountIdentity; children: React.ReactNode }) {
   return <AccountContext.Provider value={account}>{children}</AccountContext.Provider>;

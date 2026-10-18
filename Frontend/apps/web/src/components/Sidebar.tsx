@@ -16,6 +16,7 @@ import {
   UtensilsCrossed,
   X,
 } from "lucide-react";
+import { LogoutButton } from "./auth/LogoutButton";
 import { BrandLogo } from "./BrandLogo";
 import { useAccountIdentity } from "./auth/AccountIdentity";
 
@@ -102,7 +103,7 @@ export const Sidebar: React.FC = () => {
                   Active Facility
                 </p>
                 <p className="text-white font-bold truncate mt-1">
-                  {account.organization}
+                  {account.kitchenName}
                 </p>
                 <span className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold bg-lime/20 text-lime border border-lime/30">
                   Buffer +4.8% Active
@@ -143,9 +144,11 @@ export const Sidebar: React.FC = () => {
                 href="/login"
                 className="flex items-center justify-between text-xs text-white/60 hover:text-white transition-colors"
               >
-                <span>Switch Organization</span>
+                <span>Account settings</span>
                 <ChevronRight size={14} />
               </Link>
+              <p className="text-sm text-white/70 break-all mt-3">{account.email}</p>
+              <LogoutButton/>
             </div>
           </div>
         </div>
@@ -215,7 +218,7 @@ export const Sidebar: React.FC = () => {
             }`}
             title={
               !isExpanded
-                ? `Active Facility: ${account.organization} (+4.8% buffer)`
+                ? `Active Facility: ${account.kitchenName} (+4.8% buffer)`
                 : undefined
             }
           >
@@ -231,7 +234,7 @@ export const Sidebar: React.FC = () => {
                   </span>
                 </div>
                 <p className="text-sm font-bold text-white mt-1 truncate">
-                  {account.organization}
+                  {account.kitchenName}
                 </p>
                 <div className="mt-2 flex items-center justify-between text-xs text-white/70">
                   <span className="flex items-center gap-1">
@@ -329,6 +332,7 @@ export const Sidebar: React.FC = () => {
             </Link>
           </div>
         </div>
+        <div className="border-t border-white/10 mt-3 pt-3"><LogoutButton compact={!isExpanded}/></div>
       </aside>
     </>
   );
