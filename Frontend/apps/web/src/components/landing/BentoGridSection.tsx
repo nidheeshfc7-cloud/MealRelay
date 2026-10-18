@@ -8,7 +8,6 @@ import { area, curveMonotoneX, line } from "d3-shape";
 import { scaleLinear, scalePoint } from "d3-scale";
 import { DEFAULT_MEALS, formatPortionNumber } from "@mealrelay/core";
 import styles from "./BentoGridSection.module.css";
-import ingredientPhoto from "../../../public/images/veggie box.png";
 import dashboardMockup from "../../../public/images/MealRelay Dashboard Mockup.png";
 import analyticsPhone from "../../../public/images/Angled Mealrelay Kitchen Dashboard Phone.png";
 
@@ -255,11 +254,11 @@ export function BentoGridSection() {
         <article data-bento-card className={`${styles.card} ${styles.waste}`}>
           <div className={styles.wastePhoto}>
             <Image
-              src={ingredientPhoto}
+              src="/images/new%20veggie%20box"
               alt=""
               fill
-              sizes="(max-width: 650px) 45vw, 340px"
-              style={{ objectFit: "cover", objectPosition: "center right" }}
+              sizes="(max-width: 650px) 100vw, (max-width: 1100px) 50vw, 620px"
+              style={{ objectFit: "cover", objectPosition: "center" }}
             />
           </div>
           <div className={styles.bottomCopy}>

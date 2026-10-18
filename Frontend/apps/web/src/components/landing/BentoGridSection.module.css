@@ -327,7 +327,7 @@
 .wasteAccent { color: #84a800; }
 .wastePhoto {
   position: absolute;
-  inset: 0 0 0 40%;
+  inset: 0;
   overflow: hidden;
   z-index: -1;
 }
@@ -529,5 +529,5 @@
 
 @media (max-width: 1100px) {
   .waste .bottomCopy { width: 42%; }
-  .wastePhoto { left: 44%; }
+  .wastePhoto { left: 0; }
 }
