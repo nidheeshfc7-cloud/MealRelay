@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useId } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, Utensils } from "lucide-react";
@@ -17,7 +17,7 @@ const planned = DEFAULT_MEALS.reduce((sum, meal) => sum + meal.base, 0);
 const x = scalePoint<number>()
   .domain(TREND.map((_, i) => i))
   .range([22, 398]);
-const y = scaleLinear().domain([0, 1000]).range([133, 12]);
+const y = scaleLinear().domain([0, 1000]).range([172, 66]);
 const demandLine = line<number>()
   .x((_, i) => x(i)!)
   .y((value) => y(value))
@@ -50,68 +50,53 @@ function CardLink({
 }
 
 function DemandTrend() {
-  return (
-    <div className={styles.trend}>
-      <svg
-        viewBox="0 0 420 162"
-        role="img"
-        aria-label={`Illustrative daily demand in servings. ${DAYS.map((day, i) => `${day} ${TREND[i]}`).join(", ")}. Shaded band is a visual sample range, not a measured confidence interval.`}
-      >
-        {[400, 800].map((tick) => (
-          <g key={tick}>
-            <line x1="22" x2="398" y1={y(tick)} y2={y(tick)} stroke="#E5EBE1" />
-            <text x="21" y={y(tick) - 5} fontSize="9" fill="#718078">
-              {tick}
-            </text>
-          </g>
-        ))}
-        <path className={styles.band} d={demandBand} fill="#E6FCA8" />
-        <path
-          className={styles.trendLine}
-          d={demandLine}
-          fill="none"
-          stroke="#003F2F"
-          strokeWidth="2.5"
-          pathLength="1"
-        />
-        <line
-          x1={x(4)}
-          x2={x(4)}
-          y1={y(TREND[4])}
-          y2="133"
-          stroke="#718078"
-          strokeDasharray="3 4"
-        />
-        <circle
-          cx={x(4)}
-          cy={y(TREND[4])}
-          r="6"
-          fill="#003F2F"
-          stroke="white"
-          strokeWidth="3"
-        />
-        {DAYS.map((day, i) => (
-          <text
-            key={day}
-            x={x(i)}
-            y="155"
-            textAnchor="middle"
-            fontSize="10"
-            fill="#718078"
-          >
-            {day}
-          </text>
-        ))}
-      </svg>
-      <div className={styles.chartNote}>
-        <span>
-          <i />
-          Illustrative demand
-        </span>
-        <span>Servings · sample range</span>
-      </div>
-    </div>
-  );
+  const [selected, setSelected] = useState(4);
+  const titleId = useId();
+  const pointX = x(selected)!;
+  const pointY = y(TREND[selected]);
+  const tooltipX = Math.max(70, Math.min(350, pointX));
+  function selectPoint(event: React.PointerEvent<SVGSVGElement>) {
+    const svg = event.currentTarget;
+    const matrix = svg.getScreenCTM();
+    if (!matrix) return;
+    const point = svg.createSVGPoint();
+    point.x = event.clientX; point.y = event.clientY;
+    const local = point.matrixTransform(matrix.inverse());
+    setSelected(Math.max(0, Math.min(6, Math.round((local.x - 22) / (376 / 6)))));
+  }
+  return <div className={styles.trend}>
+    <svg viewBox="0 0 420 206" role="group" aria-labelledby={titleId}
+      onPointerMove={selectPoint} onPointerDown={selectPoint}>
+      <title id={titleId}>Illustrative weekly demand in servings. Use arrow keys on the chart to select a day. Shaded range is illustrative, not a measured confidence interval.</title>
+      {[400, 600, 800].map(tick => <line key={tick} className={styles.chartGrid} x1="22" x2="398" y1={y(tick)} y2={y(tick)} />)}
+      {DAYS.map((day, i) => <line key={day} className={styles.chartGrid} x1={x(i)} x2={x(i)} y1="66" y2="178" strokeDasharray="3 5" />)}
+      <path className={styles.band} d={demandBand} fill="#D5FB53" fillOpacity=".27" />
+      <path className={styles.trendLine} d={demandLine} fill="none" stroke="#003F2F" strokeWidth="3" strokeLinecap="round" pathLength="1" />
+      <line x1="22" x2="398" y1="178" y2="178" stroke="#dce3d9" />
+      <line className={styles.selectedGuide} x1={pointX} x2={pointX} y1={pointY} y2="178" stroke="#718078" strokeDasharray="3 4" />
+      <g className={styles.selectedMarker} style={{transform:`translate(${pointX}px, ${pointY}px)`}}>
+        <circle r="14" fill="#D5FB53" fillOpacity=".32" />
+        <circle r="7" fill="#003F2F" stroke="white" strokeWidth="3" />
+      </g>
+      <g className={styles.floatingTip} style={{transform:`translate(${tooltipX}px, ${pointY - 55}px)`}} aria-hidden="true">
+        <rect x="-64" width="128" height="43" rx="12" fill="white" />
+        <path d="M-5 42 L0 48 L5 42" fill="white" />
+        <text textAnchor="middle" y="16" fill="#718078" fontSize="10">{DAYS[selected]} · sample forecast</text>
+        <text textAnchor="middle" y="33" fill="#003F2F" fontSize="14" fontWeight="750">{TREND[selected]} servings</text>
+      </g>
+      {[0, 3, 6].map(i => <text key={i} x={x(i)} y="198" textAnchor="middle" fontSize="11" fill="#718078">{DAYS[i]}</text>)}
+      <rect x="8" y="4" width="404" height="198" rx="10" fill="transparent" tabIndex={0}
+        role="slider" aria-label="Illustrative forecast day" aria-valuemin={0} aria-valuemax={6} aria-valuenow={selected}
+        aria-valuetext={`${DAYS[selected]}: ${TREND[selected]} predicted servings, sample data`}
+        onKeyDown={event => {
+          if (["ArrowRight","ArrowUp","ArrowLeft","ArrowDown","Home","End"].includes(event.key)) {
+            event.preventDefault();
+            setSelected(current => event.key === "Home" ? 0 : event.key === "End" ? 6 : Math.max(0, Math.min(6, current + (["ArrowRight","ArrowUp"].includes(event.key) ? 1 : -1))));
+          }
+        }} className={styles.chartInteraction} />
+    </svg>
+    <div className={styles.chartNote}><span><i className={styles.rangeDot} />Sample range</span><span><i />Predicted servings</span><span>Illustrative data</span></div>
+  </div>;
 }
 
 function PreparationList() {
@@ -120,8 +105,8 @@ function PreparationList() {
       <div className={styles.prepHeading}>
         <Utensils size={17} aria-hidden="true" />
         <div>
-          <strong>Tomorrow’s prep</strong>
-          <small>Sample plan · 3 services</small>
+          <strong>Tomorrowâ€™s prep</strong>
+          <small>Sample plan Â· 3 services</small>
         </div>
       </div>
       {DEFAULT_MEALS.map((meal, index) => (
@@ -229,7 +214,7 @@ export function BentoGridSection() {
           <p className={styles.label}>Demand forecasting</p>
           <h3>Anticipate <span className={styles.keywordAccent}>demand.</span></h3>
           <p className={styles.description}>
-            Bring tomorrow’s service into focus before preparation begins.
+            Bring tomorrowâ€™s service into focus before preparation begins.
           </p>
           <DemandTrend />
           <CardLink href="/forecasts" label="Explore demand forecasts" />
@@ -280,7 +265,7 @@ export function BentoGridSection() {
         >
           <div className={styles.bottomCopy}>
             <p className={styles.label}>Analytics & insights</p>
-            <h3>See what’s working.</h3>
+            <h3>See whatâ€™s working.</h3>
             <p className={styles.description}>
               Compare preparation with service. Bring what you learn into your
               next plan.

@@ -531,3 +531,20 @@
   .waste .bottomCopy { width: 42%; }
   .wastePhoto { left: 0; }
 }
+
+/* Forecast chart only: scoped interaction and entrance treatments. */
+.trend { margin-top: 10px; }
+.chartGrid { stroke: #E5EBE1; stroke-width: 1; opacity: .65; }
+.chartNote { font-size: 10px; gap: 6px 12px; padding-right: 0; }
+.chartNote .rangeDot { background: #d5edaa; }
+.floatingTip { filter: drop-shadow(0 4px 8px #003f2f10); transition: transform .18s ease; pointer-events: none; }
+.selectedMarker { transition: transform .18s ease; pointer-events: none; }
+.selectedGuide { transition: x1 .18s ease, x2 .18s ease, y1 .18s ease; }
+.chartInteraction { cursor: crosshair; touch-action: pan-y; }
+.chartInteraction:focus-visible { outline: 2px solid #245c40; outline-offset: -2px; }
+.section[data-animated="true"] .card[data-visible="true"] .band { animation: bandReveal .8s ease both; }
+@keyframes bandReveal { from { opacity: 0; } to { opacity: 1; } }
+@media(prefers-reduced-motion: reduce) {
+  .floatingTip,.selectedMarker,.selectedGuide { transition: none; }
+  .section[data-animated="true"] .card[data-visible="true"] .band { animation: none; }
+}
