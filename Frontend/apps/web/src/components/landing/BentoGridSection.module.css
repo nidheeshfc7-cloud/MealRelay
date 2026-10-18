@@ -320,11 +320,15 @@
 .bottomCopy .arrowLink {
   margin-top: 20px;
 }
+.waste .bottomCopy {
+  width: 54%;
+}
 .wastePhoto {
   position: absolute;
-  inset: 0 0 0 45%;
+  inset: 0 0 0 57%;
   overflow: hidden;
   z-index: -1;
+  mask-image: linear-gradient(90deg, transparent, #000 14%);
 }
 .analytics::after {
   content: "";
@@ -520,4 +524,9 @@
   .section[data-animated="true"] .card[data-visible="true"] .trendLine {
     animation: none;
   }
+}
+
+@media (max-width: 1100px) {
+  .waste .bottomCopy { width: 61%; }
+  .wastePhoto { left: 64%; }
 }
