@@ -264,7 +264,7 @@ export function BentoGridSection() {
           </div>
           <div className={styles.bottomCopy}>
             <p className={styles.label}>Waste reduction</p>
-            <h3>Cut avoidable waste.</h3>
+            <h3>Cut<br /><span className={styles.wasteAccent}>avoidable</span><br />waste.</h3>
             <p className={styles.description}>
               Prepare with purpose. Better portion planning can help reduce
               unnecessary leftovers.
