@@ -25,7 +25,7 @@ export function MenuWorkspace() {
   const [busy,setBusy] = useState(true);
   const [message,setMessage] = useState("");
   const [error,setError] = useState("");
-  async function load() {const result=await listMenuItems();if(result.ok){setSaved(result.data);return true;}setError(result.error);return false;}
+  async function load() {try {const result=await listMenuItems();if(result.ok){setSaved(result.data);return true;}setError(result.error);} catch {setError("Unable to reach the server. Please refresh to retry.");}return false;}
   useEffect(()=>{void load().finally(()=>setBusy(false));},[]);
   function change(index:number,key:keyof MenuInput,value:string) {
     setDraft(rows=>rows.map((row,i)=>i===index?{...row,[key]:key==="price"?Number(value):value}:row));
@@ -85,4 +85,3 @@ export function MenuWorkspace() {
     </section>
   </WorkspaceShell>;
 }
-

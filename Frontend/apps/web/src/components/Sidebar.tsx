@@ -22,7 +22,7 @@ import { useAccountIdentity } from "./auth/AccountIdentity";
 const NAV_ITEMS = [
   { label: "Daily Cooking Plan", href: "/dashboard", icon: LayoutDashboard },
   { label: "Menu Management", href: "/menu", icon: UtensilsCrossed },
-  { label: "Daily Activity", href: "/records", icon: CalendarRange },
+  { label: "Services & Activity", href: "/records", icon: CalendarRange },
   { label: "Food & Savings", href: "/analytics", icon: BarChart3 },
   { label: "Kitchen Settings", href: "/settings", icon: SlidersHorizontal },
 ];
