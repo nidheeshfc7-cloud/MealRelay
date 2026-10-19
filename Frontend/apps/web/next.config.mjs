@@ -15,6 +15,9 @@ const nextConfig = {
     'motion',
     'framer-motion',
   ],
+  images: {
+    qualities: [25, 50, 75, 90, 95],
+  },
   reactStrictMode: true,
 };
 
