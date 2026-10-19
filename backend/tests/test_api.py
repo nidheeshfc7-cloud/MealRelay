@@ -95,15 +95,17 @@ def test_dishes_catalog_endpoint(client: TestClient):
     assert any(d["id"] == "d_rice_lunch" for d in dishes)
 
 
-def test_records_list_and_create_endpoints(client: TestClient):
-    """Verifies listing and creating meal records."""
+def test_demo_records_list_and_private_writes_retired(client: TestClient):
+    """Demo reads remain available; private writes use the account-owned store."""
     # List records
     get_res = client.get("/api/records?limit=10")
     assert get_res.status_code == 200
     records = get_res.json()
     assert len(records) <= 10
 
-    # Create new record
+    assert all(record["is_synthetic"] for record in records)
+
+    # Never put private activity into the unauthenticated shared engine.
     new_record_payload = {
         "dish_id": "d_idli",
         "dish_name": "Idli & Sambar",
@@ -115,10 +117,8 @@ def test_records_list_and_create_endpoints(client: TestClient):
         "leftover_portions": 5,
     }
     post_res = client.post("/api/records", json=new_record_payload)
-    assert post_res.status_code == 201
-    created_rec = post_res.json()
-    assert created_rec["dish_id"] == "d_idli"
-    assert created_rec["is_synthetic"] is False
+    assert post_res.status_code == 410
+    assert "Daily Activity" in post_res.json()["detail"]
 
 
 def test_reset_synthetic_endpoint(client: TestClient):

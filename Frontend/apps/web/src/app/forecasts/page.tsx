@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { planningDate } from '@/lib/date';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -19,7 +20,7 @@ import { DEFAULT_MEALS, estimateMealDemand, formatPortionNumber } from '@mealrel
 
 export default function ForecastsPage() {
   const forecasts = DEFAULT_MEALS.map((service) =>
-    estimateMealDemand([], service.key, '2026-10-18', 4.8)
+    estimateMealDemand([], service.key, planningDate(1), 4.8)
   );
 
   return (
@@ -30,7 +31,7 @@ export default function ForecastsPage() {
         <main className="flex-1 p-4 sm:p-8 max-w-7xl mx-auto w-full space-y-8">
           <Header
             title="Demand Forecasting Engine"
-            subtitle="Deterministic Kitchen Heuristics & Calibrated Attendance Projections"
+            subtitle="Illustrative meal-service forecasts · review before preparation"
             action={
               <Link
                 href="/planner"
@@ -48,10 +49,10 @@ export default function ForecastsPage() {
               <ShieldCheck size={20} />
             </div>
             <div>
-              <h3 className="text-base font-black text-ink">Explainable Operations Engine</h3>
+              <h3 className="text-base font-black text-ink">Illustrative forecasting examples</h3>
               <p className="text-xs sm:text-sm text-ink-secondary mt-1 leading-relaxed">
-                MealRelay uses transparent statistical methods (day-of-week moving averages, attendance velocity, and
-                protective buffers) rather than black-box algorithms. Every portion recommendation can be traced to verifiable kitchen logs.
+                These examples use default assumptions and are not calculated from your saved restaurant activity.
+                Forecast accuracy has not been validated for your kitchen. Review quantities before preparation.
               </p>
             </div>
           </div>
@@ -107,7 +108,7 @@ export default function ForecastsPage() {
                       <div className="flex items-center gap-2">
                         <h3 className="text-xl font-black text-ink">{f.serviceName}</h3>
                         <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-sage text-forest border border-line-light">
-                          Confidence: {Math.round(f.confidenceScore * 100)}%
+                          Illustrative score: {Math.round(f.confidenceScore * 100)}%
                         </span>
                       </div>
                       <p className="text-xs text-ink-secondary mt-1">{f.reasoning}</p>

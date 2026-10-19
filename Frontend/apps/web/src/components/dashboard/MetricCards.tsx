@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "./Dashboard.module.css";
+
 import React, { useState } from "react";
 import {
   ArrowDown,
@@ -36,7 +38,7 @@ export const MetricCards: React.FC<MetricCardsProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className={styles.metrics}>
       {/* 1. Estimated Demand Card */}
       <div className="p-6 rounded-2xl bg-white border border-line-light shadow-sm flex flex-col justify-between hover:border-forest/20 transition-all relative">
         <div className="flex items-center justify-between">

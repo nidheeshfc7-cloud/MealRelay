@@ -1,7 +1,12 @@
 "use client";
 
+import styles from "@/components/dashboard/Dashboard.module.css";
+import { planningDate } from "@/lib/date";
+import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
 import { AlertCircle, CheckCircle2, RefreshCw, X } from "lucide-react";
+import { useAccountIdentity } from "@/components/auth/AccountIdentity";
+import { KitchenRecordsSummary } from "@/components/kitchen/KitchenRecordsSummary";
 import { Sidebar } from "@/components/Sidebar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { MetricCards } from "@/components/dashboard/MetricCards";
@@ -9,7 +14,6 @@ import { DishPreparationTable } from "@/components/dashboard/DishPreparationTabl
 import { KeyInsightsPanel } from "@/components/dashboard/KeyInsightsPanel";
 import { DashboardActionBar } from "@/components/dashboard/DashboardActionBar";
 import { EditQuantitiesModal } from "@/components/dashboard/EditQuantitiesModal";
-import { LogOutcomesModal } from "@/components/dashboard/LogOutcomesModal";
 import { DishItem, KeyInsight, MealShiftKey } from "@/components/dashboard/types";
 import { useMealForecast } from "@/lib/hooks/useMealForecast";
 
@@ -167,8 +171,10 @@ const CANONICAL_DISHES_BY_SHIFT: Record<MealShiftKey, BaseDishConfig[]> = {
 };
 
 export default function DashboardPage() {
+  const account = useAccountIdentity();
+  const router = useRouter();
   const [selectedShift, setSelectedShift] = useState<MealShiftKey>("lunch");
-  const [selectedDate, setSelectedDate] = useState<string>("Tue, 12 Aug 2025");
+  const [selectedDate, setSelectedDate] = useState<string>(() => planningDate(1));
   const [expectedAttendance, setExpectedAttendance] = useState<number>(185);
   const [safetyBufferPct, setSafetyBufferPct] = useState<number>(0.05);
 
@@ -177,7 +183,6 @@ export default function DashboardPage() {
 
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [isLogOutcomesModalOpen, setIsLogOutcomesModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const baseDishes = CANONICAL_DISHES_BY_SHIFT[selectedShift];
@@ -355,7 +360,7 @@ export default function DashboardPage() {
   // Confirm plan handler
   const handleConfirmPlan = (): void => {
     setIsConfirmed(true);
-    setToastMessage("Tomorrow's preparation plan has been confirmed! Kitchen staff notified.");
+    setToastMessage("Plan reviewed for this browser session. Record actual service results in Services & Activity.");
     setTimeout(() => setToastMessage(null), 4000);
   };
 
@@ -371,12 +376,6 @@ export default function DashboardPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Success handler for logging shift outcomes
-  const handleLogSuccess = (msg: string): void => {
-    setToastMessage(msg);
-    refetch(); // Trigger forecast re-computation with new historical record
-    setTimeout(() => setToastMessage(null), 5000);
-  };
 
   return (
     <div className="min-h-screen bg-canvas flex flex-col font-sans selection:bg-lime selection:text-forest-dark">
@@ -384,10 +383,11 @@ export default function DashboardPage() {
         {/* Preserved Unmodified Sidebar */}
         <Sidebar />
 
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 w-full space-y-7">
+        <main className={styles.main}>
+          <KitchenRecordsSummary />
           {/* 1. Header with Chef Greeting, Date Selector, Shift Selector, and Buffer Pills */}
           <DashboardHeader
-            chefName="Sunil"
+            chefName={account.name}
             selectedDate={selectedDate}
             selectedShift={selectedShift}
             safetyBufferPct={safetyBufferPct}
@@ -433,7 +433,7 @@ export default function DashboardPage() {
           />
 
           {/* 3. Middle Section: Dish-wise Preparation Plan Table + Key Insights */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+          <div className={styles.contentGrid}>
             {/* Left Column (Dish Table): 8 of 12 cols (~67%) */}
             <div className="lg:col-span-8">
               <DishPreparationTable
@@ -453,7 +453,7 @@ export default function DashboardPage() {
           <DashboardActionBar
             onEditQuantities={() => setIsEditModalOpen(true)}
             onConfirmPlan={handleConfirmPlan}
-            onLogOutcomes={() => setIsLogOutcomesModalOpen(true)}
+            onLogOutcomes={() => router.push("/records")}
             isConfirmed={isConfirmed}
           />
 
@@ -465,16 +465,7 @@ export default function DashboardPage() {
             onSave={handleSaveDishes}
           />
 
-          {/* Modal 2: Log Shift Outcomes (Feedback Loop to ML) */}
-          <LogOutcomesModal
-            isOpen={isLogOutcomesModalOpen}
-            onClose={() => setIsLogOutcomesModalOpen(false)}
-            dishes={currentDishes}
-            date={selectedDate}
-            shift={selectedShift}
-            defaultAttendance={expectedAttendance}
-            onSuccess={handleLogSuccess}
-          />
+
 
           {/* Floating Bottom-Right Toast Notification Card (Zero Layout Shift) */}
           {toastMessage && (

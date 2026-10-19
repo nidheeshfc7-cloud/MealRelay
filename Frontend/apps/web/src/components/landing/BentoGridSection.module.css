@@ -143,7 +143,7 @@
   transform: translateX(3px);
 }
 .arrowLink:hover {
-  background: #e6fca8;
+  background: #D5FB53;
 }
 .section a:focus-visible {
   outline: 3px solid var(--forest);
@@ -320,12 +320,16 @@
 .bottomCopy .arrowLink {
   margin-top: 20px;
 }
+.waste .bottomCopy {
+  width: 38%;
+}
+.waste .bottomCopy h3 { font-size: clamp(29px, 3vw, 42px); }
+.keywordAccent { color: #84a800; }
 .wastePhoto {
   position: absolute;
-  inset: 0 0 0 45%;
+  inset: 0;
   overflow: hidden;
   z-index: -1;
-  mask-image: linear-gradient(90deg, transparent, #000 55%);
 }
 .analytics::after {
   content: "";
@@ -522,3 +526,28 @@
     animation: none;
   }
 }
+
+@media (max-width: 1100px) {
+  .waste .bottomCopy { width: 42%; }
+  .wastePhoto { left: 0; }
+}
+
+/* Forecast chart only: scoped interaction and entrance treatments. */
+.trend { margin-top: 10px; }
+.chartGrid { stroke: #E5EBE1; stroke-width: 1; opacity: .65; }
+.chartNote { font-size: 10px; gap: 6px 12px; padding-right: 0; }
+.chartNote .rangeDot { background: #D5FB53; }
+.floatingTip { filter: drop-shadow(0 4px 8px #003f2f10); transition: transform .18s ease; pointer-events: none; }
+.selectedMarker { transition: transform .18s ease; pointer-events: none; }
+.selectedGuide { transition: x1 .18s ease, x2 .18s ease, y1 .18s ease; }
+.chartInteraction { cursor: crosshair; touch-action: pan-y; }
+.chartInteraction:focus-visible { outline: 2px solid #245c40; outline-offset: -2px; }
+.section[data-animated="true"] .card[data-visible="true"] .band { animation: bandReveal .8s ease both; }
+@keyframes bandReveal { from { opacity: 0; } to { opacity: 1; } }
+@media(prefers-reduced-motion: reduce) {
+  .floatingTip,.selectedMarker,.selectedGuide { transition: none; }
+  .section[data-animated="true"] .card[data-visible="true"] .band { animation: none; }
+}
+
+.section{padding-inline:var(--landing-inline-gutter,32px)}
+.grid{max-width:var(--landing-content-width,1240px);gap:var(--landing-column-gap,24px)}

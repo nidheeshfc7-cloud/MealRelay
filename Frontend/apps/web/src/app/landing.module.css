@@ -995,3 +995,67 @@
     transition: none;
   }
 }
+
+/* Public section navigation; protected app routes are unchanged. */
+.page main section[id] { scroll-margin-top: 104px; }
+.navContainer { display: flex; align-items: center; }
+.navLinks a { transition: color .18s ease; }
+.navLinks a[aria-current="location"] { color: var(--forest); text-decoration: underline; text-underline-offset: 6px; text-decoration-color: var(--lime); text-decoration-thickness: 2px; }
+.mobileToggle { display: none; align-items: center; justify-content: center; width: 44px; height: 44px; color: var(--forest); background: transparent; border: 1px solid var(--line); border-radius: 10px; }
+.mobileToggle:focus-visible { outline: 2px solid var(--forest); outline-offset: 3px; }
+@media(max-width:800px) {
+  .navContainer { margin-left: auto; }
+  .mobileToggle { display: inline-flex; }
+  .navLinks[data-open="true"] { display: grid; position: absolute; top: 100%; left: 0; right: 0; gap: 4px; padding: 12px 22px 18px; background: #fefffe; border-bottom: 1px solid var(--line); box-shadow: 0 8px 18px #003f2f08; font-size: 14px; }
+  .navLinks a { display: flex; align-items: center; min-height: 44px; padding: 10px 12px; border-radius: 8px; }
+  .navLinks a:hover { background: var(--canvas); }
+}
+@media(prefers-reduced-motion:reduce) { .navLinks a { transition: none; } }
+
+/* Preserve wide background artwork on narrow screens instead of cropping its edges. */
+@media(max-width:800px){
+  .hero{background-color:#f7fdf4;background-size:cover;background-position:left center;padding-top:40px}
+  .hero::before{background:linear-gradient(90deg,#f7fdf4df,#f7fdf4e8 55%,#f7fdf4ed)}
+  .workflow::before{background:linear-gradient(#002f2466,#002f2466),url("/images/landing-workflow.webp") left center / cover no-repeat}
+  .platform::before{background-position:center;background-size:cover}
+}
+
+@media(max-width:360px){
+  .nav{gap:8px}
+  .nav>a:first-child>span{display:none}
+  .navActions{gap:8px}
+  .page>footer>div>div{flex-wrap:wrap;justify-content:center;row-gap:12px}
+}
+
+@media(max-width:760px){
+  .hero::before,.workflow::before,.platform::before{background:none}
+}
+
+/* Give the Problem / Solution comparison more room on larger screens. */
+@media(min-width:801px){
+  .comparison{padding:60px 0}
+  .comparisonGrid{max-width:1160px;gap:26px;align-items:stretch}
+  .comparisonCard{padding:36px;min-height:370px;border-radius:20px}
+  .comparisonHeading h2{font-size:28px;line-height:1.2}
+  .comparisonHeading p{font-size:14px;line-height:1.7;margin-top:12px}
+  .comparisonCard ul{margin-top:28px;gap:20px}
+  .comparisonCard li{font-size:14px;line-height:1.6}
+}
+
+@media(min-width:801px){
+  .comparison{min-height:calc(100dvh - 80px);display:flex;align-items:center;padding-block:clamp(32px,6dvh,72px)}
+  .comparison>.container{width:min(1440px,calc(100% - 64px))}
+  .comparisonGrid{max-width:none;gap:clamp(24px,2.5vw,40px)}
+  .comparisonCard{min-height:clamp(370px,62dvh,650px);padding:clamp(30px,3vw,52px);display:flex;flex-direction:column;justify-content:center}
+}
+
+/* One shared content frame keeps section edges aligned at every zoom level. */
+.page{--landing-content-width:1240px;--landing-inline-gutter:32px;--landing-column-gap:24px}
+.container,.comparison>.container{width:min(var(--landing-content-width),calc(100% - var(--landing-inline-gutter)*2))}
+.comparisonGrid{max-width:none;gap:var(--landing-column-gap)}
+@media(max-width:1100px){.page{--landing-inline-gutter:22px}}
+@media(max-width:650px){.page{--landing-inline-gutter:16px;--landing-column-gap:16px}}
+
+.solutionCard .comparisonHeading .icon{background:#003f2f;color:#d5fb53}
+.solutionCard li>svg{fill:#003f2f;color:#d5fb53}
+.solutionCard li>svg circle{stroke:#003f2f}

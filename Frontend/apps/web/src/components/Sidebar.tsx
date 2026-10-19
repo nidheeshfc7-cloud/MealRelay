@@ -16,16 +16,22 @@ import {
   UtensilsCrossed,
   X,
 } from "lucide-react";
+import { LogoutButton } from "./auth/LogoutButton";
 import { BrandLogo } from "./BrandLogo";
+import { useAccountIdentity } from "./auth/AccountIdentity";
 
 const NAV_ITEMS = [
   { label: "Daily Cooking Plan", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Menu Management", href: "/menu", icon: UtensilsCrossed },
+  { label: "Services & Activity", href: "/records", icon: CalendarRange },
   { label: "Food & Savings", href: "/analytics", icon: BarChart3 },
   { label: "Kitchen Settings", href: "/settings", icon: SlidersHorizontal },
 ];
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
+  const account = useAccountIdentity();
+  const initials = account.name.split(/\s+/).map(part => part[0]).join("").slice(0, 2).toUpperCase();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -97,7 +103,7 @@ export const Sidebar: React.FC = () => {
                   Active Facility
                 </p>
                 <p className="text-white font-bold truncate mt-1">
-                  Sreenidhi Campus Kitchen
+                  {account.kitchenName}
                 </p>
                 <span className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold bg-lime/20 text-lime border border-lime/30">
                   Buffer +4.8% Active
@@ -138,9 +144,11 @@ export const Sidebar: React.FC = () => {
                 href="/login"
                 className="flex items-center justify-between text-xs text-white/60 hover:text-white transition-colors"
               >
-                <span>Switch Organization</span>
+                <span>Account settings</span>
                 <ChevronRight size={14} />
               </Link>
+              <p className="text-sm text-white/70 break-all mt-3">{account.email}</p>
+              <LogoutButton/>
             </div>
           </div>
         </div>
@@ -210,7 +218,7 @@ export const Sidebar: React.FC = () => {
             }`}
             title={
               !isExpanded
-                ? "Active Facility: Sreenidhi Campus Kitchen (+4.8% buffer)"
+                ? `Active Facility: ${account.kitchenName} (+4.8% buffer)`
                 : undefined
             }
           >
@@ -226,7 +234,7 @@ export const Sidebar: React.FC = () => {
                   </span>
                 </div>
                 <p className="text-sm font-bold text-white mt-1 truncate">
-                  Sreenidhi Campus Kitchen
+                  {account.kitchenName}
                 </p>
                 <div className="mt-2 flex items-center justify-between text-xs text-white/70">
                   <span className="flex items-center gap-1">
@@ -295,9 +303,9 @@ export const Sidebar: React.FC = () => {
         <div className="border-t border-white/10 pt-4 mt-auto flex items-center">
           <div
             className="w-10 h-10 min-w-10 min-h-10 aspect-square rounded-full shrink-0 bg-lime/20 border border-lime/40 text-lime font-bold text-xs flex items-center justify-center select-none"
-            title="Campus Chef (chef@sreenidhi.edu)"
+            title={`${account.name} (${account.email})`}
           >
-            SC
+            {initials}
           </div>
 
           <div
@@ -309,10 +317,10 @@ export const Sidebar: React.FC = () => {
           >
             <div className="truncate">
               <p className="text-sm font-bold text-white truncate">
-                Campus Chef
+                {account.name}
               </p>
               <p className="text-xs text-white/50 truncate max-w-[120px]">
-                chef@sreenidhi.edu
+                {account.email}
               </p>
             </div>
             <Link
@@ -324,6 +332,7 @@ export const Sidebar: React.FC = () => {
             </Link>
           </div>
         </div>
+        <div className="border-t border-white/10 mt-3 pt-3"><LogoutButton compact={!isExpanded}/></div>
       </aside>
     </>
   );

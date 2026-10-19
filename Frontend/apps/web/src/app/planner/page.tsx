@@ -59,7 +59,7 @@ export default function PlannerPage() {
         <main className="flex-1 p-4 sm:p-8 max-w-7xl mx-auto w-full space-y-8">
           <Header
             title="Meal Preparation Planner"
-            subtitle="Sunday, 18 October 2026 · Operations Work Order"
+            subtitle="Illustrative planning workspace · quantities and review status apply to this browser session"
             action={
               <button
                 onClick={handleReset}

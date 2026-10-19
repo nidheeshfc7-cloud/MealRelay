@@ -8,6 +8,7 @@ import {
   Utensils,
 } from "lucide-react";
 import s from "@/app/landing.module.css";
+import mobile from "./landing/MobileBackgrounds.module.css";
 
 const features = [
   {
@@ -36,7 +37,7 @@ export function UnifiedPlatformSection() {
   return (
     <section
       id="architecture"
-      className={s.platform}
+      className={`${s.platform} ${mobile.dark}`}
       aria-labelledby="platform-title"
     >
       <div className={`${s.container} ${s.platformGrid}`}>

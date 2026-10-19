@@ -1,0 +1,15 @@
+.panel{overflow-y:auto}
+.content{padding-top:12px}
+.content h1{font-size:clamp(28px,4dvh,42px);margin:10px 0}
+.content>p{font-size:13px;margin-bottom:16px}
+.form form>div{margin-bottom:12px}
+.form form>div>div{margin-bottom:0}
+.form label{font-size:10px;margin-bottom:4px}
+.form input,.form select{min-height:42px;font-size:13px;padding-top:10px;padding-bottom:10px}
+.form select{padding-left:12px;border-radius:12px}
+.form input[type="checkbox"]{min-height:16px;width:16px;height:16px;padding:0;flex-shrink:0}
+.form form>button{min-height:44px;margin-top:4px;font-size:13px}
+.form form>div:last-of-type{margin-bottom:12px}
+.form form+div+div{margin-top:14px;padding-top:12px;font-size:12px}
+@media(min-height:950px) and (min-width:761px){.form input,.form select{min-height:48px}.form form>div{margin-bottom:16px}.content>p{margin-bottom:22px}}
+@media(max-width:760px){.panel{overflow:visible}.content{padding-top:28px}.content h1{font-size:34px}.form input,.form select{min-height:46px}.form input[type="checkbox"]{min-height:16px}.form label{font-size:11px}}

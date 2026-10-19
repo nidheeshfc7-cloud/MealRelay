@@ -14,8 +14,11 @@ import { CinematicIntro } from "@/components/CinematicIntro";
 import Footer from "@/components/footer";
 import { UnifiedPlatformSection } from "@/components/UnifiedPlatformSection";
 import { BentoGridSection } from "@/components/landing/BentoGridSection";
+import { LandingNavigation } from "@/components/landing/LandingNavigation";
+import { KitchensWeServe } from "@/components/landing/KitchensWeServe";
 import { DEFAULT_MEALS, formatPortionNumber } from "@mealrelay/core";
 import s from "./landing.module.css";
+import mobile from "@/components/landing/MobileBackgrounds.module.css";
 
 const steps = [
   {
@@ -58,12 +61,7 @@ export default function LandingPage() {
       <header className={s.header}>
         <div className={`${s.container} ${s.nav}`}>
           <BrandLogo size="md" />
-          <nav className={s.navLinks} aria-label="Main navigation">
-            <a href="#workflow">How It Works</a>
-            <Link href="/forecasts">Forecasting Engine</Link>
-            <a href="#architecture">Cross-Platform Stack</a>
-            <Link href="/analytics">Analytics</Link>
-          </nav>
+          <LandingNavigation />
           <div className={s.navActions}>
             <Link href="/login">Log in</Link>
             <Link href="/dashboard" className={s.primary}>
@@ -73,7 +71,10 @@ export default function LandingPage() {
         </div>
       </header>
       <main id="main-content">
-        <section className={s.hero} aria-labelledby="hero-title">
+        <section
+          className={`${s.hero} ${mobile.light}`}
+          aria-labelledby="hero-title"
+        >
           <div className={`${s.container} ${s.heroGrid}`}>
             <div className={s.heroCopy}>
               <h1 id="hero-title">
@@ -86,7 +87,7 @@ export default function LandingPage() {
                 count. A connected workspace for kitchen teams to plan better
                 meals with less guesswork.
               </p>
-              <div className={s.actions}>
+              {/* <div className={s.actions}>
                 <Link href="/dashboard" className={s.primary}>
                   Explore the Dashboard{" "}
                   <ArrowRight size={16} aria-hidden="true" />
@@ -94,7 +95,7 @@ export default function LandingPage() {
                 <Link href="/planner" className={s.secondary}>
                   See How It Works <Play size={14} aria-hidden="true" />
                 </Link>
-              </div>
+              </div> */}
               <div className={s.heroStats}>
                 <div>
                   <strong>{formatPortionNumber(total)}</strong>
@@ -117,7 +118,7 @@ export default function LandingPage() {
         </section>
         <section
           id="workflow"
-          className={s.workflow}
+          className={`${s.workflow} ${mobile.dark}`}
           aria-labelledby="workflow-title"
         >
           <div className={`${s.container} ${s.workflowGrid}`}>
@@ -152,8 +153,10 @@ export default function LandingPage() {
           </div>
         </section>
         <BentoGridSection />
+        <KitchensWeServe />
         <section
-          className={s.comparison}
+          id="why-mealrelay"
+          className={`${s.comparison} ${mobile.light}`}
           aria-label="From kitchen challenges to a clearer plan"
         >
           <div className={s.container}>
@@ -186,7 +189,7 @@ export default function LandingPage() {
                   ))}
                 </ul>
               </article>
-              <article className={s.comparisonCard}>
+              <article className={`${s.comparisonCard} ${s.solutionCard}`}>
                 <div className={s.comparisonHeading}>
                   <div className={s.icon}>
                     <Leaf size={25} aria-hidden="true" />
