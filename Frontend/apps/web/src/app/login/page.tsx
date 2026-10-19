@@ -17,7 +17,7 @@ export default function LoginPage() {
   return (
     <main className={styles.page}>
       <div className={styles.shell}>
-        <Image src={background} alt="" className={styles.background} sizes="(max-width: 760px) 1px, 100vw" priority />
+        <Image src={background} alt="" className={styles.background} sizes="100vw" priority />
         <aside className={styles.promo} aria-label="Run your kitchen smarter. Access dining preparation, forecasting buffers and institutional surplus logs." />
         <section className={styles.panel} aria-labelledby="login-heading">
           <header className={styles.topBar}>

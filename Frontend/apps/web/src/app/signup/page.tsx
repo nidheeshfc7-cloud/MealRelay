@@ -18,7 +18,7 @@ export default function SignupPage() {
   return (
     <main className={shared.page}>
       <div className={shared.shell}>
-        <Image src={background} alt="" className={shared.background} sizes="(max-width: 760px) 1px, 100vw" priority />
+        <Image src={background} alt="" className={shared.background} sizes="100vw" priority />
         <aside className={shared.promo} aria-label="Run your kitchen smarter. Access dining preparation, forecasting buffers and institutional surplus logs." />
         <section className={`${shared.panel} ${styles.panel}`} aria-labelledby="signup-heading">
           <header className={shared.topBar}>
