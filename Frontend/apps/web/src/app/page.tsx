@@ -15,40 +15,11 @@ import Footer from "@/components/footer";
 import { UnifiedPlatformSection } from "@/components/UnifiedPlatformSection";
 import { BentoGridSection } from "@/components/landing/BentoGridSection";
 import { LandingNavigation } from "@/components/landing/LandingNavigation";
+import { HowItWorks } from "@/components/landing/HowItWorks";
 import { KitchensWeServe } from "@/components/landing/KitchensWeServe";
 import { DEFAULT_MEALS, formatPortionNumber } from "@mealrelay/core";
 import s from "./landing.module.css";
 import mobile from "@/components/landing/MobileBackgrounds.module.css";
-
-const steps = [
-  {
-    number: "01",
-    title: "Predict",
-    description:
-      "Review demand forecasts, attendance and your safety buffer before the first ingredient hits the pan.",
-    Icon: BarChart3,
-    href: "/forecasts",
-    action: "Explore forecasts",
-  },
-  {
-    number: "02",
-    title: "Prepare",
-    description:
-      "Turn your reviewed forecast into clear breakfast, lunch and dinner quantities. You make the final call.",
-    Icon: Utensils,
-    href: "/planner",
-    action: "Open meal planner",
-  },
-  {
-    number: "03",
-    title: "Improve",
-    description:
-      "Compare prepared and served portions. Understand the planning gap and bring that insight to the next service.",
-    Icon: Leaf,
-    href: "/analytics",
-    action: "View analytics",
-  },
-];
 
 export default function LandingPage() {
   const total = DEFAULT_MEALS.reduce((sum, meal) => sum + meal.base, 0);
@@ -71,6 +42,7 @@ export default function LandingPage() {
         </div>
       </header>
       <main id="main-content">
+        <div className={s.continuousSurface}>
         <section
           className={`${s.hero} ${mobile.light}`}
           aria-labelledby="hero-title"
@@ -116,43 +88,9 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section
-          id="workflow"
-          className={`${s.workflow} ${mobile.dark}`}
-          aria-labelledby="workflow-title"
-        >
-          <div className={`${s.container} ${s.workflowGrid}`}>
-            <div className={s.sectionLead}>
-              <p className={s.kicker}>How it works</p>
-              <h2 id="workflow-title">
-                One rhythm.
-                <br />
-                <span>Every service.</span>
-              </h2>
-              <p>
-                From forecasts to trays, MealRelay connects the plan, the
-                preparation and the outcome.
-              </p>
-            </div>
-            {steps.map(({ number, title, description, Icon, href, action }) => (
-              <article key={number} className={s.step}>
-                <div className={s.stepHead}>
-                  <div className={s.icon}>
-                    <Icon size={25} aria-hidden="true" />
-                  </div>
-                  <span>{number}</span>
-                </div>
-                <h3>{title}</h3>
-                <p>{description}</p>
-                <Link href={href}>
-                  {action}
-                  <ArrowRight size={13} aria-hidden="true" />
-                </Link>
-              </article>
-            ))}
-          </div>
-        </section>
+        <HowItWorks />
         <BentoGridSection />
+        </div>
         <KitchensWeServe />
         <section
           id="why-mealrelay"
