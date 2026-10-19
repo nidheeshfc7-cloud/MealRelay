@@ -22,3 +22,10 @@
   .background{display:block;height:clamp(230px,70vw,340px);width:auto;max-width:none;left:0;top:0;bottom:auto}
   .panel{border-radius:24px 24px 0 0}
 }
+
+/* The portrait mobile background replaces the desktop promotional banner. */
+@media(max-width:760px){
+  .background,.promo{display:none}
+  .shell{background:transparent}
+  .panel{border-radius:24px}
+}

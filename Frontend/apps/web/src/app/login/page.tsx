@@ -1,3 +1,4 @@
+import mobile from "@/components/landing/MobileBackgrounds.module.css";
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from "next/link";
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} ${mobile.dark}`}>
       <div className={styles.shell}>
         <Image src={background} alt="" className={styles.background} sizes="100vw" priority />
         <aside className={styles.promo} aria-label="Run your kitchen smarter. Access dining preparation, forecasting buffers and institutional surplus logs." />

@@ -1,0 +1,6 @@
+/* Shared mobile-only surfaces. Existing tablet/desktop backgrounds are untouched. */
+@media(max-width:760px){
+  .light.light,.dark.dark{background-size:cover;background-position:center;background-repeat:no-repeat}
+  .light.light{background-color:#f7fdf4;background-image:linear-gradient(#f7fdf440,#f7fdf440),url("/images/Mint Analytics UI Wallpaper.png")}
+  .dark.dark{background-color:#002f24;background-image:linear-gradient(#002f2426,#002f2426),url("/images/ChatGPT Image Oct 19, 2026, 04_38_11 PM.png")}
+}

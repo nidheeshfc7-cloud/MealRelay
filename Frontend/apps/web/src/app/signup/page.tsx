@@ -1,3 +1,4 @@
+import mobile from "@/components/landing/MobileBackgrounds.module.css";
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from "next/link";
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function SignupPage() {
   return (
-    <main className={shared.page}>
+    <main className={`${shared.page} ${mobile.dark}`}>
       <div className={shared.shell}>
         <Image src={background} alt="" className={shared.background} sizes="100vw" priority />
         <aside className={shared.promo} aria-label="Run your kitchen smarter. Access dining preparation, forecasting buffers and institutional surplus logs." />

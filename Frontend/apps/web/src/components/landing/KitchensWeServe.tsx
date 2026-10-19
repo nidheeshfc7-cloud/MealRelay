@@ -3,6 +3,7 @@ import { Leaf } from "lucide-react";
 import hostelMessImg from "../../../public/images/hostel-mess.jpg";
 import collegeCanteenImg from "../../../public/images/college-canteen.jpg";
 import styles from "./KitchensWeServe.module.css";
+import mobile from "./MobileBackgrounds.module.css";
 
 const KITCHEN_STAGES = [
   {
@@ -29,7 +30,7 @@ export function KitchensWeServe() {
   return (
     <section
       id="who-we-serve"
-      className={styles.section}
+      className={`${styles.section} ${mobile.dark}`}
       aria-labelledby="kitchens-section-title"
     >
       <div className={styles.container}>

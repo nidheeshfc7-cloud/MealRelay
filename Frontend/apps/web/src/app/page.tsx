@@ -18,6 +18,7 @@ import { LandingNavigation } from "@/components/landing/LandingNavigation";
 import { KitchensWeServe } from "@/components/landing/KitchensWeServe";
 import { DEFAULT_MEALS, formatPortionNumber } from "@mealrelay/core";
 import s from "./landing.module.css";
+import mobile from "@/components/landing/MobileBackgrounds.module.css";
 
 const steps = [
   {
@@ -70,7 +71,7 @@ export default function LandingPage() {
         </div>
       </header>
       <main id="main-content">
-        <section className={s.hero} aria-labelledby="hero-title">
+        <section className={`${s.hero} ${mobile.light}`} aria-labelledby="hero-title">
           <div className={`${s.container} ${s.heroGrid}`}>
             <div className={s.heroCopy}>
               <h1 id="hero-title">
@@ -114,7 +115,7 @@ export default function LandingPage() {
         </section>
         <section
           id="workflow"
-          className={s.workflow}
+          className={`${s.workflow} ${mobile.dark}`}
           aria-labelledby="workflow-title"
         >
           <div className={`${s.container} ${s.workflowGrid}`}>
@@ -152,7 +153,7 @@ export default function LandingPage() {
         <KitchensWeServe />
         <section
           id="why-mealrelay"
-          className={s.comparison}
+          className={`${s.comparison} ${mobile.light}`}
           aria-label="From kitchen challenges to a clearer plan"
         >
           <div className={s.container}>
