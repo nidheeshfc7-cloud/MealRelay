@@ -2,6 +2,19 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { authConfig } from "@/lib/auth/config";
 
+function navigationUrl(path: string, request: NextRequest) {
+  const url = new URL(path, request.url);
+  // Preserve the browser-facing host when Next runs behind a tunnel/proxy.
+  const host = request.headers.get("host");
+  if (host && /^[a-z0-9.\-]+(?::\d+)?$/i.test(host)) {
+    url.port = "";
+    url.host = host;
+  }
+  const protocol = request.headers.get("x-forwarded-proto")?.split(",")[0].trim();
+  if (protocol === "https" || protocol === "http") url.protocol = `${protocol}:`;
+  return url;
+}
+
 export async function middleware(request: NextRequest) {
   const protectedRoute = /^\/(dashboard|forecasts|planner|analytics|settings|onboarding|menu|records|reset-password)(?:\/|$)/.test(request.nextUrl.pathname);
   let config;
@@ -25,7 +38,7 @@ export async function middleware(request: NextRequest) {
   try { const { data, error } = await client.auth.getUser(); authenticated = !error && !!data.user; }
   catch { /* Deny protected access when verification fails. */ }
   if (protectedRoute && !authenticated) {
-    const login = new URL("/login", process.env.AUTH_SITE_URL || request.url);
+    const login = navigationUrl("/login", request);
     login.pathname = "/login";
     login.search = "";
     login.searchParams.set("next", request.nextUrl.pathname + request.nextUrl.search);
@@ -34,8 +47,7 @@ export async function middleware(request: NextRequest) {
     response = redirect;
   }
   if (request.method === "GET" && authenticated && ["/login", "/signup"].includes(request.nextUrl.pathname)) {
-    const destination = new URL("/dashboard", process.env.AUTH_SITE_URL || request.url);
-    const redirect = NextResponse.redirect(destination);
+    const redirect = NextResponse.redirect(navigationUrl("/dashboard", request));
     response.cookies.getAll().forEach(cookie => redirect.cookies.set(cookie));
     response = redirect;
   }
