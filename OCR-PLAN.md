@@ -15,9 +15,9 @@ Before making a commit at the end of any phase, inspect the git history (`git lo
 ## Phased Implementation Checklist
 
 ### Phase 1: Environment & Dependency Setup
-- [ ] Install `tesseract.js` in `@mealrelay/web` (`npm install tesseract.js`).
-- [ ] Configure Next.js dynamic client import to guarantee zero SSR issues.
-- [ ] Verify build and type compatibility with existing React 19 / Next.js 15 stack.
+- [x] Install `tesseract.js` in `@mealrelay/web` (`npm install tesseract.js`).
+- [x] Configure Next.js dynamic client import to guarantee zero SSR issues.
+- [x] Verify build and type compatibility with existing React 19 / Next.js 15 stack.
 - **Commit:** Follow convention with next prefix (`<N>: install tesseract.js and setup ocr dependencies`)
 
 ### Phase 2: Preprocessing & OCR Extraction Engine
