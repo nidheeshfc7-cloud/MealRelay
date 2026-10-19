@@ -65,13 +65,13 @@ const TermsPage = () => {
     <div className="min-h-screen bg-canvas flex flex-col font-sans selection:bg-lime selection:text-forest-dark">
       {/* Quiet Top Navigation */}
       <header className="border-b border-line-light bg-canvas/80 backdrop-blur-md sticky top-0 z-30">
-        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <BrandLogo size="md" />
           <Link
             href="/"
-            className="text-xs font-semibold text-ink-secondary hover:text-ink flex items-center gap-1.5 transition-colors"
+            className="text-sm font-semibold text-ink-secondary hover:text-ink flex items-center gap-2 transition-colors"
           >
-            <ArrowLeft size={14} />
+            <ArrowLeft size={16} />
             <span>Back to Home</span>
           </Link>
         </div>
