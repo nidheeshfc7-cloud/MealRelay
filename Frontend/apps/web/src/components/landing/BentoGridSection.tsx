@@ -106,7 +106,7 @@ function PreparationList() {
         <Utensils size={17} aria-hidden="true" />
         <div>
           <strong>Tomorrow’s prep</strong>
-          <small>Sample plan Â· 3 services</small>
+          <small>Sample plan &middot; 3 services</small>
         </div>
       </div>
       {DEFAULT_MEALS.map((meal, index) => (
