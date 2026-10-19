@@ -5,9 +5,10 @@ import s from "@/app/landing.module.css";
 
 const links = [
   ["workflow", "How It Works"],
-  ["why-mealrelay", "Why MealRelay"],
-  ["who-we-serve", "Who We Serve"],
   ["product-capabilities", "Product Features"],
+  ["who-we-serve", "Who We Serve"],
+  ["why-mealrelay", "Why MealRelay"],
+  ["architecture", "Cross-Platform"],
 ] as const;
 
 export function LandingNavigation() {
