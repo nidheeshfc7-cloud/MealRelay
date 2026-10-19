@@ -7,13 +7,18 @@ Using **client-side Tesseract.js in a Web Worker**, text is extracted on the use
 
 ---
 
+## Commit Convention Rule
+Before making a commit at the end of any phase, inspect the git history (`git log -n 5 --oneline`) to verify the latest sequential integer prefix. Every commit must strictly follow the repository convention: `<next_number>: <concise description>` (e.g., `105: install tesseract.js and setup ocr dependencies`). Never duplicate or skip prefix numbers.
+
+---
+
 ## Phased Implementation Checklist
 
 ### Phase 1: Environment & Dependency Setup
 - [ ] Install `tesseract.js` in `@mealrelay/web` (`npm install tesseract.js`).
 - [ ] Configure Next.js dynamic client import to guarantee zero SSR issues.
 - [ ] Verify build and type compatibility with existing React 19 / Next.js 15 stack.
-- **Commit:** `104: install tesseract.js and setup ocr dependencies`
+- **Commit:** Follow convention with next prefix (`<N>: install tesseract.js and setup ocr dependencies`)
 
 ### Phase 2: Preprocessing & OCR Extraction Engine
 - [ ] Create `frontend/apps/web/src/lib/ocr/preprocess.ts`:
@@ -30,7 +35,7 @@ Using **client-side Tesseract.js in a Web Worker**, text is extracted on the use
   - Fuzzy duplicate matcher against existing saved catalog (`account_menu_items`).
   - Kitchen register log parser (dates, shift, prepared, served, leftover, attendance).
   - Word-level confidence scoring (<65% flagged for review).
-- **Commit:** `105: implement ocr preprocessing engine and parser`
+- **Commit:** Follow convention with next prefix (`<N>: implement ocr preprocessing engine and parser`)
 
 ### Phase 3: Interactive Staging & Review UI
 - [ ] Create `frontend/apps/web/src/components/kitchen/OcrMenuImportModal.tsx`:
@@ -42,7 +47,7 @@ Using **client-side Tesseract.js in a Web Worker**, text is extracted on the use
   - Bulk actions toolbar: Select All, Set Category, Apply Price, Remove Noise.
   - Direct paste fallback tab (parses raw text from WhatsApp/email menus).
   - Validation banner for missing required fields.
-- **Commit:** `106: add interactive ocr review modal and staging grid`
+- **Commit:** Follow convention with next prefix (`<N>: add interactive ocr review modal and staging grid`)
 
 ### Phase 4: Menu & Kitchen Workspace Integration
 - [ ] Update `frontend/apps/web/src/components/kitchen/MenuWorkspace.tsx`:
@@ -51,11 +56,11 @@ Using **client-side Tesseract.js in a Web Worker**, text is extracted on the use
   - Add instant catalog refresh and success toast notifications.
 - [ ] Update `frontend/apps/web/src/components/kitchen/ActivityWorkspace.tsx`:
   - Add OCR register import trigger to populate daily activity logs.
-- **Commit:** `107: integrate ocr import into menu and activity workspaces`
+- **Commit:** Follow convention with next prefix (`<N>: integrate ocr import into menu and activity workspaces`)
 
 ### Phase 5: Verification & Quality Assurance
 - [ ] Test end-to-end flow with sample whiteboard photo, printed rate sheet, and raw text.
 - [ ] Test edge cases: blurry images, large files (>10MB), network failure recovery.
 - [ ] Verify Supabase database persistence in `account_menu_items` and `account_activity_logs`.
 - [ ] Run `npm run typecheck` and `npm run build` to verify zero lint or bundle errors.
-- **Commit:** `108: complete ocr menu import end-to-end verification`
+- **Commit:** Follow convention with next prefix (`<N>: complete ocr menu import end-to-end verification`)
