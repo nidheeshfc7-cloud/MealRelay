@@ -59,8 +59,8 @@ Before making a commit at the end of any phase, inspect the git history (`git lo
 - **Commit:** Follow convention with next prefix (`<N>: integrate ocr import into menu and activity workspaces`)
 
 ### Phase 5: Verification & Quality Assurance
-- [ ] Test end-to-end flow with sample whiteboard photo, printed rate sheet, and raw text.
-- [ ] Test edge cases: blurry images, large files (>10MB), network failure recovery.
-- [ ] Verify Supabase database persistence in `account_menu_items` and `account_activity_logs`.
-- [ ] Run `npm run typecheck` and `npm run build` to verify zero lint or bundle errors.
+- [x] Test end-to-end flow with sample whiteboard photo, printed rate sheet, and raw text.
+- [x] Test edge cases: blurry images, large files (>10MB), network failure recovery.
+- [x] Verify Supabase database persistence in `account_menu_items` and `account_activity_logs`.
+- [x] Run `npm run typecheck` and `npm run build` to verify zero lint or bundle errors.
 - **Commit:** Follow convention with next prefix (`<N>: complete ocr menu import end-to-end verification`)

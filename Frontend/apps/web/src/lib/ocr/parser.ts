@@ -16,13 +16,21 @@ const CATEGORY_KEYWORDS: Record<DishCatalogItem["category"], RegExp> = {
   dessert: /\b(gulab\s*jamun|kheer|halwa|ice\s*cream|sweet|payasam|jalebi|rasgulla|custard|brownie|shrikhand|laddu)\b/i,
 };
 
-const NOISE_LINE_PATTERNS = [
-  /^(menu|rate\s*list|price\s*list|weekly\s*menu|hostel\s*mess|canteen\s*menu|dining\s*hall)$/i,
-  /^(day|date|sl\s*no|s\.no|item\s*name|dish|cost|rate|price|total|timing|shift)$/i,
-  /^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)$/i,
-  /^(breakfast|lunch|snacks?|tea|dinner|meals?)$/i,
-  /^[-=_~*#|.\s]+$/,
-];
+const isNoiseHeader = (line: string): boolean => {
+  const trimmed = line.trim();
+  if (trimmed.length <= 1) return true;
+  if (/^[-=_~*#|.\s]+$/.test(trimmed)) return true;
+  if (/^(day|date|sl\s*no|s\.no|item\s*name|dish|cost|rate|price|total|timing|shift)$/i.test(trimmed)) return true;
+  if (/^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)$/i.test(trimmed)) return true;
+  if (/^(breakfast|lunch|snacks?|tea|dinner|meals?)$/i.test(trimmed)) return true;
+  if (/\b(hostel\s*mess|weekly\s*menu|canteen\s*menu|rate\s*list|price\s*list|dining\s*hall|mess\s*schedule)\b/i.test(trimmed)) {
+    return true;
+  }
+  if (/^(today'?s\s*)?menu$/i.test(trimmed)) {
+    return true;
+  }
+  return false;
+};
 
 const normalizeForComparison = (text: string): string => {
   return text.toLowerCase().replace(/[^a-z0-9]/g, "").trim();
@@ -66,8 +74,7 @@ export const parseMenuDishes = (
 
   for (const line of lines) {
     // 1. Skip metadata, table column headers, and noise rows
-    const isNoise = NOISE_LINE_PATTERNS.some((pattern) => pattern.test(line));
-    if (isNoise) {
+    if (isNoiseHeader(line)) {
       continue;
     }
 
