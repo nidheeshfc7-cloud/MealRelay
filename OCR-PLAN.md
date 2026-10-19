@@ -38,7 +38,7 @@ Before making a commit at the end of any phase, inspect the git history (`git lo
 - **Commit:** Follow convention with next prefix (`<N>: implement ocr preprocessing engine and parser`)
 
 ### Phase 3: Interactive Staging & Review UI
-- [ ] Create `frontend/apps/web/src/components/kitchen/OcrMenuImportModal.tsx`:
+- [x] Create `frontend/apps/web/src/components/kitchen/OcrMenuImportModal.tsx`:
   - Drag-and-drop dropzone supporting PNG, JPEG, WebP.
   - Image preview bar with 90° rotation, filter presets, and crop tools.
   - Animated progress bar with percentage and stage status.
