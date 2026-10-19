@@ -10,7 +10,7 @@ import {
   FileText,
   Loader2,
   RotateCw,
-  Sparkles,
+  ScanLine,
   Trash2,
   Upload,
   X,
@@ -195,12 +195,12 @@ export const OcrRegisterImportModal: React.FC<OcrRegisterImportModalProps> = ({
         <div className="flex items-center justify-between px-6 py-4 border-b border-line-light bg-canvas/40 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-forest text-lime flex items-center justify-center shrink-0">
-              <Sparkles size={20} strokeWidth={2.5} />
+              <ScanLine size={20} strokeWidth={2.5} />
             </div>
             <div>
-              <h2 className="text-lg font-black text-ink">OCR Kitchen Register Digitizer</h2>
+              <h2 className="text-lg font-black text-ink">Register Photo Digitizer</h2>
               <p className="text-xs text-ink-secondary">
-                Scan kitchen register sheets to quickly import daily prep, served, and leftover counts
+                Digitize physical mess register sheets into verified meal preparation logs
               </p>
             </div>
           </div>
@@ -317,9 +317,9 @@ export const OcrRegisterImportModal: React.FC<OcrRegisterImportModalProps> = ({
                       type="button"
                       disabled={isProcessing}
                       onClick={handleRunOcr}
-                      className="px-5 py-2.5 rounded-xl bg-forest text-lime font-bold text-sm flex items-center gap-2 disabled:opacity-50"
+                      className="px-5 py-3 rounded-xl bg-forest text-lime font-bold text-sm flex items-center gap-2 disabled:opacity-50 cursor-pointer shadow-xs"
                     >
-                      {isProcessing ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+                      {isProcessing ? <Loader2 size={16} className="animate-spin" /> : <ScanLine size={16} />}
                       <span>{isProcessing ? "Scanning..." : "Scan Register Records"}</span>
                     </button>
                   </div>
