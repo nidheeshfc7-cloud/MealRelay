@@ -1,9 +1,7 @@
 import mobile from "@/components/landing/MobileBackgrounds.module.css";
 import React from 'react';
 import type { Metadata } from 'next';
-import Link from "next/link";
 import Image from "next/image";
-import { UserRound } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import background from "../../../public/images/Smarter Kitchens, Sustainable Tomorrow.png";
 import styles from "./LoginPage.module.css";
@@ -23,7 +21,6 @@ export default function LoginPage() {
         <section className={styles.panel} aria-labelledby="login-heading">
           <header className={styles.topBar}>
             <BrandLogo size="lg" />
-            <Link href="/signup"><UserRound size={19} aria-hidden="true" />Sign up</Link>
           </header>
           <div className={styles.content}>
             <h1 id="login-heading">Sign In</h1>
