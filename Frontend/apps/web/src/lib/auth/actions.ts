@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createAuthClient } from "./server";
 import { safeNext } from "./config";
+import { formatDefaultKitchenName } from "./kitchenName";
 
 export type AuthResult = { ok: true; redirectTo: string; requiresEmailConfirmation?: boolean } | { ok: false; error: string; code: string };
 const field = (form: FormData, key: string) => typeof form.get(key) === "string" ? String(form.get(key)) : "";
@@ -20,7 +21,21 @@ async function authenticate(form: FormData, signup: boolean): Promise<AuthResult
       if (!site) return failure("AUTH_NOT_CONFIGURED", "Authentication setup is incomplete.");
       const destination = new URL("/auth/callback", site);
       destination.searchParams.set("next", safeNext(field(form, "next")));
-      const { data, error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: destination.toString(), data: { job_title: field(form, "jobTitle").trim().slice(0,120), full_name: field(form, "fullName").trim().slice(0,120), organization: field(form, "organization").trim().slice(0,120) } } });
+      const org = field(form, "organization").trim().slice(0, 120);
+      const kitchen = field(form, "kitchenName").trim().slice(0, 120) || (org ? formatDefaultKitchenName(org) : "Your kitchen");
+      const { data, error } = await client.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: destination.toString(),
+          data: {
+            job_title: field(form, "jobTitle").trim().slice(0, 120),
+            full_name: field(form, "fullName").trim().slice(0, 120),
+            organization: org,
+            kitchen_name: kitchen,
+          },
+        },
+      });
       if (error) return failure("SIGNUP_FAILED", "Unable to create an account. Check your details or try signing in.");
       revalidatePath("/", "layout");
       return { ok: true, redirectTo: data.session ? "/dashboard" : "/login", requiresEmailConfirmation: !data.session };

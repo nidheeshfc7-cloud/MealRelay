@@ -5,10 +5,12 @@ import { Sidebar } from "@/components/Sidebar";
 import { useAccountIdentity } from "@/components/auth/AccountIdentity";
 import { ProfileSettingsForm } from "@/components/auth/ProfileSettingsForm";
 import { LogoutButton } from "@/components/auth/LogoutButton";
+import { formatDefaultKitchenName } from "@/lib/auth/kitchenName";
 import styles from "./settings.module.css";
 
 export default function SettingsPage() {
   const account = useAccountIdentity();
+  const displayKitchen = account.kitchenName || (account.organization ? formatDefaultKitchenName(account.organization) : "Complete your kitchen profile");
   return <div className={styles.shell}>
     <Sidebar />
     <main className={styles.main}>
@@ -16,7 +18,7 @@ export default function SettingsPage() {
         <div><p className={styles.eyebrow}>Settings</p><h1>Kitchen &amp; account settings</h1><p className={styles.subtitle}>Manage your kitchen profile, workspace information and account security.</p></div>
         <a href="#workspace" className={styles.summary}>
           <span className={styles.summaryIcon}><Building2 size={25} /></span>
-          <span><small>Your kitchen</small><strong>{account.kitchenName || account.organization || "Complete your kitchen profile"}</strong><small>Account workspace</small></span>
+          <span><small>Your kitchen</small><strong>{displayKitchen}</strong><small>Account workspace</small></span>
           <ChevronRight size={19} />
         </a>
       </header>
