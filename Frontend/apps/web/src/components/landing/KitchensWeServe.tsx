@@ -28,6 +28,7 @@ const KITCHEN_STAGES = [
 export function KitchensWeServe() {
   return (
     <section
+      id="who-we-serve"
       className={styles.section}
       aria-labelledby="kitchens-section-title"
     >

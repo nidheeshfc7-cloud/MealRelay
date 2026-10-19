@@ -14,6 +14,7 @@ import { CinematicIntro } from "@/components/CinematicIntro";
 import Footer from "@/components/footer";
 import { UnifiedPlatformSection } from "@/components/UnifiedPlatformSection";
 import { BentoGridSection } from "@/components/landing/BentoGridSection";
+import { LandingNavigation } from "@/components/landing/LandingNavigation";
 import { KitchensWeServe } from "@/components/landing/KitchensWeServe";
 import { DEFAULT_MEALS, formatPortionNumber } from "@mealrelay/core";
 import s from "./landing.module.css";
@@ -59,12 +60,7 @@ export default function LandingPage() {
       <header className={s.header}>
         <div className={`${s.container} ${s.nav}`}>
           <BrandLogo size="md" />
-          <nav className={s.navLinks} aria-label="Main navigation">
-            <a href="#workflow">How It Works</a>
-            <Link href="/forecasts">Forecasting Engine</Link>
-            <a href="#architecture">Cross-Platform Stack</a>
-            <Link href="/analytics">Analytics</Link>
-          </nav>
+          <LandingNavigation />
           <div className={s.navActions}>
             <Link href="/login">Log in</Link>
             <Link href="/dashboard" className={s.primary}>
@@ -155,6 +151,7 @@ export default function LandingPage() {
         <BentoGridSection />
         <KitchensWeServe />
         <section
+          id="why-mealrelay"
           className={s.comparison}
           aria-label="From kitchen challenges to a clearer plan"
         >

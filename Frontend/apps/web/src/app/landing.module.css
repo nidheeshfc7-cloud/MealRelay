@@ -995,3 +995,19 @@
     transition: none;
   }
 }
+
+/* Public section navigation; protected app routes are unchanged. */
+.page main section[id] { scroll-margin-top: 104px; }
+.navContainer { display: flex; align-items: center; }
+.navLinks a { transition: color .18s ease; }
+.navLinks a[aria-current="location"] { color: var(--forest); text-decoration: underline; text-underline-offset: 6px; text-decoration-color: var(--lime); text-decoration-thickness: 2px; }
+.mobileToggle { display: none; align-items: center; justify-content: center; width: 44px; height: 44px; color: var(--forest); background: transparent; border: 1px solid var(--line); border-radius: 10px; }
+.mobileToggle:focus-visible { outline: 2px solid var(--forest); outline-offset: 3px; }
+@media(max-width:800px) {
+  .navContainer { margin-left: auto; }
+  .mobileToggle { display: inline-flex; }
+  .navLinks[data-open="true"] { display: grid; position: absolute; top: 100%; left: 0; right: 0; gap: 4px; padding: 12px 22px 18px; background: #fefffe; border-bottom: 1px solid var(--line); box-shadow: 0 8px 18px #003f2f08; font-size: 14px; }
+  .navLinks a { display: flex; align-items: center; min-height: 44px; padding: 10px 12px; border-radius: 8px; }
+  .navLinks a:hover { background: var(--canvas); }
+}
+@media(prefers-reduced-motion:reduce) { .navLinks a { transition: none; } }
