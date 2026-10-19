@@ -22,8 +22,8 @@ export function HowItWorks() {
             <article key={title} className={`${s.card} ${i === 1 ? s.light : ""}`} aria-label={`${step}: ${title}`}>
               <Image src={`/images/${image}`} alt="" fill sizes="(max-width: 600px) 100vw, (max-width: 850px) 50vw, 33vw" className={s.background} />
               <div className={s.copy}><h3>{title}</h3><p>{description}</p></div>
-              <Link className={`${s.cta} ${i > 0 ? s.embeddedCta : ""}`} href={href} aria-label={action}>
-                {i === 0 && <ArrowRight size={23} aria-hidden="true" />}
+              <Link className={s.cta} href={href} aria-label={action}>
+                <ArrowRight size={23} aria-hidden="true" />
               </Link>
             </article>
           ))}

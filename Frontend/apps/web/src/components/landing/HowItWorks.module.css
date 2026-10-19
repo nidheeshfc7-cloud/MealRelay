@@ -14,8 +14,7 @@
 .card h3{font-size:clamp(21px,2.1vw,29px);font-weight:750;letter-spacing:-.035em;margin:0 0 10px;line-height:1.15}
 .copy>p{font-size:clamp(12px,1.05vw,14px);line-height:1.55;max-width:340px}
 .cta{position:absolute;z-index:2;bottom:6%;right:5.5%;width:12%;aspect-ratio:1;min-width:40px;display:grid;place-items:center;border-radius:50%;background:#d5fb53;color:#003f2f;transition:transform .2s}
-.embeddedCta{background:transparent;bottom:10.3%;right:6.3%;width:12.5%}
-.card:last-child .embeddedCta{bottom:6.3%;right:5.5%;width:12%}
+.light .cta{background:#003f2f;color:#fff}
 .cta:hover{transform:scale(1.07);box-shadow:0 0 0 3px #d5fb5350}
 .cta:focus-visible{outline:3px solid #84a800;outline-offset:4px}
 @media(max-width:1050px){.grid{gap:16px}.heading{gap:30px}.copy{padding:18px 17px 0}.card h3{font-size:22px;margin-bottom:8px}.copy>p{font-size:12px;line-height:1.5}}
