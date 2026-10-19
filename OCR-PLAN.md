@@ -21,15 +21,15 @@ Before making a commit at the end of any phase, inspect the git history (`git lo
 - **Commit:** Follow convention with next prefix (`<N>: install tesseract.js and setup ocr dependencies`)
 
 ### Phase 2: Preprocessing & OCR Extraction Engine
-- [ ] Create `frontend/apps/web/src/lib/ocr/preprocess.ts`:
+- [x] Create `frontend/apps/web/src/lib/ocr/preprocess.ts`:
   - Canvas downscaling (max 2000px dimension) for speed.
   - EXIF / 90-degree manual rotation controls.
   - Contrast filters: Auto-Adaptive, High-Contrast B&W (for whiteboards), Natural.
-- [ ] Create `frontend/apps/web/src/lib/ocr/engine.ts`:
+- [x] Create `frontend/apps/web/src/lib/ocr/engine.ts`:
   - Dynamic client-only Tesseract Web Worker runner (`eng` language pack).
   - Real-time progress streaming (`recognizing text: XX%`).
   - 30-second watchdog timeout and error recovery.
-- [ ] Create `frontend/apps/web/src/lib/ocr/parser.ts`:
+- [x] Create `frontend/apps/web/src/lib/ocr/parser.ts`:
   - Dish name cleanup and price regex extractor (`₹`, `Rs.`, `/-`).
   - Indian mess category classifier (rice, bread, curry, main, side, beverage, dessert).
   - Fuzzy duplicate matcher against existing saved catalog (`account_menu_items`).
