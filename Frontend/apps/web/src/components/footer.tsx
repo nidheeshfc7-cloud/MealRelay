@@ -13,6 +13,7 @@ const FOOTER_LINKS: FooterLinkItem[] = [
   { label: "Forecasts", href: "/forecasts" },
   { label: "Analytics", href: "/analytics" },
   { label: "Settings", href: "/settings" },
+  { label: "Terms & Conditions", href: "/terms" },
 ];
 
 export const Footer: React.FC = () => {
@@ -21,7 +22,8 @@ export const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <BrandLogo size="md" />
 
-        <div className="flex items-center gap-6 text-xs text-ink-secondary font-semibold">
+        <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-ink-secondary font-semibold">
+
           {FOOTER_LINKS.map((link) => (
             <Link
               key={link.href}

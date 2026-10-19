@@ -69,8 +69,9 @@ export function SignupForm() {
     }
 
     if (!termsAgreed) {
-      errors.termsAgreed = 'Please confirm that you will check the suggested quantities before cooking.';
+      errors.termsAgreed = 'Please agree to the Terms & Conditions to create an account.';
     }
+
 
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -335,10 +336,19 @@ export function SignupForm() {
               }}
               className={styles.checkboxInput}
             />
-            <span className="text-xs">
-              I’ll check the suggested quantities before cooking.
+            <span className="text-xs text-ink-secondary">
+              I agree to the{' '}
+              <Link
+                href="/terms"
+                target="_blank"
+                className="font-bold underline text-forest hover:text-forest-dark transition-colors"
+              >
+                Terms &amp; Conditions
+              </Link>{' '}
+              and will verify preparation quantities before cooking.
             </span>
           </label>
+
           {fieldErrors.termsAgreed && (
             <div className={styles.fieldError}>
               <AlertCircle size={12} />
