@@ -1,3 +1,8 @@
 import { ActivityWorkspace } from "@/components/kitchen/ActivityWorkspace";
-export default function RecordsPage() { return <ActivityWorkspace />; }
+
+const RecordsPage: React.FC = () => {
+  return <ActivityWorkspace />;
+};
+
+export default RecordsPage;
 
