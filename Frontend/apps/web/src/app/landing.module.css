@@ -1059,3 +1059,68 @@
 .solutionCard .comparisonHeading .icon{background:#003f2f;color:#d5fb53}
 .solutionCard li>svg{fill:#003f2f;color:#d5fb53}
 .solutionCard li>svg circle{stroke:#003f2f}
+
+/* One canvas: full-opacity artwork above a clean lower surface. */
+.introSurface {
+  container-type: inline-size;
+  position: relative;
+  isolation: isolate;
+  background: #f7fdf4;
+}
+.introSurface::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 1672 / 941;
+  pointer-events: none;
+  background: url("/images/Minimal Mint Analytics Dashboard Background.png") top center / 100% auto no-repeat;
+}
+.introSurface.introSurface > section {
+  position: relative;
+  background: transparent;
+  margin-block: 0;
+}
+.introSurface > .hero::before { background: none; }
+.introSurface > .hero::after { display: none; }
+.introSurface > section + section { padding-top: 48px; }
+@media (min-width: 801px) {
+  .introSurface > .hero > .heroGrid {
+    min-height: max(calc(100svh - 80px), calc(100vw * 941 / 1672));
+  }
+}
+@media (max-width: 800px) {
+  .introSurface > .hero { padding-block: 56px 24px; }
+  .introSurface > section + section { padding-top: 48px; }
+}
+
+/* Keep live content inside the new artwork's empty center. */
+@media (min-width: 801px) {
+  .introSurface .heroCopy { max-width: min(900px, 50vw); }
+  .introSurface .hero h1 { font-size: clamp(36px, 4.6vw, 70px); }
+}
+@media (max-width: 800px) {
+  .introSurface > .hero { padding-top: clamp(180px, 58vw, 450px); }
+}
+
+/* Stretch only the actual final pixel row below the artwork, then blend it
+   into the canvas. This matches every edge color without fading devices. */
+.introSurface::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  left: 0;
+  right: 0;
+  top: calc(100cqw * 941 / 1672 - 1px);
+  height: 0;
+  border-bottom: 120px solid transparent;
+  border-image-source: url("/images/Minimal Mint Analytics Dashboard Background.png");
+  border-image-slice: 0 0 1 0;
+  border-image-width: 0 0 120px 0;
+  border-image-repeat: stretch;
+  mask-image: linear-gradient(#000, transparent);
+  -webkit-mask-image: linear-gradient(#000, transparent);
+}

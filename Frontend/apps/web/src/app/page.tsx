@@ -42,6 +42,7 @@ export default function LandingPage() {
         </div>
       </header>
       <main id="main-content">
+        <div className={s.introSurface}>
         <section
           className={`${s.hero} ${mobile.light}`}
           aria-labelledby="hero-title"
@@ -88,6 +89,7 @@ export default function LandingPage() {
           </div>
         </section>
         <HowItWorks />
+        </div>
         <BentoGridSection />
         <KitchensWeServe />
         <section
