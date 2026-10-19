@@ -1030,3 +1030,14 @@
 @media(max-width:760px){
   .hero::before,.workflow::before,.platform::before{background:none}
 }
+
+/* Give the Problem / Solution comparison more room on larger screens. */
+@media(min-width:801px){
+  .comparison{padding:60px 0}
+  .comparisonGrid{max-width:1160px;gap:26px;align-items:stretch}
+  .comparisonCard{padding:36px;min-height:370px;border-radius:20px}
+  .comparisonHeading h2{font-size:28px;line-height:1.2}
+  .comparisonHeading p{font-size:14px;line-height:1.7;margin-top:12px}
+  .comparisonCard ul{margin-top:28px;gap:20px}
+  .comparisonCard li{font-size:14px;line-height:1.6}
+}
