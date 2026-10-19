@@ -241,3 +241,7 @@
     margin-bottom: 24px;
   }
 }
+
+.section{padding-inline:var(--landing-inline-gutter,32px)}
+.container{max-width:var(--landing-content-width,1240px);width:100%}
+.cardsGrid{gap:var(--landing-column-gap,24px)}

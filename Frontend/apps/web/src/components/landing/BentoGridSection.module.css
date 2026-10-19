@@ -548,3 +548,6 @@
   .floatingTip,.selectedMarker,.selectedGuide { transition: none; }
   .section[data-animated="true"] .card[data-visible="true"] .band { animation: none; }
 }
+
+.section{padding-inline:var(--landing-inline-gutter,32px)}
+.grid{max-width:var(--landing-content-width,1240px);gap:var(--landing-column-gap,24px)}
