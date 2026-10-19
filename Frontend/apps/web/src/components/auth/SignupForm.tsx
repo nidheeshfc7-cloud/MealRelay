@@ -41,17 +41,17 @@ export function SignupForm() {
     const errors: Record<string, string> = {};
 
     if (!fullName.trim()) {
-      errors.fullName = 'Full operator name is required.';
+      errors.fullName = 'Please enter your name.';
     }
 
     if (!organization.trim()) {
-      errors.organization = 'Dining hall / institutional kitchen name is required.';
+      errors.organization = 'Please enter your hostel, mess or kitchen name.';
     }
 
     if (!email.trim()) {
-      errors.email = 'Institutional email is required.';
+      errors.email = 'Please enter your email address.';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errors.email = 'Please provide a valid institutional email address.';
+      errors.email = 'Please enter a valid email address.';
     }
 
     if (!password) {
@@ -63,13 +63,13 @@ export function SignupForm() {
     }
 
     if (!confirmPassword) {
-      errors.confirmPassword = 'Confirmation password is required.';
+      errors.confirmPassword = 'Please enter your password again.';
     } else if (confirmPassword !== password) {
       errors.confirmPassword = 'Passwords do not match.';
     }
 
     if (!termsAgreed) {
-      errors.termsAgreed = 'Please confirm that you will review recommendations before use.';
+      errors.termsAgreed = 'Please confirm that you will check the suggested quantities before cooking.';
     }
 
     setFieldErrors(errors);
@@ -116,15 +116,15 @@ export function SignupForm() {
         </div>
         <h2 className="text-xl font-black text-[#172a21] mb-2">Check Your Email</h2>
         <p className="text-xs text-[#718078] mb-6 leading-relaxed">
-          We have dispatched a verification link to <strong className="text-[#172a21]">{email}</strong>.
-          Please click the confirmation link to activate your institutional kitchen access.
+          We sent a confirmation link to <strong className="text-[#172a21]">{email}</strong>.
+          Open the link in your email to finish creating your account.
         </p>
 
         <Link
           href="/login"
           className={styles.primaryButton}
         >
-          <span>Return to Sign In</span>
+          <span>Back to sign in</span>
           <ArrowRight size={16} />
         </Link>
       </div>
@@ -145,7 +145,7 @@ export function SignupForm() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className={styles.formGroup}>
             <label htmlFor="signup-name" className={styles.label}>
-              Operator Name
+              Your name
             </label>
             <div className={styles.inputWrapper}>
               <User size={16} className={styles.inputIcon} />
@@ -154,7 +154,7 @@ export function SignupForm() {
                 name="name"
                 type="text"
                 autoComplete="name"
-                placeholder="Marcus Vance"
+                placeholder="Your full name"
                 value={fullName}
                 onChange={(e) => {
                   setFullName(e.target.value);
@@ -173,7 +173,7 @@ export function SignupForm() {
 
           <div className={styles.formGroup}>
             <label htmlFor="signup-org" className={styles.label}>
-              Kitchen / Facility
+              Hostel / mess name
             </label>
             <div className={styles.inputWrapper}>
               <Building size={16} className={styles.inputIcon} />
@@ -181,7 +181,7 @@ export function SignupForm() {
                 id="signup-org"
                 name="organization"
                 type="text"
-                placeholder="North Dining Hall"
+                placeholder="e.g. Sri Sai Hostel Mess"
                 value={organization}
                 onChange={(e) => {
                   setOrganization(e.target.value);
@@ -202,7 +202,7 @@ export function SignupForm() {
         {/* Email */}
         <div className={styles.formGroup}>
           <label htmlFor="signup-email" className={styles.label}>
-            Institutional Email
+            Email address
           </label>
           <div className={styles.inputWrapper}>
             <Mail size={16} className={styles.inputIcon} />
@@ -211,7 +211,7 @@ export function SignupForm() {
               name="email"
               type="email"
               autoComplete="email"
-              placeholder="m.vance@university.edu"
+              placeholder="you@gmail.com"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -231,7 +231,7 @@ export function SignupForm() {
         {/* Role Select */}
         <div className={styles.formGroup}>
           <label htmlFor="signup-role" className={styles.label}>
-            Job title (profile only)
+            Your role
           </label>
           <select
             id="signup-role"
@@ -240,10 +240,10 @@ export function SignupForm() {
             onChange={(e) => setRole(e.target.value)}
             className={`${styles.input} pl-4 cursor-pointer`}
           >
-            <option value="Head Chef / Operations Lead">Head Chef / Operations Lead</option>
-            <option value="Kitchen Director / Food Services">Kitchen Director / Food Services</option>
-            <option value="Inventory / Supply Chain Manager">Inventory / Supply Chain Manager</option>
-            <option value="Food Recovery Partner / Shelter Lead">Food Recovery Partner / Shelter Lead</option>
+            <option value="Head Chef / Operations Lead">Cook / kitchen staff</option>
+            <option value="Kitchen Director / Food Services">Hostel / mess manager</option>
+            <option value="Inventory / Supply Chain Manager">Stock / supplies manager</option>
+            <option value="Food Recovery Partner / Shelter Lead">Food collection partner</option>
           </select>
         </div>
 
@@ -251,7 +251,7 @@ export function SignupForm() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className={styles.formGroup}>
             <label htmlFor="signup-password" className={styles.label}>
-              Password (8+ chars)
+              Password (at least 8 characters)
             </label>
             <div className={styles.inputWrapper}>
               <Lock size={16} className={styles.inputIcon} />
@@ -260,7 +260,7 @@ export function SignupForm() {
                 name="password"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="new-password"
-                placeholder="Min. 8 chars"
+                placeholder="At least 8 characters"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
@@ -336,7 +336,7 @@ export function SignupForm() {
               className={styles.checkboxInput}
             />
             <span className="text-xs">
-              I understand that preparation recommendations need my review before use.
+              I’ll check the suggested quantities before cooking.
             </span>
           </label>
           {fieldErrors.termsAgreed && (
@@ -356,11 +356,11 @@ export function SignupForm() {
           {isLoading ? (
             <>
               <Loader2 size={16} className="animate-spin" />
-              <span>Creating Kitchen Account...</span>
+              <span>Creating your account...</span>
             </>
           ) : (
             <>
-              <span>Complete Kitchen Registration</span>
+              <span>Create account</span>
               <ArrowRight size={16} />
             </>
           )}
@@ -371,20 +371,20 @@ export function SignupForm() {
       <div className={styles.integrationNote}>
         {AUTH_CONFIG.isIntegrationPending
           ? 'Authentication is unavailable. Please contact the site owner.'
-          : 'Connected to operational Supabase authentication.'}
+          : 'Your account uses secure sign-in.'}
       </div>
 
       {/* Navigation */}
       <div className={styles.footerDivider}>
         <span>Already have an account?</span>
         <Link href="/login" className={styles.linkAccent}>
-          Sign In Here →
+          Sign in →
         </Link>
       </div>
 
       <div className="mt-3 text-center">
         <Link href="/" className="text-xs text-[#718078] hover:text-[#003f2f] transition-colors">
-          ← Return to Public Overview
+          ← Back to home
         </Link>
       </div>
     </div>

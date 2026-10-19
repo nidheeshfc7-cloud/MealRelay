@@ -32,9 +32,9 @@ function LoginFormContent() {
     const errors: { email?: string; password?: string } = {};
 
     if (!email.trim()) {
-      errors.email = 'Institutional email is required.';
+      errors.email = 'Please enter your email address.';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errors.email = 'Please provide a valid email format (e.g., chef@institution.edu).';
+      errors.email = 'Please enter a valid email address.';
     }
 
     if (!password) {
@@ -85,7 +85,7 @@ function LoginFormContent() {
         {/* Email Field */}
         <div className={styles.formGroup}>
           <label htmlFor="login-email" className={styles.label}>
-            Institutional Email
+            Email address
           </label>
           <div className={styles.inputWrapper}>
             <Mail size={16} className={styles.inputIcon} />
@@ -94,7 +94,7 @@ function LoginFormContent() {
               id="login-email"
               type="email"
               autoComplete="email"
-              placeholder="operator@institution.edu"
+              placeholder="you@gmail.com"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -164,7 +164,7 @@ function LoginFormContent() {
           {isLoading ? (
             <>
               <Loader2 size={16} className="animate-spin" />
-              <span>Authenticating Session...</span>
+              <span>Signing you in...</span>
             </>
           ) : (
             <>
@@ -179,20 +179,20 @@ function LoginFormContent() {
       <div className={styles.integrationNote}>
         {AUTH_CONFIG.isIntegrationPending
           ? 'Authentication is unavailable. Please contact the site owner.'
-          : 'Connected to operational Supabase authentication.'}
+          : 'Your account uses secure sign-in.'}
       </div>
 
       {/* Footer Navigation */}
       <div className={styles.footerDivider}>
-        <span>New kitchen facility?</span>
+        <span>New to MealRelay?</span>
         <Link href="/signup" className={styles.linkAccent}>
-          Create Facility Account →
+          Create account →
         </Link>
       </div>
 
       <div className="mt-3 text-center">
         <Link href="/" className="text-xs text-[#718078] hover:text-[#003f2f] transition-colors">
-          ← Return to Public Overview
+          ← Back to home
         </Link>
       </div>
     </div>

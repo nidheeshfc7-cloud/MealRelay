@@ -11,7 +11,7 @@ import { SignupForm } from '@/components/auth/SignupForm';
 
 export const metadata: Metadata = {
   title: 'Create Kitchen Workspace | MealRelay',
-  description: 'Register your institutional kitchen, dining hall, or food recovery team on MealRelay.',
+  description: 'Create a MealRelay account for your hostel, mess or kitchen.',
 };
 
 export default function SignupPage() {
@@ -26,9 +26,9 @@ export default function SignupPage() {
             <Link href="/login"><UserRound size={19} aria-hidden="true" />Sign in</Link>
           </header>
           <div className={`${shared.content} ${styles.content}`}>
-            <span className={shared.badge}><i aria-hidden="true" />Workspace setup</span>
+            <span className={shared.badge}><i aria-hidden="true" />Get started</span>
             <h1 id="signup-heading">Create account</h1>
-            <p className={shared.subtitle}>Bring your kitchen into one connected workspace.</p>
+            <p className={shared.subtitle}>Plan daily meals for your hostel, mess or kitchen.</p>
             <div className={`${shared.form} ${styles.form}`}><SignupForm /></div>
           </div>
         </section>

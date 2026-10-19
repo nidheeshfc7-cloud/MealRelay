@@ -10,7 +10,7 @@ import { LoginForm } from '@/components/auth/LoginForm';
 
 export const metadata: Metadata = {
   title: 'Sign In | MealRelay Operations',
-  description: 'Access dining preparation, forecasting buffers, and surplus redistributions.',
+  description: 'Sign in to plan meals and track daily kitchen activity.',
 };
 
 export default function LoginPage() {
@@ -25,9 +25,9 @@ export default function LoginPage() {
             <Link href="/signup"><UserRound size={19} aria-hidden="true" />Sign up</Link>
           </header>
           <div className={styles.content}>
-            <span className={styles.badge}><i aria-hidden="true" />Operational access</span>
+            <span className={styles.badge}><i aria-hidden="true" />Welcome back</span>
             <h1 id="login-heading">Sign In</h1>
-            <p className={styles.subtitle}>Your kitchen, ready for what&apos;s next.<br />Sign in to plan, prepare and serve smarter.</p>
+            <p className={styles.subtitle}>Plan your meals, check quantities<br />and keep track of leftovers.</p>
             <div className={styles.form}><LoginForm /></div>
           </div>
 
