@@ -1041,3 +1041,10 @@
   .comparisonCard ul{margin-top:28px;gap:20px}
   .comparisonCard li{font-size:14px;line-height:1.6}
 }
+
+@media(min-width:801px){
+  .comparison{min-height:calc(100dvh - 80px);display:flex;align-items:center;padding-block:clamp(32px,6dvh,72px)}
+  .comparison>.container{width:min(1440px,calc(100% - 64px))}
+  .comparisonGrid{max-width:none;gap:clamp(24px,2.5vw,40px)}
+  .comparisonCard{min-height:clamp(370px,62dvh,650px);padding:clamp(30px,3vw,52px);display:flex;flex-direction:column;justify-content:center}
+}
