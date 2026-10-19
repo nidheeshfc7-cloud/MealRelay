@@ -10,10 +10,9 @@ export const AuthenticatedLayout = async ({ children }: { children: React.ReactN
   const org = text(metadata.organization);
   const rawKitchen = text(metadata.kitchen_name);
 
-  // If kitchen_name is unset, or was previously set to literally match the raw organization name without "'s kitchen"
-  const kitchenName = rawKitchen && rawKitchen !== org
-    ? rawKitchen
-    : (org ? formatDefaultKitchenName(org) : "Your kitchen");
+  // Explicit user kitchen name ALWAYS takes precedence and is NEVER overwritten.
+  // Default formatDefaultKitchenName(org) is strictly a fallback when kitchen_name is missing/empty.
+  const kitchenName = rawKitchen ? rawKitchen : (org ? formatDefaultKitchenName(org) : "Your kitchen");
 
   // Metadata is presentation only, never an authorization source.
   const account = {
