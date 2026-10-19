@@ -90,6 +90,7 @@ function LoginFormContent() {
           <div className={styles.inputWrapper}>
             <Mail size={16} className={styles.inputIcon} />
             <input
+              suppressHydrationWarning // Autofill extensions may inject fdprocessedid before hydration.
               id="login-email"
               type="email"
               autoComplete="email"
@@ -118,6 +119,7 @@ function LoginFormContent() {
           <div className={styles.inputWrapper}>
             <Lock size={16} className={styles.inputIcon} />
             <input
+              suppressHydrationWarning // Ignore extension-only attributes on this control.
               id="login-password"
               type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
@@ -131,6 +133,7 @@ function LoginFormContent() {
             />
             <button
               type="button"
+              suppressHydrationWarning
               className={styles.visibilityToggle}
               onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
@@ -154,6 +157,7 @@ function LoginFormContent() {
         {/* Submit Button */}
         <button
           type="submit"
+          suppressHydrationWarning
           disabled={isLoading}
           className={styles.primaryButton}
         >

@@ -105,7 +105,7 @@ function PreparationList() {
       <div className={styles.prepHeading}>
         <Utensils size={17} aria-hidden="true" />
         <div>
-          <strong>Tomorrowâ€™s prep</strong>
+          <strong>Tomorrow’s prep</strong>
           <small>Sample plan Â· 3 services</small>
         </div>
       </div>
@@ -214,7 +214,7 @@ export function BentoGridSection() {
           <p className={styles.label}>Demand forecasting</p>
           <h3>Anticipate <span className={styles.keywordAccent}>demand.</span></h3>
           <p className={styles.description}>
-            Bring tomorrowâ€™s service into focus before preparation begins.
+            Bring tomorrow’s service into focus before preparation begins.
           </p>
           <DemandTrend />
           <CardLink href="/forecasts" label="Explore demand forecasts" />
@@ -265,7 +265,7 @@ export function BentoGridSection() {
         >
           <div className={styles.bottomCopy}>
             <p className={styles.label}>Analytics & insights</p>
-            <h3>See whatâ€™s working.</h3>
+            <h3>See what’s working.</h3>
             <p className={styles.description}>
               Compare preparation with service. Bring what you learn into your
               next plan.
