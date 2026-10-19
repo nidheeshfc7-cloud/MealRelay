@@ -16,7 +16,6 @@ import { UnifiedPlatformSection } from "@/components/UnifiedPlatformSection";
 import { BentoGridSection } from "@/components/landing/BentoGridSection";
 import { LandingNavigation } from "@/components/landing/LandingNavigation";
 import { KitchensWeServe } from "@/components/landing/KitchensWeServe";
-import { DEFAULT_MEALS, formatPortionNumber } from "@mealrelay/core";
 import s from "./landing.module.css";
 
 const steps = [
@@ -50,7 +49,6 @@ const steps = [
 ];
 
 export default function LandingPage() {
-  const total = DEFAULT_MEALS.reduce((sum, meal) => sum + meal.base, 0);
   return (
     <div className={s.page}>
       <CinematicIntro />
@@ -94,20 +92,20 @@ export default function LandingPage() {
               </div>
               <div className={s.heroStats}>
                 <div>
-                  <strong>{formatPortionNumber(total)}</strong>
-                  <span>Sample planned portions</span>
+                  <strong>Next day</strong>
+                  <span>Demand forecasting</span>
                 </div>
                 <div>
-                  <strong>3</strong>
-                  <span>Breakfast, lunch & dinner</span>
+                  <strong>Dish-wise</strong>
+                  <span>Preparation quantities</span>
                 </div>
                 <div>
-                  <strong>+4.8%</strong>
-                  <span>Configurable safety buffer</span>
+                  <strong>Daily</strong>
+                  <span>Service &amp; leftover tracking</span>
                 </div>
               </div>
               <small className={s.sampleNote}>
-                Quantities shown are illustrative. Your team stays in control.
+                Review the forecast. Set your quantities. Track what gets served.
               </small>
             </div>
           </div>
