@@ -71,7 +71,10 @@ export default function LandingPage() {
         </div>
       </header>
       <main id="main-content">
-        <section className={`${s.hero} ${mobile.light}`} aria-labelledby="hero-title">
+        <section
+          className={`${s.hero} ${mobile.light}`}
+          aria-labelledby="hero-title"
+        >
           <div className={`${s.container} ${s.heroGrid}`}>
             <div className={s.heroCopy}>
               <h1 id="hero-title">
@@ -84,7 +87,7 @@ export default function LandingPage() {
                 count. A connected workspace for kitchen teams to plan better
                 meals with less guesswork.
               </p>
-              <div className={s.actions}>
+              {/* <div className={s.actions}>
                 <Link href="/dashboard" className={s.primary}>
                   Explore the Dashboard{" "}
                   <ArrowRight size={16} aria-hidden="true" />
@@ -92,7 +95,7 @@ export default function LandingPage() {
                 <Link href="/planner" className={s.secondary}>
                   See How It Works <Play size={14} aria-hidden="true" />
                 </Link>
-              </div>
+              </div> */}
               <div className={s.heroStats}>
                 <div>
                   <strong>{formatPortionNumber(total)}</strong>
