@@ -27,7 +27,6 @@ export default function SignupPage() {
             <Link href="/login"><UserRound size={19} aria-hidden="true" />Sign in</Link>
           </header>
           <div className={`${shared.content} ${styles.content}`}>
-            <span className={shared.badge}><i aria-hidden="true" />Get started</span>
             <h1 id="signup-heading">Create account</h1>
             <p className={shared.subtitle}>Plan daily meals for your hostel, mess or kitchen.</p>
             <div className={`${shared.form} ${styles.form}`}><SignupForm /></div>
