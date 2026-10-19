@@ -30,7 +30,11 @@ export interface OcrMenuImportModalProps {
   onConfirmDishes: (
     dishes: Array<{ name: string; category: DishCatalogItem["category"]; price: number }>
   ) => Promise<boolean | void>;
+  onLoadToDraft?: (
+    dishes: Array<{ name: string; category: DishCatalogItem["category"]; price: number }>
+  ) => void;
   existingCatalog?: MenuItem[];
+  initialFile?: File | null;
 }
 
 type ActiveTab = "photo" | "direct_paste";
@@ -41,10 +45,12 @@ export const OcrMenuImportModal: React.FC<OcrMenuImportModalProps> = ({
   isOpen,
   onClose,
   onConfirmDishes,
+  onLoadToDraft,
   existingCatalog = [],
+  initialFile = null,
 }) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("photo");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(initialFile);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [rotation, setRotation] = useState<0 | 90 | 180 | 270>(0);
   const [filterPreset, setFilterPreset] = useState<OcrFilterPreset>("adaptive");
@@ -83,7 +89,12 @@ export const OcrMenuImportModal: React.FC<OcrMenuImportModalProps> = ({
 
   // Reset state when modal is opened or closed
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
+      if (initialFile) {
+        setSelectedFile(initialFile);
+        setActiveTab("photo");
+      }
+    } else {
       setSelectedFile(null);
       setPreviewUrl("");
       setRotation(0);
@@ -95,7 +106,7 @@ export const OcrMenuImportModal: React.FC<OcrMenuImportModalProps> = ({
       setPastedText("");
       setIsSaving(false);
     }
-  }, [isOpen]);
+  }, [isOpen, initialFile]);
 
   if (!isOpen) {
     return null;
@@ -293,6 +304,34 @@ export const OcrMenuImportModal: React.FC<OcrMenuImportModalProps> = ({
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleLoadToDraft = (): void => {
+    const selectedItems = extractedRows.filter((r) => r.selected);
+    if (!selectedItems.length) {
+      setErrorMessage("Select at least one dish to load into the review form.");
+      return;
+    }
+
+    const invalidRow = selectedItems.find(
+      (r) => !r.name.trim() || r.name.trim().length > 100 || !r.price || r.price <= 0
+    );
+
+    if (invalidRow) {
+      setErrorMessage("All selected dishes must have a valid name and positive price.");
+      return;
+    }
+
+    const payload = selectedItems.map((item) => ({
+      name: item.name.trim(),
+      category: item.category,
+      price: Number(item.price.toFixed(2)),
+    }));
+
+    if (onLoadToDraft) {
+      onLoadToDraft(payload);
+    }
+    onClose();
   };
 
   const selectedCount = extractedRows.filter((r) => r.selected).length;
@@ -778,6 +817,16 @@ export const OcrMenuImportModal: React.FC<OcrMenuImportModalProps> = ({
             >
               Cancel
             </button>
+            {onLoadToDraft && (
+              <button
+                type="button"
+                disabled={isSaving || selectedCount === 0}
+                onClick={handleLoadToDraft}
+                className="px-4 py-2.5 rounded-xl border border-forest text-forest font-bold text-sm hover:bg-forest/5 transition-colors disabled:opacity-50"
+              >
+                Load {selectedCount} to Review Form
+              </button>
+            )}
             <button
               type="button"
               disabled={isSaving || selectedCount === 0}
