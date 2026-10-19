@@ -1014,7 +1014,8 @@
 
 /* Preserve wide background artwork on narrow screens instead of cropping its edges. */
 @media(max-width:800px){
-  .hero{background-color:#f7fdf4;background-size:100% auto;background-position:center top;padding-top:clamp(165px,43vw,310px)}
+  .hero{background-color:#f7fdf4;background-size:cover;background-position:left center;padding-top:40px}
+  .hero::before{background:linear-gradient(90deg,#f7fdf4df,#f7fdf4e8 55%,#f7fdf4ed)}
   .workflow::before{background:linear-gradient(#002f2466,#002f2466),url("/images/landing-workflow.webp") left center / cover no-repeat}
   .platform::before{background-position:center;background-size:cover}
 }
