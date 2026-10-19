@@ -143,7 +143,7 @@
   transform: translateX(3px);
 }
 .arrowLink:hover {
-  background: #e6fca8;
+  background: #D5FB53;
 }
 .section a:focus-visible {
   outline: 3px solid var(--forest);
@@ -324,7 +324,7 @@
   width: 38%;
 }
 .waste .bottomCopy h3 { font-size: clamp(29px, 3vw, 42px); }
-.keywordAccent { color: #84a800; }
+.keywordAccent { color: #D5FB53; }
 .wastePhoto {
   position: absolute;
   inset: 0;
@@ -536,7 +536,7 @@
 .trend { margin-top: 10px; }
 .chartGrid { stroke: #E5EBE1; stroke-width: 1; opacity: .65; }
 .chartNote { font-size: 10px; gap: 6px 12px; padding-right: 0; }
-.chartNote .rangeDot { background: #d5edaa; }
+.chartNote .rangeDot { background: #D5FB53; }
 .floatingTip { filter: drop-shadow(0 4px 8px #003f2f10); transition: transform .18s ease; pointer-events: none; }
 .selectedMarker { transition: transform .18s ease; pointer-events: none; }
 .selectedGuide { transition: x1 .18s ease, x2 .18s ease, y1 .18s ease; }

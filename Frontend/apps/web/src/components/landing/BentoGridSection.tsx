@@ -22,12 +22,6 @@ const demandLine = line<number>()
   .x((_, i) => x(i)!)
   .y((value) => y(value))
   .curve(curveMonotoneX)(TREND)!;
-const demandBand = area<number>()
-  .x((_, i) => x(i)!)
-  .y0((value) => y(value - 65))
-  .y1((value) => y(value + 65))
-  .curve(curveMonotoneX)(TREND)!;
-
 const demandFill = area<number>()
   .x((_, i) => x(i)!)
   .y0(178)
@@ -74,7 +68,7 @@ function DemandTrend() {
   return <div className={styles.trend}>
     <svg viewBox="0 0 420 206" role="group" aria-labelledby={titleId}
       onPointerMove={selectPoint} onPointerDown={selectPoint}>
-      <title id={titleId}>Illustrative weekly demand in servings. Use arrow keys on the chart to select a day. Shaded range is illustrative, not a measured confidence interval.</title>
+      <title id={titleId}>Illustrative weekly demand in servings. Use arrow keys on the chart to select a day. Shading below the line illustrates the demand trend.</title>
       <defs><linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stopColor="#D5FB53" stopOpacity=".32" />
         <stop offset="100%" stopColor="#D5FB53" stopOpacity=".07" />
@@ -82,7 +76,6 @@ function DemandTrend() {
       {[400, 600, 800].map(tick => <line key={tick} className={styles.chartGrid} x1="22" x2="398" y1={y(tick)} y2={y(tick)} />)}
       {DAYS.map((day, i) => <line key={day} className={styles.chartGrid} x1={x(i)} x2={x(i)} y1="66" y2="178" strokeDasharray="3 5" />)}
       <path className={styles.band} d={demandFill} fill={`url(#${fillId})`} />
-      <path className={styles.band} d={demandBand} fill="#D5FB53" fillOpacity=".27" />
       <path className={styles.trendLine} d={demandLine} fill="none" stroke="#003F2F" strokeWidth="3" strokeLinecap="round" pathLength="1" />
       <line x1="22" x2="398" y1="178" y2="178" stroke="#dce3d9" />
       <line className={styles.selectedGuide} x1={pointX} x2={pointX} y1={pointY} y2="178" stroke="#718078" strokeDasharray="3 4" />
@@ -107,7 +100,7 @@ function DemandTrend() {
           }
         }} className={styles.chartInteraction} />
     </svg>
-    <div className={styles.chartNote}><span><i className={styles.rangeDot} />Sample range</span><span><i />Predicted servings</span><span>Illustrative data</span></div>
+    <div className={styles.chartNote}><span><i className={styles.rangeDot} />Demand trend</span><span><i />Predicted servings</span><span>Illustrative data</span></div>
   </div>;
 }
 
@@ -277,7 +270,7 @@ export function BentoGridSection() {
         >
           <div className={styles.bottomCopy}>
             <p className={styles.label}>Analytics & insights</p>
-            <h3>See what’s working.</h3>
+            <h3>See what’s <span className={styles.keywordAccent}>working.</span></h3>
             <p className={styles.description}>
               Compare preparation with service. Bring what you learn into your
               next plan.
