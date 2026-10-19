@@ -189,7 +189,7 @@ export default function LandingPage() {
                   ))}
                 </ul>
               </article>
-              <article className={s.comparisonCard}>
+              <article className={`${s.comparisonCard} ${s.solutionCard}`}>
                 <div className={s.comparisonHeading}>
                   <div className={s.icon}>
                     <Leaf size={25} aria-hidden="true" />
