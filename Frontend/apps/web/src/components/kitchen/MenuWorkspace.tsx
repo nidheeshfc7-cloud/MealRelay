@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Sparkles } from "lucide-react";
 import { listMenuItems, saveMenuItems, deleteMenuItem } from "@/lib/kitchen/actions";
 import { MENU_CATEGORIES, type MenuInput, type MenuItem } from "@/lib/kitchen/types";
 import { WorkspaceShell } from "./WorkspaceShell";
+import { OcrMenuImportModal } from "./OcrMenuImportModal";
 
 const blank = (): MenuInput => ({ name:"", category:"main", price:0 });
 const control = "w-full min-w-0 rounded-xl border border-line-light bg-white p-3 text-base";
@@ -25,6 +27,7 @@ export function MenuWorkspace() {
   const [busy,setBusy] = useState(true);
   const [message,setMessage] = useState("");
   const [error,setError] = useState("");
+  const [isOcrOpen,setIsOcrOpen] = useState(false);
   async function load() {try {const result=await listMenuItems();if(result.ok){setSaved(result.data);return true;}setError(result.error);} catch {setError("Unable to reach the server. Please refresh to retry.");}return false;}
   useEffect(()=>{void load().finally(()=>setBusy(false));},[]);
   function change(index:number,key:keyof MenuInput,value:string) {
@@ -36,6 +39,22 @@ export function MenuWorkspace() {
     catch {setError("Unable to reach the server. Your draft is still available.");}
     finally {setBusy(false);}
   }
+  const handleOcrConfirm = async (extracted: Array<{ name: string; category: MenuInput["category"]; price: number }>) => {
+    setBusy(true); setError(""); setMessage("");
+    try {
+      const result = await saveMenuItems(extracted);
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      await load();
+      setMessage(`Successfully imported ${extracted.length} dish${extracted.length === 1 ? "" : "es"} using OCR.`);
+    } catch {
+      setError("Unable to reach the server. Please retry.");
+    } finally {
+      setBusy(false);
+    }
+  };
   async function remove(id:string) {
     if(!confirm("Delete this menu item? Items used in activity logs cannot be deleted."))return;
     setBusy(true);setError("");setMessage("");
@@ -46,8 +65,23 @@ export function MenuWorkspace() {
     {message && <p role="status" className="p-4 bg-sage rounded-xl text-forest">{message}</p>}
     {error && <p role="alert" className="p-4 bg-red-50 text-red-800 rounded-xl">{error}</p>}
     <section className="rounded-2xl bg-white border border-line-light p-5 space-y-4">
-      <h2 className="text-xl font-bold">Menu photographs</h2>
-      <p className="text-ink-secondary">Images stay in this browser for reference. OCR is not configured; enter and review items below. Photos are not stored with your menu.</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-bold">Menu photographs &amp; OCR import</h2>
+          <p className="text-ink-secondary text-sm">
+            Upload whiteboard photos, weekly cycle sheets, or paper menus to automatically extract dishes and prices.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsOcrOpen(true)}
+          className="flex items-center gap-2 rounded-xl bg-forest text-lime px-4 py-3 font-bold hover:bg-forest-dark transition-all shadow-sm"
+        >
+          <Sparkles size={16} />
+          <span>Launch OCR Digitizer</span>
+        </button>
+      </div>
+
       <label className="block font-semibold">Choose menu photos
         <input className="block mt-2 max-w-full" type="file" multiple accept="image/png,image/jpeg,image/webp" onChange={event=>{
           const incoming=Array.from(event.target.files||[]);
@@ -56,8 +90,26 @@ export function MenuWorkspace() {
         }}/>
       </label>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">{photos.map((file,i)=><PhotoPreview key={file.name+file.lastModified+i} file={file} remove={()=>setPhotos(items=>items.filter((_,j)=>i!==j))}/>)}</div>
-      <button type="button" className={button} disabled={!photos.length} onClick={()=>setMessage("Automatic extraction is unavailable. Use the photographs to enter and review your menu manually below.")}>Continue with manual entry</button>
+      <div className="flex flex-wrap gap-3">
+        <button type="button" className={button} onClick={() => setIsOcrOpen(true)}>
+          <span className="flex items-center gap-2">
+            <Sparkles size={15} />
+            <span>Scan Menu Photos with OCR</span>
+          </span>
+        </button>
+        {photos.length > 0 && (
+          <button type="button" className="px-4 py-3 font-semibold text-ink-secondary hover:text-ink" onClick={()=>setMessage("Use the photographs above to enter or adjust your menu items below.")}>
+            Use photos for manual entry
+          </button>
+        )}
+      </div>
     </section>
+    <OcrMenuImportModal
+      isOpen={isOcrOpen}
+      onClose={() => setIsOcrOpen(false)}
+      onConfirmDishes={handleOcrConfirm}
+      existingCatalog={saved}
+    />
     <form onSubmit={save} className="rounded-2xl bg-white border border-line-light p-5 space-y-4">
       <h2 className="text-xl font-bold">{editing?"Edit menu item":"Review and confirm menu"}</h2>
       <p className="text-sm text-ink-secondary">Prices use your restaurant's currency. Up to 200 items can be confirmed together.</p>

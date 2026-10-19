@@ -50,11 +50,11 @@ Before making a commit at the end of any phase, inspect the git history (`git lo
 - **Commit:** Follow convention with next prefix (`<N>: add interactive ocr review modal and staging grid`)
 
 ### Phase 4: Menu & Kitchen Workspace Integration
-- [ ] Update `frontend/apps/web/src/components/kitchen/MenuWorkspace.tsx`:
+- [x] Update `frontend/apps/web/src/components/kitchen/MenuWorkspace.tsx`:
   - Replace static "OCR is not configured" placeholder with "Scan Menu Photo (OCR)" button.
   - Wire confirmed dishes into verified Server Action `saveMenuItems`.
   - Add instant catalog refresh and success toast notifications.
-- [ ] Update `frontend/apps/web/src/components/kitchen/ActivityWorkspace.tsx`:
+- [x] Update `frontend/apps/web/src/components/kitchen/ActivityWorkspace.tsx`:
   - Add OCR register import trigger to populate daily activity logs.
 - **Commit:** Follow convention with next prefix (`<N>: integrate ocr import into menu and activity workspaces`)
 

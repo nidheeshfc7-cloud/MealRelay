@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Sparkles } from "lucide-react";
 import { listMenuItems, listActivityLogs, saveActivityLog, deleteActivityLog } from "@/lib/kitchen/actions";
 import type { ActivityInput, ActivityLog, MenuItem } from "@/lib/kitchen/types";
 import { WorkspaceShell } from "./WorkspaceShell";
+import { OcrRegisterImportModal } from "./OcrRegisterImportModal";
 const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");};
 const blank=():ActivityInput=>({menu_item_id:"",service_date:today(),meal_service:"lunch",prepared:0,served:0,leftover:0,attendance:0,notes:""});
 const control="block w-full rounded-xl bg-white border border-line-light p-3 text-base";
@@ -16,6 +18,7 @@ export function ActivityWorkspace(){
   const [busy,setBusy]=useState(true);
   const [error,setError]=useState("");
   const [message,setMessage]=useState("");
+  const [isOcrOpen,setIsOcrOpen]=useState(false);
   async function load(date=filter,offset=page*100){try {const result=await listActivityLogs(date||undefined,offset);if(result.ok)setLogs(result.data);else setError(result.error);} catch {setError("Unable to refresh saved activity. Please retry.");}}
   useEffect(()=>{let active=true;setBusy(true);setError("");Promise.all([listMenuItems(),listActivityLogs(filter||undefined,page*100)]).then(([items,records])=>{if(!active)return;if(items.ok)setMenu(items.data);else setError(items.error);if(records.ok)setLogs(records.data);else setError(records.error);}).catch(()=>{if(active)setError("Unable to load kitchen records.");}).finally(()=>{if(active)setBusy(false);});return()=>{active=false;};},[filter,page]);
   async function save(event:React.FormEvent){
@@ -23,12 +26,50 @@ export function ActivityWorkspace(){
     try{const result=await saveActivityLog(form,editing);if(!result.ok){setError(result.error);return;}setEditing(undefined);setForm(blank());await load();setMessage("Activity saved to your account.");}
     catch{setError("Unable to reach the server. Your entry has not been cleared.");}finally{setBusy(false);}
   }
+  const handleOcrConfirmLogs = async (extracted: ActivityInput[]) => {
+    setBusy(true); setError(""); setMessage("");
+    try {
+      let savedCount = 0;
+      for (const item of extracted) {
+        const res = await saveActivityLog(item);
+        if (res.ok) savedCount++;
+      }
+      await load();
+      setMessage(`Successfully imported ${savedCount} daily kitchen record${savedCount === 1 ? "" : "s"} using OCR.`);
+    } catch {
+      setError("Unable to save activity logs.");
+    } finally {
+      setBusy(false);
+    }
+  };
   async function remove(id:string){if(!confirm("Delete this activity log?"))return;setBusy(true);setError("");setMessage("");try{const result=await deleteActivityLog(id);if(result.ok){await load();setMessage("Activity deleted.");}else setError(result.error);}catch{setError("Unable to reach the server.");}finally{setBusy(false);}}
   return <WorkspaceShell title="Daily kitchen activity" description="Record preparation, service and leftovers for your own saved menu.">
     {error&&<p role="alert" className="p-4 rounded-xl bg-red-50 text-red-800">{error}</p>}
     {message&&<p role="status" className="p-4 rounded-xl bg-sage text-forest">{message}</p>}
+    <OcrRegisterImportModal
+      isOpen={isOcrOpen}
+      onClose={() => setIsOcrOpen(false)}
+      onConfirmLogs={handleOcrConfirmLogs}
+      menu={menu}
+    />
     <form onSubmit={save} className="rounded-2xl bg-white border border-line-light p-5 space-y-4">
-      <h2 className="text-xl font-bold">{editing?"Edit activity":"Add daily activity"}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-line-light">
+        <div>
+          <h2 className="text-xl font-bold">{editing?"Edit activity":"Add daily activity"}</h2>
+          <p className="text-xs text-ink-secondary">Enter portions manually or scan daily register sheets with OCR</p>
+        </div>
+        {!editing && (
+          <button
+            type="button"
+            disabled={busy || !menu.length}
+            onClick={() => setIsOcrOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-forest text-lime text-xs font-bold hover:bg-forest-dark transition-all disabled:opacity-50"
+          >
+            <Sparkles size={14} />
+            <span>Scan Register Photo (OCR)</span>
+          </button>
+        )}
+      </div>
       {!menu.length&&!busy&&<p className="text-ink-secondary">Save a dish in Menu management before adding activity.</p>}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <label className="font-semibold text-sm">Date<input required type="date" value={form.service_date} className={control} onChange={e=>setForm({...form,service_date:e.target.value})}/></label>
