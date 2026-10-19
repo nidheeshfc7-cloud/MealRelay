@@ -42,7 +42,6 @@ export default function LandingPage() {
         </div>
       </header>
       <main id="main-content">
-        <div className={s.continuousSurface}>
         <section
           className={`${s.hero} ${mobile.light}`}
           aria-labelledby="hero-title"
@@ -90,7 +89,6 @@ export default function LandingPage() {
         </section>
         <HowItWorks />
         <BentoGridSection />
-        </div>
         <KitchensWeServe />
         <section
           id="why-mealrelay"

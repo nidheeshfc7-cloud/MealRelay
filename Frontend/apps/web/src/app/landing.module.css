@@ -1059,22 +1059,3 @@
 .solutionCard .comparisonHeading .icon{background:#003f2f;color:#d5fb53}
 .solutionCard li>svg{fill:#003f2f;color:#d5fb53}
 .solutionCard li>svg circle{stroke:#003f2f}
-
-/* A single background spans the first three public sections without seams. */
-.continuousSurface {
-  background: #f7fdf4 url("/images/Minimal Green Dashboard Corner Layout.png") center / cover no-repeat;
-  display: flow-root;
-}
-.continuousSurface.continuousSurface > section {
-  background: transparent;
-  border-block: 0;
-  margin-block: 0;
-}
-.continuousSurface > .hero::before {
-  background: none;
-}
-@media (max-width: 760px) {
-  .continuousSurface.continuousSurface > section {
-    background: transparent;
-  }
-}
