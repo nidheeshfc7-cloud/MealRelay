@@ -1,7 +1,7 @@
 """Feature engineering and preprocessing for demand forecasting models."""
 
 from datetime import date
-from typing import List, Tuple, Optional, Dict
+from typing import List, Tuple, Optional, Dict, Union, overload, Literal
 import pandas as pd
 import numpy as np
 
@@ -158,12 +158,39 @@ class FeaturePreprocessor:
 
         return df
 
+    @overload
+    @classmethod
+    def prepare_training_dataset(
+        cls,
+        records: List[MealRecord],
+        return_weights: Literal[False] = False,
+    ) -> Tuple[pd.DataFrame, pd.Series]:
+        ...
+
+    @overload
+    @classmethod
+    def prepare_training_dataset(
+        cls,
+        records: List[MealRecord],
+        return_weights: Literal[True],
+    ) -> Tuple[pd.DataFrame, pd.Series, np.ndarray]:
+        ...
+
+    @overload
+    @classmethod
+    def prepare_training_dataset(
+        cls,
+        records: List[MealRecord],
+        return_weights: bool,
+    ) -> Union[Tuple[pd.DataFrame, pd.Series], Tuple[pd.DataFrame, pd.Series, np.ndarray]]:
+        ...
+
     @classmethod
     def prepare_training_dataset(
         cls,
         records: List[MealRecord],
         return_weights: bool = False,
-    ) -> Tuple[pd.DataFrame, pd.Series, Optional[np.ndarray]]:
+    ) -> Union[Tuple[pd.DataFrame, pd.Series], Tuple[pd.DataFrame, pd.Series, np.ndarray]]:
         """Prepares feature matrix X and continuous target vector y for model training."""
         df = cls.records_to_dataframe(records)
         
