@@ -9,13 +9,10 @@ import {
   Edit3,
   RefreshCw,
   Search,
-  FileText,
   CheckCircle2,
   AlertCircle,
   X,
   Camera,
-  UtensilsCrossed,
-  ClipboardList,
 } from "lucide-react";
 import { listMenuItems, saveMenuItems, deleteMenuItem } from "@/lib/kitchen/actions";
 import { MENU_CATEGORIES, type MenuInput, type MenuItem } from "@/lib/kitchen/types";
@@ -332,18 +329,9 @@ export const MenuWorkspace: React.FC = () => {
       <div className={styles.workspace}>
         <header className={styles.header}>
           <div><p className={styles.eyebrow}>Kitchen Operations Workspace</p><h1>Menu Management</h1><p>Upload menus, review extracted dishes and keep your kitchen’s digital menu up to date.</p></div>
-          <div className={styles.actions}>
-            <button type="button" className={styles.primary} onClick={() => openOcr(photos[0] || null)}><Sparkles size={16} />Open OCR Digitizer</button>
-            <button type="button" onClick={() => openOcr(null, "direct_paste")}><FileText size={16} />Paste Text</button>
-          </div>
         </header>
         {message && <div role="status" className={styles.notice}><CheckCircle2 size={18} /><span>{message}</span><button type="button" aria-label="Dismiss message" onClick={() => setMessage("")}><X size={16} /></button></div>}
         {error && <div role="alert" className={styles.error}><AlertCircle size={18} /><span>{error}</span><button type="button" aria-label="Dismiss error" onClick={() => setError("")}><X size={16} /></button></div>}
-        <div className={styles.summary}>
-          <div><UtensilsCrossed size={20} /><span>Dishes in menu</span><strong>{busy && !saved.length ? "—" : saved.length}</strong><small>Saved to your account</small></div>
-          <div><ClipboardList size={20} /><span>Pending review</span><strong>{pendingCount}</strong><small>Items in the review table</small></div>
-          <div><Camera size={20} /><span>Menu photos uploaded</span><strong>{photos.length}</strong><small>Selected in this session</small></div>
-        </div>
         <section className={styles.card}>
           <div className={styles.sectionHeading}><div className={styles.numberedHeading} data-step="1"><h2>Upload menu photos</h2><p>Upload your menu, then scan a photo to extract dishes for review.</p></div><span className={styles.badge}>Up to {MAX_PHOTOS} photos</span></div>
           <div className={styles.dropzone} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); handlePhotoUpload(Array.from(event.dataTransfer.files)); }}>
