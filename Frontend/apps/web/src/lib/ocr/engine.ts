@@ -2,6 +2,75 @@ import type { OcrEngineResult, OcrProgress, OcrWordConfidence } from "./types";
 
 const OCR_TIMEOUT_MS = 60000;
 
+interface SpatialItem {
+  text: string;
+  box: { x: number; y: number; width: number; height: number };
+  confidence: number;
+}
+
+const reconstructSpatialLines = (rawLines: any[][]): string => {
+  const allItems: SpatialItem[] = [];
+
+  for (const line of rawLines) {
+    if (!Array.isArray(line)) continue;
+    for (const item of line) {
+      if (!item || !item.text) continue;
+      const text = String(item.text).trim();
+      if (!text) continue;
+      if (item.box && typeof item.box.y === "number") {
+        allItems.push({
+          text,
+          box: item.box,
+          confidence: typeof item.confidence === "number" ? item.confidence : 0.85,
+        });
+      }
+    }
+  }
+
+  // Early return if bounding box coordinates are not available
+  if (allItems.length === 0) {
+    return "";
+  }
+
+  // Sort top-to-bottom by vertical center point
+  allItems.sort((a, b) => {
+    const centerYA = a.box.y + (a.box.height || 20) / 2;
+    const centerYB = b.box.y + (b.box.height || 20) / 2;
+    return centerYA - centerYB;
+  });
+
+  // Cluster items into lines based on vertical overlap
+  const rows: SpatialItem[][] = [];
+  for (const item of allItems) {
+    const itemHeight = item.box.height || 20;
+    const itemCenter = item.box.y + itemHeight / 2;
+
+    const matchingRow = rows.find((row) => {
+      const rowItem = row[0];
+      const rowHeight = rowItem.box.height || 20;
+      const rowCenter = rowItem.box.y + rowHeight / 2;
+      const verticalTolerance = Math.max(itemHeight, rowHeight) * 0.75;
+      return Math.abs(itemCenter - rowCenter) <= verticalTolerance;
+    });
+
+    if (matchingRow) {
+      matchingRow.push(item);
+    } else {
+      rows.push([item]);
+    }
+  }
+
+  // Sort each row left-to-right (by x) and join text to ensure dish name and price are on the same line
+  return rows
+    .map((row) =>
+      row
+        .sort((a, b) => a.box.x - b.box.x)
+        .map((i) => i.text)
+        .join(" ")
+    )
+    .join("\n");
+};
+
 export const recognizeText = async (
   imageDataUrl: string,
   onProgress?: (progress: OcrProgress) => void
@@ -91,7 +160,13 @@ export const recognizeText = async (
             ? Math.round(ocrOutput.confidence <= 1 ? ocrOutput.confidence * 100 : ocrOutput.confidence)
             : 80;
 
+      // Spatially align 2D bounding boxes to unite dish names with prices horizontally
+      const spatialText = Array.isArray(ocrOutput.lines)
+        ? reconstructSpatialLines(ocrOutput.lines)
+        : "";
+
       const fullText =
+        spatialText ||
         ocrOutput.text ||
         (Array.isArray(ocrOutput.lines)
           ? ocrOutput.lines
