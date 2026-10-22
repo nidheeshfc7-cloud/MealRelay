@@ -14,9 +14,12 @@ import {
   AlertCircle,
   X,
   Camera,
+  UtensilsCrossed,
+  ClipboardList,
 } from "lucide-react";
 import { listMenuItems, saveMenuItems, deleteMenuItem } from "@/lib/kitchen/actions";
 import { MENU_CATEGORIES, type MenuInput, type MenuItem } from "@/lib/kitchen/types";
+import styles from "./MenuWorkspace.module.css";
 import { WorkspaceShell } from "./WorkspaceShell";
 import { OcrMenuImportModal } from "./OcrMenuImportModal";
 
@@ -92,9 +95,12 @@ export const MenuWorkspace: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [isOcrOpen, setIsOcrOpen] = useState<boolean>(false);
   const [activeOcrPhoto, setActiveOcrPhoto] = useState<File | null>(null);
+  const [ocrTab, setOcrTab] = useState<"photo" | "direct_paste">("photo");
 
   // Search & category filter states for saved menu
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState("name");
+  const [excludedRows, setExcludedRows] = useState<Set<number>>(new Set());
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
   const load = async (): Promise<boolean> => {
@@ -137,13 +143,16 @@ export const MenuWorkspace: React.FC = () => {
   const removeDraftRow = (index: number): void => {
     if (draft.length <= 1) {
       setDraft([blank()]);
+      setExcludedRows(new Set());
       return;
     }
+    setExcludedRows((excluded) => new Set([...excluded].filter((i) => i !== index).map((i) => i > index ? i - 1 : i)));
     setDraft((rows) => rows.filter((_, j) => j !== index));
   };
 
   const clearDraft = (): void => {
     setDraft([blank()]);
+    setExcludedRows(new Set());
     setEditingId(undefined);
   };
 
@@ -151,13 +160,15 @@ export const MenuWorkspace: React.FC = () => {
     event.preventDefault();
 
     // Validate draft
-    const hasEmptyName = draft.some((item) => !item.name.trim());
+    const selectedDraft = draft.filter((_, index) => !excludedRows.has(index));
+    if (!selectedDraft.length) { setError("Select at least one dish to save."); return; }
+    const hasEmptyName = selectedDraft.some((item) => !item.name.trim());
     if (hasEmptyName) {
       setError("Each dish in the table must have a name.");
       return;
     }
 
-    const hasInvalidPrice = draft.some((item) => !item.price || item.price <= 0);
+    const hasInvalidPrice = selectedDraft.some((item) => !Number.isFinite(item.price) || item.price <= 0);
     if (hasInvalidPrice) {
       setError("Each dish must have a positive price greater than zero.");
       return;
@@ -168,12 +179,13 @@ export const MenuWorkspace: React.FC = () => {
     setMessage("");
 
     try {
-      const result = await saveMenuItems(draft, editingId);
+      const result = await saveMenuItems(selectedDraft, editingId);
       if (!result.ok) {
         setError(result.error);
         return;
       }
       setDraft([blank()]);
+      setExcludedRows(new Set());
       setEditingId(undefined);
       await load();
       setMessage(
@@ -223,6 +235,7 @@ export const MenuWorkspace: React.FC = () => {
       return [...cleanPrev, ...extracted];
     });
     setEditingId(undefined);
+    setExcludedRows(new Set());
     setMessage(
       `Loaded ${extracted.length} dish${
         extracted.length === 1 ? "" : "es"
@@ -304,481 +317,60 @@ export const MenuWorkspace: React.FC = () => {
       const q = searchQuery.toLowerCase().trim();
       result = result.filter((item) => item.name.toLowerCase().includes(q));
     }
-    return result;
-  }, [saved, categoryFilter, searchQuery]);
+    return [...result].sort((a, b) => sortOrder === "price" ? Number(a.price) - Number(b.price) : a.name.localeCompare(b.name));
+  }, [saved, categoryFilter, searchQuery, sortOrder]);
 
-  // Counts by category
-  const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: saved.length };
-    MENU_CATEGORIES.forEach((cat) => {
-      counts[cat] = saved.filter((item) => item.category === cat).length;
-    });
-    return counts;
-  }, [saved]);
+  const openOcr = (file: File | null = null, tab: "photo" | "direct_paste" = "photo") => {
+    setOcrTab(tab);
+    setActiveOcrPhoto(file);
+    setIsOcrOpen(true);
+  };
+  const pendingCount = draft.filter((row) => row.name.trim() || row.price > 0).length;
 
   return (
-    <WorkspaceShell
-      title="Menu management"
-      description="Review your dishes and prices, extract items with client-side OCR, and maintain a verified menu for your kitchen."
-    >
-      {message && (
-        <div
-          role="status"
-          className="flex items-center gap-3 p-4 bg-sage rounded-2xl text-forest text-sm font-semibold border border-forest/10 animate-fadeIn"
-        >
-          <CheckCircle2 size={18} className="shrink-0 text-forest" />
-          <span className="flex-1">{message}</span>
-          <button
-            type="button"
-            onClick={() => setMessage("")}
-            className="text-forest/60 hover:text-forest"
-          >
-            <X size={16} />
-          </button>
+    <WorkspaceShell title="Menu Management" description="Manage your kitchen menu." customHeader>
+      <div className={styles.workspace}>
+        <header className={styles.header}>
+          <div><p className={styles.eyebrow}>Kitchen Operations Workspace</p><h1>Menu Management</h1><p>Upload menus, review extracted dishes and keep your kitchen’s digital menu up to date.</p></div>
+          <div className={styles.actions}>
+            <button type="button" className={styles.primary} onClick={() => openOcr(photos[0] || null)}><Sparkles size={16} />Open OCR Digitizer</button>
+            <button type="button" onClick={() => openOcr(null, "direct_paste")}><FileText size={16} />Paste Text</button>
+          </div>
+        </header>
+        {message && <div role="status" className={styles.notice}><CheckCircle2 size={18} /><span>{message}</span><button type="button" aria-label="Dismiss message" onClick={() => setMessage("")}><X size={16} /></button></div>}
+        {error && <div role="alert" className={styles.error}><AlertCircle size={18} /><span>{error}</span><button type="button" aria-label="Dismiss error" onClick={() => setError("")}><X size={16} /></button></div>}
+        <div className={styles.summary}>
+          <div><UtensilsCrossed size={20} /><span>Dishes in menu</span><strong>{busy && !saved.length ? "—" : saved.length}</strong><small>Saved to your account</small></div>
+          <div><ClipboardList size={20} /><span>Pending review</span><strong>{pendingCount}</strong><small>Items in the review table</small></div>
+          <div><Camera size={20} /><span>Menu photos uploaded</span><strong>{photos.length}</strong><small>Selected in this session</small></div>
         </div>
-      )}
-
-      {error && (
-        <div
-          role="alert"
-          className="flex items-center gap-3 p-4 bg-red-50 text-red-800 rounded-2xl text-sm font-semibold border border-red-200 animate-fadeIn"
-        >
-          <AlertCircle size={18} className="shrink-0 text-red-700" />
-          <span className="flex-1">{error}</span>
-          <button
-            type="button"
-            onClick={() => setError("")}
-            className="text-red-700/60 hover:text-red-900"
-          >
-            <X size={16} />
-          </button>
-        </div>
-      )}
-
-      {/* SECTION 1: Menu Photographs & OCR Digitizer */}
-      <section className="rounded-3xl bg-white border border-line-light p-6 space-y-5 shadow-xs">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-black text-ink">Menu photographs</h2>
-              <span className="px-2 py-0.5 rounded-md bg-sage text-forest text-[11px] font-bold">
-                Tesseract.js OCR
-              </span>
-            </div>
-            <p className="text-ink-secondary text-sm mt-0.5">
-              Upload photos of printed weekly cycles, handwritten boards, or rate sheets to extract
-              dishes automatically.
-            </p>
+        <section className={styles.card}>
+          <div className={styles.sectionHeading}><div className={styles.numberedHeading} data-step="1"><h2>Upload menu photos</h2><p>Upload your menu, then scan a photo to extract dishes for review.</p></div><span className={styles.badge}>Up to {MAX_PHOTOS} photos</span></div>
+          <div className={styles.dropzone} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); handlePhotoUpload(Array.from(event.dataTransfer.files)); }}>
+            <Upload size={28} /><strong>Drag and drop menu photos here</strong><p>PNG, JPEG or WebP · Up to 10 MB per photo</p>
+            <label className={styles.browse}>Browse files<input aria-label="Upload menu photos" type="file" multiple accept="image/png,image/jpeg,image/webp" onChange={(event) => { handlePhotoUpload(Array.from(event.target.files || [])); event.target.value = ""; }} /></label>
           </div>
-
-          <div className="flex items-center gap-2.5">
-            <button
-              type="button"
-              onClick={() => {
-                setActiveOcrPhoto(photos[0] || null);
-                setIsOcrOpen(true);
-              }}
-              className="flex items-center gap-2 rounded-xl bg-forest text-lime px-4 py-2.5 font-bold text-sm hover:bg-forest-dark transition-all shadow-xs"
-            >
-              <Sparkles size={16} />
-              <span>{photos.length > 0 ? "Scan with OCR" : "Open OCR Digitizer"}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setActiveOcrPhoto(null);
-                setIsOcrOpen(true);
-              }}
-              className="flex items-center gap-2 rounded-xl border border-line-light px-3.5 py-2.5 font-bold text-sm text-forest hover:bg-canvas transition-colors"
-              title="Paste text from WhatsApp, email or notice boards"
-            >
-              <FileText size={15} />
-              <span>Paste Text</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Drag and Drop Zone */}
-        <div
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => {
-            e.preventDefault();
-            handlePhotoUpload(Array.from(e.dataTransfer.files || []));
-          }}
-          className="rounded-2xl border-2 border-dashed border-line-light bg-canvas/30 hover:bg-canvas/60 p-6 flex flex-col items-center justify-center text-center transition-all cursor-pointer"
-          onClick={() => document.getElementById("menu-photo-input")?.click()}
-        >
-          <div className="w-12 h-12 rounded-2xl bg-forest/10 text-forest flex items-center justify-center mb-2">
-            <Upload size={22} />
-          </div>
-          <p className="text-sm font-bold text-ink">
-            Drop menu photos here, or <span className="text-forest underline">browse</span>
-          </p>
-          <p className="text-xs text-ink-secondary mt-1">
-            PNG, JPEG, WebP up to 10 MB each (max {MAX_PHOTOS} photos)
-          </p>
-          <input
-            id="menu-photo-input"
-            type="file"
-            multiple
-            accept="image/png,image/jpeg,image/webp"
-            className="hidden"
-            onChange={(e) => {
-              handlePhotoUpload(Array.from(e.target.files || []));
-              e.target.value = "";
-            }}
-          />
-        </div>
-
-        {/* Photo Gallery Previews */}
-        {photos.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-xs font-semibold text-ink-secondary">
-              <span>
-                {photos.length} photo{photos.length === 1 ? "" : "s"} selected
-              </span>
-              <button
-                type="button"
-                onClick={() => setPhotos([])}
-                className="text-red-700 hover:underline"
-              >
-                Clear all photos
-              </button>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {photos.map((file, i) => (
-                <PhotoPreview
-                  key={file.name + file.lastModified + i}
-                  file={file}
-                  onScan={() => {
-                    setActiveOcrPhoto(file);
-                    setIsOcrOpen(true);
-                  }}
-                  remove={() => setPhotos((items) => items.filter((_, j) => i !== j))}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-      </section>
-
-      {/* SECTION 2: Review and Confirm Menu (Editable Table) */}
-      <form
-        id="menu-review-table"
-        onSubmit={save}
-        className="rounded-3xl bg-white border border-line-light p-6 space-y-5 shadow-xs"
-      >
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-line-light">
-          <div>
-            <h2 className="text-xl font-black text-ink">
-              {editingId ? "Edit menu item" : "Review and confirm menu"}
-            </h2>
-            <p className="text-sm text-ink-secondary">
-              {editingId
-                ? "Update this dish's name, category, or price and save changes."
-                : "Enter dishes manually, or import them from photos with OCR above. Up to 200 items per batch."}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {!editingId && (
-              <button
-                type="button"
-                onClick={addDraftRow}
-                disabled={busy || draft.length >= 200}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-line-light text-sm font-bold text-forest hover:bg-canvas transition-colors disabled:opacity-50"
-              >
-                <Plus size={16} />
-                <span>Add Row</span>
-              </button>
-            )}
-            {draft.length > 1 && !editingId && (
-              <button
-                type="button"
-                onClick={clearDraft}
-                disabled={busy}
-                className="px-3 py-2 text-xs font-bold text-ink-secondary hover:text-red-700 transition-colors"
-              >
-                Clear Rows
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* High-Density Editable Table */}
-        <div className="overflow-x-auto rounded-2xl border border-line-light">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-canvas/50 text-xs font-bold text-ink-secondary border-b border-line-light">
-              <tr>
-                <th className="py-3 px-3 w-12 text-center">#</th>
-                <th className="py-3 px-3">Dish Name</th>
-                <th className="py-3 px-3 w-48">Category</th>
-                <th className="py-3 px-3 w-36">Price (₹)</th>
-                <th className="py-3 px-3 w-16 text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line-light">
-              {draft.map((row, i) => (
-                <tr key={i} className="hover:bg-canvas/20 transition-colors">
-                  <td className="py-2.5 px-3 text-center text-xs text-ink-secondary font-bold">
-                    {i + 1}
-                  </td>
-                  <td className="py-2.5 px-3">
-                    <input
-                      required
-                      maxLength={100}
-                      placeholder="e.g. Masala Dosa, Dal Makhani"
-                      value={row.name}
-                      onChange={(e) => changeDraft(i, "name", e.target.value)}
-                      className="w-full rounded-xl border border-line-light bg-white px-3 py-2 text-sm font-medium text-ink focus:border-forest focus:outline-none"
-                    />
-                  </td>
-                  <td className="py-2.5 px-3">
-                    <select
-                      value={row.category}
-                      onChange={(e) => changeDraft(i, "category", e.target.value)}
-                      className="w-full rounded-xl border border-line-light bg-white px-3 py-2 text-sm font-medium text-ink focus:border-forest focus:outline-none capitalize"
-                    >
-                      {MENU_CATEGORIES.map((cat) => (
-                        <option key={cat} value={cat}>
-                          {cat}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="py-2.5 px-3">
-                    <input
-                      required
-                      type="number"
-                      min="0.01"
-                      max="9999999999.99"
-                      step="0.01"
-                      placeholder="40.00"
-                      value={row.price || ""}
-                      onChange={(e) => changeDraft(i, "price", e.target.value)}
-                      className="w-full rounded-xl border border-line-light bg-white px-3 py-2 text-sm font-medium text-ink focus:border-forest focus:outline-none"
-                    />
-                  </td>
-                  <td className="py-2.5 px-3 text-center">
-                    <button
-                      type="button"
-                      disabled={draft.length === 1 || busy}
-                      onClick={() => removeDraftRow(i)}
-                      className="p-2 text-ink-secondary hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-20"
-                      title="Remove row"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Form Actions */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-          <div className="text-xs text-ink-secondary">
-            {draft.length} item{draft.length === 1 ? "" : "s"} in batch
-          </div>
-
-          <div className="flex items-center gap-3">
-            {editingId && (
-              <button
-                type="button"
-                disabled={busy}
-                onClick={clearDraft}
-                className="px-4 py-2.5 rounded-xl border border-line-light font-bold text-sm text-ink-secondary hover:text-ink transition-colors"
-              >
-                Cancel edit
-              </button>
-            )}
-            <button
-              type="submit"
-              disabled={busy}
-              className="flex items-center gap-2 rounded-xl bg-forest text-lime px-6 py-2.5 font-black text-sm hover:bg-forest-dark transition-all disabled:opacity-50 shadow-xs"
-            >
-              <CheckCircle2 size={16} />
-              <span>
-                {busy
-                  ? "Saving to catalog..."
-                  : editingId
-                  ? "Update menu item"
-                  : `Confirm and save ${draft.length} dish${draft.length === 1 ? "" : "es"}`}
-              </span>
-            </button>
-          </div>
-        </div>
-      </form>
-
-      {/* SECTION 3: Saved Menu Catalog */}
-      <section
-        className="rounded-3xl bg-white border border-line-light p-6 space-y-5 shadow-xs"
-        aria-busy={busy}
-      >
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-2 border-b border-line-light">
-          <div>
-            <h2 className="text-xl font-black text-ink">Saved menu ({saved.length})</h2>
-            <p className="text-sm text-ink-secondary">
-              Dishes registered to your account available for daily service activity logging.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => {
-              setBusy(true);
-              setError("");
-              void load().finally(() => setBusy(false));
-            }}
-            className="flex items-center gap-1.5 py-2 px-3.5 rounded-xl border border-line-light text-sm font-bold text-forest hover:bg-canvas transition-colors"
-          >
-            <RefreshCw size={14} className={busy ? "animate-spin" : ""} />
-            <span>Refresh</span>
-          </button>
-        </div>
-
-        {/* Filter and Search Toolbar */}
-        {saved.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              {/* Category Pills */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
-                <button
-                  type="button"
-                  onClick={() => setCategoryFilter("all")}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
-                    categoryFilter === "all"
-                      ? "bg-forest text-lime shadow-xs"
-                      : "bg-canvas text-ink-secondary hover:text-ink"
-                  }`}
-                >
-                  All ({categoryCounts.all || 0})
-                </button>
-                {MENU_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => setCategoryFilter(cat)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-all shrink-0 ${
-                      categoryFilter === cat
-                        ? "bg-forest text-lime shadow-xs"
-                        : "bg-canvas text-ink-secondary hover:text-ink"
-                    }`}
-                  >
-                    {cat} ({categoryCounts[cat] || 0})
-                  </button>
-                ))}
-              </div>
-
-              {/* Dish Search Input */}
-              <div className="relative min-w-[200px] max-w-xs w-full">
-                <Search
-                  size={15}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-secondary"
-                />
-                <input
-                  type="text"
-                  placeholder="Search saved dishes..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-xl border border-line-light bg-canvas/40 pl-9 pr-3 py-1.5 text-xs font-medium text-ink focus:border-forest focus:outline-none"
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-secondary hover:text-ink"
-                  >
-                    <X size={13} />
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Saved Items List */}
-        {!saved.length && !busy ? (
-          <div className="text-center py-10 bg-canvas/30 rounded-2xl border border-dashed border-line-light">
-            <p className="font-bold text-ink text-sm">No saved dishes in your account yet</p>
-            <p className="text-xs text-ink-secondary mt-1 max-w-sm mx-auto">
-              Use the OCR digitizer above to scan a photo menu, or add dishes in the table to get
-              started.
-            </p>
-          </div>
-        ) : filteredSaved.length === 0 && saved.length > 0 ? (
-          <div className="text-center py-8 text-ink-secondary text-sm">
-            <p>No dishes match your current filter or search.</p>
-            <button
-              type="button"
-              onClick={() => {
-                setCategoryFilter("all");
-                setSearchQuery("");
-              }}
-              className="text-forest underline text-xs font-bold mt-2"
-            >
-              Reset filters
-            </button>
-          </div>
-        ) : (
-          <ul className="divide-y divide-line-light rounded-2xl border border-line-light overflow-hidden bg-white">
-            {filteredSaved.map((item) => (
-              <li
-                key={item.id}
-                className="flex flex-wrap items-center justify-between gap-3 p-4 hover:bg-canvas/20 transition-colors"
-              >
-                <div className="flex-1 min-w-[200px]">
-                  <p className="font-bold text-ink text-sm break-words">{item.name}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="px-2 py-0.5 rounded-md bg-sage text-forest text-[10px] font-black uppercase tracking-wider">
-                      {item.category}
-                    </span>
-                    <span className="text-xs font-semibold text-ink-secondary">
-                      ₹{Number(item.price).toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={() => startEditSavedItem(item)}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-line-light text-xs font-bold text-forest hover:bg-canvas transition-colors disabled:opacity-50"
-                  >
-                    <Edit3 size={13} />
-                    <span>Edit</span>
-                  </button>
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={() => void removeSavedItem(item.id)}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-red-700 hover:bg-red-50 transition-colors disabled:opacity-50"
-                  >
-                    <Trash2 size={13} />
-                    <span>Delete</span>
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      {/* OCR Menu Import Modal */}
-      <OcrMenuImportModal
-        isOpen={isOcrOpen}
-        onClose={() => {
-          setIsOcrOpen(false);
-          setActiveOcrPhoto(null);
-        }}
-        onConfirmDishes={handleOcrDirectConfirm}
-        onLoadToDraft={handleOcrLoadToDraft}
-        existingCatalog={saved}
-        initialFile={activeOcrPhoto}
-      />
+          {photos.length > 0 && <><div className={styles.uploadCount}><span>{photos.length} photos selected</span><button type="button" onClick={() => setPhotos([])}>Clear all photos</button></div><div className={styles.photos}>{photos.map((file, index) => <PhotoPreview key={file.name + file.lastModified + index} file={file} onScan={() => openOcr(file)} remove={() => setPhotos((items) => items.filter((_, i) => i !== index))} />)}</div></>}
+        </section>
+        <form id="menu-review-table" onSubmit={save} className={styles.card}>
+          <div className={styles.sectionHeading}><div className={styles.numberedHeading} data-step="2"><h2>{editingId ? "Edit menu item" : "Review and confirm extracted items"}</h2><p>Check dish names, categories and prices before saving to your menu.</p></div><button type="button" disabled={busy || draft.length >= 200 || !!editingId} onClick={addDraftRow}><Plus size={16} />Add Item Manually</button></div>
+          <div className={styles.tableScroll}><table className={styles.table}><thead><tr><th><input type="checkbox" aria-label="Select all review items" checked={excludedRows.size === 0} onChange={(event) => setExcludedRows(event.target.checked ? new Set() : new Set(draft.map((_, i) => i)))} /></th><th>#</th><th>Dish name</th><th>Category</th><th>Price (₹)</th><th>Actions</th></tr></thead>
+          <tbody>{draft.map((row, index) => <tr key={index}>
+            <td><input type="checkbox" aria-label={`Select item ${index + 1}`} checked={!excludedRows.has(index)} onChange={(event) => setExcludedRows((previous) => { const next = new Set(previous); if (event.target.checked) next.delete(index); else next.add(index); return next; })} /></td><td>{index + 1}</td>
+            <td><input aria-label={`Dish name ${index + 1}`} disabled={excludedRows.has(index)} required={!excludedRows.has(index)} maxLength={100} placeholder="Enter dish name" value={row.name} onChange={(event) => changeDraft(index, "name", event.target.value)} />{(!row.name.trim() || !Number.isFinite(row.price) || row.price <= 0) && <small className={styles.review}>Needs review</small>}</td>
+            <td><select disabled={excludedRows.has(index)} aria-label={`Category ${index + 1}`} value={row.category} onChange={(event) => changeDraft(index, "category", event.target.value)}>{MENU_CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}</select></td>
+            <td><input aria-label={`Price ${index + 1}`} disabled={excludedRows.has(index)} required={!excludedRows.has(index)} type="number" min="0.01" max="9999999999.99" step="0.01" placeholder="0.00" value={row.price || ""} onChange={(event) => changeDraft(index, "price", event.target.value)} /></td>
+            <td><div className={styles.actions}><button type="button" aria-label={`Edit item ${index + 1}`} disabled={excludedRows.has(index)} onClick={() => (document.querySelector(`[aria-label="Dish name ${index + 1}"]`) as HTMLInputElement | null)?.focus()}><Edit3 size={15} /></button><button type="button" aria-label={`Delete item ${index + 1}`} disabled={busy} onClick={() => removeDraftRow(index)}><Trash2 size={16} /></button></div></td>
+          </tr>)}</tbody></table></div>
+          <div className={styles.formFooter}><span>{pendingCount} item{pendingCount === 1 ? "" : "s"} in review · {draft.length - excludedRows.size} selected</span><div className={styles.actions}><button type="button" disabled={busy} onClick={() => { if (editingId || confirm("Discard all items in the review table?")) clearDraft(); }}>{editingId ? "Cancel edit" : "Discard All"}</button><button type="submit" className={styles.primary} disabled={busy}><CheckCircle2 size={16} />{busy ? "Please wait…" : editingId ? "Update menu item" : "Confirm and Save to Menu"}</button></div></div>
+        </form>
+        <section className={styles.card} aria-busy={busy}>
+          <div className={styles.sectionHeading}><div><h2>Saved Menu</h2><p>Manage the dishes available for your kitchen’s daily service.</p></div><div className={styles.actions}><button type="button" disabled={busy} onClick={() => { setBusy(true); setError(""); void load().finally(() => setBusy(false)); }}><RefreshCw size={16} />Refresh</button><button type="button" className={styles.primary} disabled={busy} onClick={() => { clearDraft(); document.getElementById("menu-review-table")?.scrollIntoView({ behavior: "smooth" }); }}><Plus size={16} />Add Dish</button></div></div>
+          <div className={styles.filters}><label className={styles.search}><Search size={16} /><input aria-label="Search dishes" placeholder="Search dishes…" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} /></label><select aria-label="Filter by category" value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)}><option value="all">All categories</option>{MENU_CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}</select><select aria-label="Sort dishes" value={sortOrder} onChange={(event) => setSortOrder(event.target.value)}><option value="name">Name: A–Z</option><option value="price">Price: low to high</option></select></div>
+          <div className={styles.tableScroll}><table className={styles.table}><thead><tr><th>#</th><th>Dish name</th><th>Category</th><th>Price (₹)</th><th>Actions</th></tr></thead><tbody>{filteredSaved.map((item, index) => <tr key={item.id}><td>{index + 1}</td><td className={styles.dish}>{item.name}</td><td><span className={styles.badge}>{item.category}</span></td><td>₹{Number(item.price).toFixed(2)}</td><td><div className={styles.actions}><button type="button" disabled={busy} aria-label={`Edit ${item.name}`} onClick={() => { setExcludedRows(new Set()); startEditSavedItem(item); }}><Edit3 size={15} />Edit</button><button type="button" disabled={busy} aria-label={`Delete ${item.name}`} onClick={() => void removeSavedItem(item.id)}><Trash2 size={15} /></button></div></td></tr>)}{!filteredSaved.length && <tr><td colSpan={5} className={styles.empty}>{busy ? "Loading your menu…" : saved.length ? "No dishes match your search or category." : "No saved dishes yet. Upload a menu or add your first dish manually."}</td></tr>}</tbody></table></div><div className={styles.caption}>{filteredSaved.length} of {saved.length} saved dishes</div>
+        </section>
+      </div>
+      <OcrMenuImportModal isOpen={isOcrOpen} initialTab={ocrTab} onClose={() => { setIsOcrOpen(false); setActiveOcrPhoto(null); }} onConfirmDishes={handleOcrDirectConfirm} onLoadToDraft={handleOcrLoadToDraft} existingCatalog={saved} initialFile={activeOcrPhoto} />
     </WorkspaceShell>
   );
 };

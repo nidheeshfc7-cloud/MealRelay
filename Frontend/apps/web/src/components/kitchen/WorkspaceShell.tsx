@@ -10,6 +10,7 @@ interface WorkspaceShellProps {
   title: string;
   description: string;
   children: React.ReactNode;
+  customHeader?: boolean;
 }
 
 const WORKSPACE_TABS = [
@@ -34,6 +35,7 @@ export const WorkspaceShell: React.FC<WorkspaceShellProps> = ({
   title,
   description,
   children,
+  customHeader = false,
 }) => {
   const pathname = usePathname();
 
@@ -41,7 +43,7 @@ export const WorkspaceShell: React.FC<WorkspaceShellProps> = ({
     <div className="min-h-screen bg-canvas text-ink flex flex-col lg:flex-row font-sans selection:bg-lime selection:text-forest-dark">
       <Sidebar />
       <main className="flex-1 min-w-0 w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-        <header className="space-y-2">
+        {!customHeader && <header className="space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sage text-forest text-xs font-bold">
             <span className="w-2 h-2 rounded-full bg-forest animate-pulse" />
             <span>Kitchen Operations Workspace</span>
@@ -52,10 +54,10 @@ export const WorkspaceShell: React.FC<WorkspaceShellProps> = ({
           <p className="text-sm sm:text-base text-ink-secondary max-w-3xl font-medium leading-relaxed">
             {description}
           </p>
-        </header>
+        </header>}
 
         {/* Cohesive Workflow Segmented Bar */}
-        <nav
+        {!customHeader && <nav
           aria-label="Kitchen workflows"
           className="flex items-center gap-2 flex-wrap border-b border-line-light pb-4"
         >
@@ -77,7 +79,7 @@ export const WorkspaceShell: React.FC<WorkspaceShellProps> = ({
               </Link>
             );
           })}
-        </nav>
+        </nav>}
 
         {children}
       </main>

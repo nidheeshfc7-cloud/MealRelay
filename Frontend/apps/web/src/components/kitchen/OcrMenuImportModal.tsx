@@ -35,6 +35,7 @@ export interface OcrMenuImportModalProps {
   ) => void;
   existingCatalog?: MenuItem[];
   initialFile?: File | null;
+  initialTab?: "photo" | "direct_paste";
 }
 
 type ActiveTab = "photo" | "direct_paste";
@@ -48,6 +49,7 @@ export const OcrMenuImportModal: React.FC<OcrMenuImportModalProps> = ({
   onLoadToDraft,
   existingCatalog = [],
   initialFile = null,
+  initialTab = "photo",
 }) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("photo");
   const [selectedFile, setSelectedFile] = useState<File | null>(initialFile);
@@ -90,6 +92,7 @@ export const OcrMenuImportModal: React.FC<OcrMenuImportModalProps> = ({
   // Reset state when modal is opened or closed
   useEffect(() => {
     if (isOpen) {
+      setActiveTab(initialTab);
       if (initialFile) {
         setSelectedFile(initialFile);
         setActiveTab("photo");
@@ -106,7 +109,7 @@ export const OcrMenuImportModal: React.FC<OcrMenuImportModalProps> = ({
       setPastedText("");
       setIsSaving(false);
     }
-  }, [isOpen, initialFile]);
+  }, [isOpen, initialFile, initialTab]);
 
   if (!isOpen) {
     return null;
