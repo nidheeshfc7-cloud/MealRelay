@@ -1,11 +1,12 @@
-import type { OcrEngineResult, OcrProgress } from "./types";
+import type { OcrEngineResult, OcrProgress, OcrWordConfidence } from "./types";
 
-const OCR_TIMEOUT_MS = 35000;
+const OCR_TIMEOUT_MS = 60000;
 
 export const recognizeText = async (
   imageDataUrl: string,
   onProgress?: (progress: OcrProgress) => void
 ): Promise<OcrEngineResult> => {
+  // Early return if running in SSR environment
   if (typeof window === "undefined") {
     return {
       text: "",
@@ -14,79 +15,103 @@ export const recognizeText = async (
     };
   }
 
-  const { createWorker } = await import("tesseract.js");
-
   let timeoutTimer: ReturnType<typeof setTimeout> | null = null;
 
   const timeoutPromise = new Promise<never>((_, reject) => {
     timeoutTimer = setTimeout(() => {
       reject(
         new Error(
-          "OCR processing timed out. Please try a smaller or higher-contrast photo, or use direct text paste."
+          "PaddleOCR processing timed out. Please try a clearer photo or use direct text paste."
         )
       );
     }, OCR_TIMEOUT_MS);
   });
 
   const workerExecution = async (): Promise<OcrEngineResult> => {
-    let worker: any = null;
+    let service: any = null;
     try {
       if (onProgress) {
-        onProgress({ status: "Initializing OCR engine...", progress: 5 });
+        onProgress({ status: "Loading in-browser PaddleOCR runtime...", progress: 10 });
       }
 
-      worker = await createWorker("eng", 1, {
-        logger: (message: { status?: string; progress?: number }) => {
-          if (!onProgress) return;
-          const status = message.status || "processing";
-          const rawProgress = typeof message.progress === "number" ? message.progress : 0;
+      // Dynamic client-side import for WebAssembly/WebGPU PaddleOCR
+      const { PaddleOcrService } = await import("ppu-paddle-ocr/web");
 
-          if (status === "recognizing text") {
-            const mappedProgress = Math.min(98, Math.max(15, Math.round(rawProgress * 100)));
-            onProgress({
-              status: `Recognizing text... (${mappedProgress}%)`,
-              progress: mappedProgress,
+      if (onProgress) {
+        onProgress({ status: "Initializing PaddleOCR models...", progress: 25 });
+      }
+
+      service = new PaddleOcrService();
+      await service.initialize();
+
+      if (onProgress) {
+        onProgress({ status: "Recognizing text in browser...", progress: 60 });
+      }
+
+      // Convert data URL to ArrayBuffer for in-browser inference
+      const responseBuffer = await fetch(imageDataUrl).then((res) => res.arrayBuffer());
+      const ocrOutput = await service.recognize(responseBuffer);
+
+      if (onProgress) {
+        onProgress({ status: "Structuring extracted dishes...", progress: 95 });
+      }
+
+      const words: OcrWordConfidence[] = [];
+      let totalConfidence = 0;
+      let count = 0;
+
+      // Extract per-word tokens and confidence ratings
+      if (Array.isArray(ocrOutput.lines)) {
+        for (const line of ocrOutput.lines) {
+          if (!Array.isArray(line)) continue;
+          for (const item of line) {
+            const itemText = String(item.text || "").trim();
+            if (!itemText) continue;
+
+            const rawConfidence =
+              typeof item.confidence === "number" ? item.confidence : 0.85;
+            const normalizedScore =
+              rawConfidence <= 1 ? Math.round(rawConfidence * 100) : Math.round(rawConfidence);
+
+            words.push({
+              text: itemText,
+              confidence: normalizedScore,
             });
-            return;
+
+            totalConfidence += normalizedScore;
+            count++;
           }
-
-          if (status.includes("loading") || status.includes("initialized")) {
-            onProgress({ status: "Loading language models...", progress: 12 });
-            return;
-          }
-
-          onProgress({ status: "Preparing image for scan...", progress: 8 });
-        },
-      });
-
-      if (onProgress) {
-        onProgress({ status: "Scanning text...", progress: 20 });
+        }
       }
 
-      const response = await worker.recognize(imageDataUrl);
+      const meanConfidence =
+        count > 0
+          ? Math.round(totalConfidence / count)
+          : typeof ocrOutput.confidence === "number"
+            ? Math.round(ocrOutput.confidence <= 1 ? ocrOutput.confidence * 100 : ocrOutput.confidence)
+            : 80;
 
-      if (onProgress) {
-        onProgress({ status: "Structuring extracted dishes...", progress: 100 });
-      }
-
-      const words = Array.isArray(response.data.words)
-        ? response.data.words.map((w: { text?: string; confidence?: number }) => ({
-            text: String(w.text || "").trim(),
-            confidence: typeof w.confidence === "number" ? w.confidence : 0,
-          }))
-        : [];
+      const fullText =
+        ocrOutput.text ||
+        (Array.isArray(ocrOutput.lines)
+          ? ocrOutput.lines
+              .map((line: any[]) =>
+                Array.isArray(line) ? line.map((w: any) => String(w.text || "")).join(" ") : ""
+              )
+              .join("\n")
+          : words.map((w) => w.text).join("\n"));
 
       return {
-        text: response.data.text || "",
-        confidence: typeof response.data.confidence === "number" ? response.data.confidence : 0,
+        text: fullText,
+        confidence: meanConfidence,
         words,
       };
     } finally {
-      if (worker) {
+      if (service && typeof service.destroy === "function") {
         try {
-          await worker.terminate();
+          await service.destroy();
         } catch {
-          // Worker termination fallback
+          // Cleanup fallback
         }
       }
     }

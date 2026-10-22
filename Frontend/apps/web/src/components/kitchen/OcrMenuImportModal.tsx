@@ -531,7 +531,7 @@ export const OcrMenuImportModal: React.FC<OcrMenuImportModalProps> = ({
                       {isProcessing ? (
                         <>
                           <Loader2 size={16} className="animate-spin" />
-                          <span>Scanning with Tesseract...</span>
+                          <span>Scanning with PaddleOCR...</span>
                         </>
                       ) : (
                         <>

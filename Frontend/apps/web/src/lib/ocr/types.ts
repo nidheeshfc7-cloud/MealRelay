@@ -35,11 +35,13 @@ export interface ExtractedActivityRecord {
   selected: boolean;
 }
 
+export interface OcrWordConfidence {
+  text: string;
+  confidence: number;
+}
+
 export interface OcrEngineResult {
   text: string;
   confidence: number;
-  words: Array<{
-    text: string;
-    confidence: number;
-  }>;
+  words: OcrWordConfidence[];
 }

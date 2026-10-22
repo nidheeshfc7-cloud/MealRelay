@@ -362,7 +362,7 @@ export const MenuWorkspace: React.FC = () => {
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-black text-ink">Menu photographs</h2>
               <span className="px-2 py-0.5 rounded-md bg-sage text-forest text-[11px] font-bold">
-                Tesseract.js OCR
+                PaddleOCR In-Browser
               </span>
             </div>
             <p className="text-ink-secondary text-sm mt-0.5">
