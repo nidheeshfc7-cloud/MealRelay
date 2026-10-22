@@ -1,0 +1,22 @@
+.scanProgress {
+  padding: 22px 18px;
+  border: 1px solid #e4eae6;
+  border-radius: 16px;
+  background: #f7faf5;
+  text-align: center;
+}
+.scanProgress h3 { margin: 0 0 22px; color: #003f2f; font-size: 15px; font-weight: 750; }
+.checkpoints { display: flex; margin: 0; padding: 0; list-style: none; }
+.checkpoints li { position: relative; display: flex; flex: 1; flex-direction: column; align-items: center; gap: 9px; min-width: 0; color: #718078; font-size: 12px; font-weight: 600; }
+.checkpoints li:not(:last-child)::after { content: ""; position: absolute; top: 20px; left: calc(50% + 25px); width: calc(100% - 50px); height: 2px; background: #dfe7dd; }
+.checkpoints li.complete::after { background: #3d8055; }
+.circle { display: grid; place-items: center; width: 42px; height: 42px; border: 2px solid #dce5db; border-radius: 50%; background: white; color: #8b9c92; transition: background-color .2s, border-color .2s; }
+.complete .circle { background: #245c40; border-color: #245c40; color: white; }
+.active .circle { border-color: #245c40; color: #245c40; }
+.checkpoints .complete, .checkpoints .active { color: #003f2f; }
+.scanProgress p { margin: 18px 0 0; color: #718078; font-size: 12px; line-height: 1.6; }
+.spinner { animation: spin 1s linear infinite; }
+.screenReader { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 420px) { .scanProgress { padding: 18px 10px; } .checkpoints li { font-size: 10px; } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } .circle { transition: none; } }

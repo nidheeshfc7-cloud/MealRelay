@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import Image from "next/image";
 import {
   Sparkles,
   Upload,
@@ -13,6 +14,9 @@ import {
   AlertCircle,
   X,
   Camera,
+  BookOpen,
+  Lightbulb,
+  Check,
 } from "lucide-react";
 import { listMenuItems, saveMenuItems, deleteMenuItem } from "@/lib/kitchen/actions";
 import { MENU_CATEGORIES, type MenuInput, type MenuItem } from "@/lib/kitchen/types";
@@ -328,15 +332,31 @@ export const MenuWorkspace: React.FC = () => {
     <WorkspaceShell title="Menu Management" description="Manage your kitchen menu." customHeader>
       <div className={styles.workspace}>
         <header className={styles.header}>
-          <div><p className={styles.eyebrow}>Kitchen Operations Workspace</p><h1>Menu Management</h1><p>Upload menus, review extracted dishes and keep your kitchen’s digital menu up to date.</p></div>
+          <div><p className={styles.eyebrow}>Kitchen Operations Workspace</p><h1>Menu Management</h1><p>Upload restaurant menus, extract dishes and prices with OCR, then review and save them to your kitchen’s menu.</p></div>
         </header>
         {message && <div role="status" className={styles.notice}><CheckCircle2 size={18} /><span>{message}</span><button type="button" aria-label="Dismiss message" onClick={() => setMessage("")}><X size={16} /></button></div>}
         {error && <div role="alert" className={styles.error}><AlertCircle size={18} /><span>{error}</span><button type="button" aria-label="Dismiss error" onClick={() => setError("")}><X size={16} /></button></div>}
         <section className={styles.card}>
           <div className={styles.sectionHeading}><div className={styles.numberedHeading} data-step="1"><h2>Upload menu photos</h2><p>Upload your menu, then scan a photo to extract dishes for review.</p></div><span className={styles.badge}>Up to {MAX_PHOTOS} photos</span></div>
+          <div className={styles.uploadLayout}>
           <div className={styles.dropzone} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); handlePhotoUpload(Array.from(event.dataTransfer.files)); }}>
-            <Upload size={28} /><strong>Drag and drop menu photos here</strong><p>PNG, JPEG or WebP · Up to 10 MB per photo</p>
+            <Upload size={25} /><strong>Drag and drop menu photos here, or browse below</strong><p>PNG, JPEG or WebP · Up to 10 MB each · Maximum {MAX_PHOTOS} photos</p>
             <label className={styles.browse}>Browse files<input aria-label="Upload menu photos" type="file" multiple accept="image/png,image/jpeg,image/webp" onChange={(event) => { handlePhotoUpload(Array.from(event.target.files || [])); event.target.value = ""; }} /></label>
+          </div>
+          <aside className={styles.uploadHelp} aria-label="Menu photo guidance">
+            <div className={styles.previewImage}>
+              <Image src="/images/Overlapping Restaurant Menu Mockups.png" alt="Overlapping restaurant menu examples" fill sizes="(max-width: 768px) 45vw, 220px" style={{ objectFit: "contain" }} />
+            </div>
+            <div className={styles.tips}>
+              <h3><Lightbulb size={18} />Tips for best results</h3>
+              <ul>
+                <li><Check size={14} />Use clear, well-lit photos</li>
+                <li><Check size={14} />Keep the menu flat and fully visible</li>
+                <li><Check size={14} />Avoid blurry or cropped text</li>
+                <li><Check size={14} />Include the full menu area</li>
+              </ul>
+            </div>
+          </aside>
           </div>
           {photos.length > 0 && <><div className={styles.uploadCount}><span>{photos.length} photos selected</span><button type="button" onClick={() => setPhotos([])}>Clear all photos</button></div><div className={styles.photos}>{photos.map((file, index) => <PhotoPreview key={file.name + file.lastModified + index} file={file} onScan={() => openOcr(file)} remove={() => setPhotos((items) => items.filter((_, i) => i !== index))} />)}</div></>}
         </section>
@@ -353,8 +373,8 @@ export const MenuWorkspace: React.FC = () => {
           <div className={styles.formFooter}><span>{pendingCount} item{pendingCount === 1 ? "" : "s"} in review · {draft.length - excludedRows.size} selected</span><div className={styles.actions}><button type="button" disabled={busy} onClick={() => { if (editingId || confirm("Discard all items in the review table?")) clearDraft(); }}>{editingId ? "Cancel edit" : "Discard All"}</button><button type="submit" className={styles.primary} disabled={busy}><CheckCircle2 size={16} />{busy ? "Please wait…" : editingId ? "Update menu item" : "Confirm and Save to Menu"}</button></div></div>
         </form>
         <section className={styles.card} aria-busy={busy}>
-          <div className={styles.sectionHeading}><div><h2>Saved Menu</h2><p>Manage the dishes available for your kitchen’s daily service.</p></div><div className={styles.actions}><button type="button" disabled={busy} onClick={() => { setBusy(true); setError(""); void load().finally(() => setBusy(false)); }}><RefreshCw size={16} />Refresh</button><button type="button" className={styles.primary} disabled={busy} onClick={() => { clearDraft(); document.getElementById("menu-review-table")?.scrollIntoView({ behavior: "smooth" }); }}><Plus size={16} />Add Dish</button></div></div>
-          <div className={styles.filters}><label className={styles.search}><Search size={16} /><input aria-label="Search dishes" placeholder="Search dishes…" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} /></label><select aria-label="Filter by category" value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)}><option value="all">All categories</option>{MENU_CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}</select><select aria-label="Sort dishes" value={sortOrder} onChange={(event) => setSortOrder(event.target.value)}><option value="name">Name: A–Z</option><option value="price">Price: low to high</option></select></div>
+          <div className={styles.savedHeader}><div className={styles.savedHeading}><BookOpen size={24} /><div><h2>Saved Menu</h2><p>Dishes available for daily service. Manage, edit or delete items.</p></div></div><div className={styles.filters}><label className={styles.search}><Search size={16} /><input aria-label="Search dishes" placeholder="Search dishes…" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} /></label><select aria-label="Filter by category" value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)}><option value="all">All categories</option>{MENU_CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}</select><select aria-label="Sort dishes" value={sortOrder} onChange={(event) => setSortOrder(event.target.value)}><option value="name">Name: A–Z</option><option value="price">Price: low to high</option></select></div><div className={styles.actions}><button type="button" disabled={busy} onClick={() => { setBusy(true); setError(""); void load().finally(() => setBusy(false)); }}><RefreshCw size={16} />Refresh</button><button type="button" className={styles.primary} disabled={busy} onClick={() => { clearDraft(); document.getElementById("menu-review-table")?.scrollIntoView({ behavior: "smooth" }); }}><Plus size={16} />Add Dish</button></div></div>
+
           <div className={styles.tableScroll}><table className={styles.table}><thead><tr><th>#</th><th>Dish name</th><th>Category</th><th>Price (₹)</th><th>Actions</th></tr></thead><tbody>{filteredSaved.map((item, index) => <tr key={item.id}><td>{index + 1}</td><td className={styles.dish}>{item.name}</td><td><span className={styles.badge}>{item.category}</span></td><td>₹{Number(item.price).toFixed(2)}</td><td><div className={styles.actions}><button type="button" disabled={busy} aria-label={`Edit ${item.name}`} onClick={() => { setExcludedRows(new Set()); startEditSavedItem(item); }}><Edit3 size={15} />Edit</button><button type="button" disabled={busy} aria-label={`Delete ${item.name}`} onClick={() => void removeSavedItem(item.id)}><Trash2 size={15} /></button></div></td></tr>)}{!filteredSaved.length && <tr><td colSpan={5} className={styles.empty}>{busy ? "Loading your menu…" : saved.length ? "No dishes match your search or category." : "No saved dishes yet. Upload a menu or add your first dish manually."}</td></tr>}</tbody></table></div><div className={styles.caption}>{filteredSaved.length} of {saved.length} saved dishes</div>
         </section>
       </div>

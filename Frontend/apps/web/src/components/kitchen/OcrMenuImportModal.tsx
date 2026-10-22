@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useId } from "react";
+import React, { useState, useEffect, useId, useRef } from "react";
 import {
   AlertCircle,
   AlertTriangle,
@@ -20,6 +20,7 @@ import {
 import type { DishCatalogItem } from "@/lib/types/api";
 import { MENU_CATEGORIES, type MenuItem } from "@/lib/kitchen/types";
 import type { ExtractedMenuItem, OcrFilterPreset, OcrProgress } from "@/lib/ocr/types";
+import { OcrScanProgress } from "./OcrScanProgress";
 import { preprocessImage } from "@/lib/ocr/preprocess";
 import { recognizeText } from "@/lib/ocr/engine";
 import { parseMenuDishes } from "@/lib/ocr/parser";
@@ -58,6 +59,16 @@ export const OcrMenuImportModal: React.FC<OcrMenuImportModalProps> = ({
   const [filterPreset, setFilterPreset] = useState<OcrFilterPreset>("adaptive");
 
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [completedCheckpoints, setCompletedCheckpoints] = useState(0);
+  const scanController = useRef<AbortController | null>(null);
+
+  // A closed modal or changed photo must not receive a previous scan's results.
+  useEffect(() => {
+    scanController.current?.abort();
+    setIsProcessing(false);
+    setCompletedCheckpoints(0);
+    return () => { scanController.current?.abort(); };
+  }, [isOpen, selectedFile, rotation, filterPreset]);
   const [progress, setProgress] = useState<OcrProgress>({ status: "", progress: 0 });
   const [extractedRows, setExtractedRows] = useState<ExtractedMenuItem[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -165,30 +176,60 @@ export const OcrMenuImportModal: React.FC<OcrMenuImportModalProps> = ({
   };
 
   const handleRunOcr = async () => {
-    if (!previewUrl) return;
+    if (!previewUrl || isProcessing) return;
+    scanController.current?.abort();
+    const controller = new AbortController();
+    scanController.current = controller;
+    const { signal } = controller;
+    const pause = (milliseconds: number) => new Promise<void>((resolve, reject) => {
+      if (signal.aborted) { reject(new DOMException("Cancelled", "AbortError")); return; }
+      const cancelled = () => {
+        window.clearTimeout(timer);
+        reject(new DOMException("Cancelled", "AbortError"));
+      };
+      const timer = window.setTimeout(() => {
+        signal.removeEventListener("abort", cancelled);
+        resolve();
+      }, milliseconds);
+      signal.addEventListener("abort", cancelled, { once: true });
+    });
 
     setIsProcessing(true);
+    setCompletedCheckpoints(0);
+    setExtractedRows([]);
     setErrorMessage("");
     setProgress({ status: "Preparing image...", progress: 5 });
 
     try {
-      const ocrResult = await recognizeText(previewUrl, (p) => setProgress(p));
+      // OCR runs concurrently with the minimum six-second presentation sequence.
+      const minimumLoadingTime = (async () => {
+        await pause(2000);
+        setCompletedCheckpoints(1);
+        await pause(2000);
+        setCompletedCheckpoints(2);
+        await pause(2000);
+      })();
+      const recognition = recognizeText(previewUrl, (update) => {
+        if (!signal.aborted) setProgress(update);
+      });
+      const [ocrResult] = await Promise.all([recognition, minimumLoadingTime]);
+      if (signal.aborted) return;
       const dishes = parseMenuDishes(ocrResult, existingCatalog);
-
       if (!dishes.length) {
-        setErrorMessage(
-          "No readable dish items were found. Try rotating 90°, switching to High-Contrast filter, or pasting text directly."
-        );
-        setExtractedRows([]);
+        setErrorMessage("No readable dish items were found. Try rotating 90°, switching to High-Contrast filter, or pasting text directly.");
         return;
       }
-
-      setExtractedRows(dishes);
+      setCompletedCheckpoints(3);
+      // Let the completed green checkpoints paint before revealing editable details.
+      await pause(250);
+      if (!signal.aborted) setExtractedRows(dishes);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "OCR recognition failed.";
-      setErrorMessage(msg);
+      if (!signal.aborted) {
+        setErrorMessage(err instanceof Error ? err.message : "OCR recognition failed.");
+        controller.abort();
+      }
     } finally {
-      setIsProcessing(false);
+      if (scanController.current === controller) setIsProcessing(false);
     }
   };
 
@@ -534,7 +575,7 @@ export const OcrMenuImportModal: React.FC<OcrMenuImportModalProps> = ({
                       {isProcessing ? (
                         <>
                           <Loader2 size={16} className="animate-spin" />
-                          <span>Scanning with Tesseract...</span>
+                          <span>Analyzing menu…</span>
                         </>
                       ) : (
                         <>
@@ -547,20 +588,11 @@ export const OcrMenuImportModal: React.FC<OcrMenuImportModalProps> = ({
                 </div>
               )}
 
-              {/* Live Progress Bar */}
               {isProcessing && (
-                <div className="rounded-2xl border border-line-light bg-canvas/50 p-4 space-y-2 animate-fadeIn">
-                  <div className="flex justify-between text-xs font-bold text-ink">
-                    <span>{progress.status || "Scanning text in image..."}</span>
-                    <span>{progress.progress}%</span>
-                  </div>
-                  <div className="w-full h-2 rounded-full bg-line-light overflow-hidden">
-                    <div
-                      className="h-full bg-forest transition-all duration-300"
-                      style={{ width: `${progress.progress}%` }}
-                    />
-                  </div>
-                </div>
+                <OcrScanProgress
+                  completedCheckpoints={completedCheckpoints}
+                  status={progress.status}
+                />
               )}
             </div>
           ) : (

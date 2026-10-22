@@ -80,3 +80,41 @@
 .sectionHeading h2{font-size:16px}
 }
 
+
+/* Contained menu preview beside uploads. */
+.uploadLayout { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(310px,1fr); gap:15px; }
+.uploadLayout .dropzone { min-height:190px; padding:18px; }
+.uploadHelp { display:grid; grid-template-columns:minmax(110px,.95fr) minmax(150px,1fr); align-items:center; gap:12px; padding:16px; background:#f2f8f3; border-radius:10px; min-width:0; }
+.previewImage { position:relative; width:100%; min-height:150px; aspect-ratio:1.15; }
+.tips h3 { display:flex; align-items:center; gap:7px; margin:0 0 12px; font-size:12px; font-weight:750; }
+.tips h3 svg { flex-shrink:0; color:#245c40; }
+.tips ul { list-style:none; margin:0; padding:0; display:grid; gap:9px; }
+.tips li { display:flex; align-items:flex-start; gap:7px; color:#52665a; font-size:11px; line-height:1.55; }
+.tips li svg { flex-shrink:0; margin-top:2px; color:#245c40; }
+.savedHeader { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+.savedHeading { display:flex; align-items:center; gap:12px; margin-right:auto; min-width:230px; }
+.savedHeading > svg { box-sizing:content-box; padding:8px; background:#e8f5ed; border-radius:9px; color:var(--green); }
+.savedHeading h2 { margin:0 0 4px; font-size:17px; font-weight:750; }
+.savedHeading p { margin:0; color:#718078; font-size:12px; line-height:1.6; }
+.savedHeader .filters { margin-bottom:0; flex:1; min-width:300px; }
+.savedHeader .search { min-width:140px; }
+.savedHeader .filters > select { max-width:150px; }
+@media(max-width:1200px) {
+  .uploadLayout { grid-template-columns:minmax(0,1.15fr) minmax(300px,1fr); }
+  .uploadHelp { grid-template-columns:1fr; }
+  .previewImage { min-height:110px; max-height:140px; aspect-ratio:2; }
+  .tips ul { gap:6px; }
+}
+@media(max-width:768px) {
+  .uploadLayout { grid-template-columns:1fr; }
+  .uploadHelp { grid-template-columns:minmax(100px,.8fr) minmax(150px,1fr); }
+  .previewImage { min-height:155px; max-height:none; aspect-ratio:1.15; }
+  .savedHeader .filters { flex-basis:100%; min-width:0; }
+  .savedHeader .filters > select { max-width:none; }
+}
+@media(max-width:420px) {
+  .uploadHelp { gap:10px; padding:12px; }
+  .previewImage { min-height:130px; }
+  .tips h3 { font-size:11px; }
+  .tips li { font-size:10px; }
+}
